@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WordQuest - Global Leaderboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-deep: #0D0221;
+            --bg-card: #1E1243;
+            --accent-neon: #00FFC2;
+            --accent-gold: #FFB800;
+            --accent-pink: #FF2E97;
+            --text-primary: #FFFFFF;
+            --text-secondary: #B4A5D8;
+        }
+
+        body {
+            font-family: 'Space Mono', monospace;
+            background: var(--bg-deep);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 42px;
+            text-align: center;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, var(--accent-neon), var(--accent-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .leaderboard {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 20px;
+        }
+
+        .player-row {
+            display: grid;
+            grid-template-columns: 50px 1fr 120px;
+            gap: 15px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+
+        .player-row.top1 {
+            background: linear-gradient(135deg, rgba(0, 255, 194, 0.2), rgba(255, 184, 0, 0.2));
+            border: 2px solid var(--accent-gold);
+        }
+
+        .player-row.top2, .player-row.top3 {
+            background: rgba(0, 255, 194, 0.1);
+            border: 1px solid var(--accent-neon);
+        }
+
+        .rank {
+            font-size: 24px;
+            font-weight: 700;
+            text-align: center;
+            color: var(--accent-gold);
+        }
+
+        .wizard-name {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .score {
+            text-align: right;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--accent-neon);
+        }
+
+        .refresh-btn {
+            background: linear-gradient(135deg, var(--accent-neon), var(--accent-pink));
+            color: var(--bg-deep);
+            border: none;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            width: 100%;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .refresh-btn:active {
+            transform: scale(0.98);
+        }
+
+        .empty {
+            text-align: center;
+            color: var(--text-secondary);
+            padding: 40px;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏆 Global Leaderboard</h1>
+        <p class="subtitle">Top WordQuest Wizards</p>
+
+        <div class="leaderboard" id="leaderboard">
+            <div class="empty">Loading leaderboard...</div>
+        </div>
+
+        <button class="refresh-btn" onclick="loadLeaderboard()">🔄 Refresh Leaderboard</button>
+    </div>
+
+    <script>
+        function loadLeaderboard() {
+            const leaderboard = JSON.parse(localStorage.getItem('wordQuest_GlobalLeaderboard') || '{}');
+            
+            // Convert to array and sort by score
+            const players = Object.keys(leaderboard).map(name => ({
+                name: name,
+                score: leaderboard[name].score,
+                lastPlayed: leaderboard[name].lastPlayed
+            })).sort((a, b) => b.score - a.score);
+
+            const container = document.getElementById('leaderboard');
+            
+            if (players.length === 0) {
+                container.innerHTML = '<div class="empty">No players yet. Be the first to play!</div>';
+                return;
+            }
+
+            container.innerHTML = players.map((player, index) => {
+                const rank = index + 1;
+                let className = 'player-row';
+                if (rank === 1) className += ' top1';
+                else if (rank === 2 || rank === 3) className += ` top${rank}`;
+                
+                let rankDisplay = rank;
+                if (rank === 1) rankDisplay = '🥇';
+                else if (rank === 2) rankDisplay = '🥈';
+                else if (rank === 3) rankDisplay = '🥉';
+                
+                return `
+                    <div class="${className}">
+                        <div class="rank">${rankDisplay}</div>
+                        <div class="wizard-name">🧙 ${player.name}</div>
+                        <div class="score">${player.score} pts</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Load on page load
+        loadLeaderboard();
+
+        // Auto-refresh every 30 seconds
+        setInterval(loadLeaderboard, 30000);
+    </script>
+</body>
+</html>

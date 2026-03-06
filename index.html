@@ -45,7 +45,6 @@
             position: relative;
         }
 
-        /* Animated Background */
         body::before {
             content: '';
             position: fixed;
@@ -76,7 +75,6 @@
             min-height: 100vh;
         }
 
-        /* Header */
         .header {
             text-align: center;
             padding: 25px 20px 20px;
@@ -95,7 +93,6 @@
             background-clip: text;
             margin-bottom: 5px;
             letter-spacing: -1px;
-            text-shadow: 0 0 40px var(--glow-neon);
             animation: titleGlow 3s ease-in-out infinite;
         }
 
@@ -110,6 +107,15 @@
             font-weight: 400;
             letter-spacing: 3px;
             text-transform: uppercase;
+        }
+
+        .wizard-name-display {
+            position: absolute;
+            top: 25px;
+            left: 20px;
+            font-size: 12px;
+            color: var(--accent-gold);
+            font-weight: 700;
         }
 
         .stats-btn {
@@ -132,7 +138,6 @@
             box-shadow: 0 0 20px var(--glow-neon);
         }
 
-        /* Level Selector */
         .level-selector {
             padding: 20px;
             animation: fadeIn 0.6s ease;
@@ -141,6 +146,19 @@
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
+        }
+
+        .daily-indicator {
+            background: linear-gradient(135deg, var(--accent-gold), var(--accent-pink));
+            color: var(--bg-deep);
+            padding: 8px 16px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .level-card {
@@ -153,6 +171,25 @@
             position: relative;
             overflow: hidden;
             border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .level-card.completed {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .level-card.completed::after {
+            content: '✓ Completed Today';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 255, 194, 0.9);
+            color: var(--bg-deep);
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 700;
         }
 
         .level-card::before {
@@ -170,7 +207,7 @@
         .level-card.seeker { --accent: var(--accent-gold); }
         .level-card.master { --accent: var(--accent-pink); }
 
-        .level-card:active {
+        .level-card:active:not(.completed) {
             transform: scale(0.98);
         }
 
@@ -222,7 +259,6 @@
             font-weight: 700;
         }
 
-        /* Game Area */
         .game-area {
             display: none;
         }
@@ -252,7 +288,6 @@
             transform: scale(0.95);
         }
 
-        /* Main Game Layout */
         .game-layout {
             display: grid;
             grid-template-columns: 1fr;
@@ -260,7 +295,6 @@
             padding: 0 15px 20px;
         }
 
-        /* Guess Input Section */
         .guess-section {
             background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-light) 100%);
             border-radius: 18px;
@@ -316,7 +350,6 @@
             transform: scale(0.95);
         }
 
-        /* Side Panels Container */
         .side-panels {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -324,7 +357,6 @@
             margin-bottom: 15px;
         }
 
-        /* Categories Panel - LEFT */
         .categories-panel {
             background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-light) 100%);
             border-radius: 15px;
@@ -368,17 +400,22 @@
             50% { transform: scale(1.08); }
         }
 
-        /* Stats & Hints Panel - RIGHT */
-        .stats-hints-panel {
+        .stats-panel {
             background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-light) 100%);
             border-radius: 15px;
             padding: 15px;
             border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
         }
 
-        .stat-row {
-            margin-bottom: 12px;
+        .stat-box {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px;
+            border-radius: 10px;
             text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
         .stat-label {
@@ -390,28 +427,35 @@
         }
 
         .stat-value {
-            font-size: 28px;
+            font-size: 24px;
             font-weight: 700;
             background: linear-gradient(135deg, var(--accent-neon) 0%, var(--accent-purple) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
-        .divider {
-            height: 1px;
-            background: rgba(255, 255, 255, 0.1);
-            margin: 12px 0;
+        .whispers-box {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 184, 0, 0.2);
         }
 
-        .hints-mini {
-            margin-top: 10px;
+        .whispers-title {
+            font-size: 9px;
+            font-weight: 700;
+            color: var(--accent-gold);
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
         }
 
         .hint-mini-item {
-            background: rgba(0, 0, 0, 0.3);
-            padding: 6px 10px;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 5px 8px;
             border-radius: 6px;
-            margin-bottom: 5px;
+            margin-bottom: 4px;
             font-size: 10px;
             text-align: center;
             border-left: 2px solid var(--accent-gold);
@@ -433,7 +477,6 @@
             to { opacity: 1; transform: translateX(0); }
         }
 
-        /* Word Spatial Map */
         .spatial-map {
             background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-light) 100%);
             border-radius: 18px;
@@ -539,7 +582,6 @@
             to { stroke-dashoffset: -100; }
         }
 
-        /* Oracle Panel */
         .oracle-panel {
             background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-light) 100%);
             border-radius: 18px;
@@ -593,6 +635,105 @@
             font-style: italic;
         }
 
+        /* Wizard Name Modal */
+        .wizard-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            padding: 20px;
+        }
+
+        .wizard-modal.hidden {
+            display: none;
+        }
+
+        .wizard-content {
+            background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-light) 100%);
+            border-radius: 25px;
+            padding: 40px 30px;
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+            border: 2px solid rgba(255, 184, 0, 0.3);
+            box-shadow: 0 0 60px var(--glow-pink);
+            animation: modalPop 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        @keyframes modalPop {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .wizard-icon {
+            font-size: 72px;
+            margin-bottom: 20px;
+        }
+
+        .wizard-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 28px;
+            font-weight: 900;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, var(--accent-gold), var(--accent-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .wizard-subtitle {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        .wizard-input {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(255, 184, 0, 0.3);
+            color: var(--text-primary);
+            padding: 14px 18px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-family: 'Space Mono', monospace;
+            margin-bottom: 20px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .wizard-input:focus {
+            outline: none;
+            border-color: var(--accent-gold);
+            box-shadow: 0 0 20px rgba(255, 184, 0, 0.4);
+        }
+
+        .wizard-btn {
+            width: 100%;
+            background: linear-gradient(135deg, var(--accent-gold), var(--accent-pink));
+            color: var(--bg-deep);
+            border: none;
+            padding: 14px 30px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 20px rgba(255, 184, 0, 0.4);
+        }
+
+        .wizard-btn:active {
+            transform: scale(0.95);
+        }
+
         /* Modal */
         .modal {
             position: fixed;
@@ -624,11 +765,6 @@
             border: 2px solid rgba(0, 255, 194, 0.3);
             box-shadow: 0 0 60px var(--glow-neon);
             animation: modalPop 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-        }
-
-        @keyframes modalPop {
-            from { opacity: 0; transform: scale(0.8); }
-            to { opacity: 1; transform: scale(1); }
         }
 
         .modal-icon {
@@ -702,7 +838,6 @@
             transform: scale(0.95);
         }
 
-        /* Notification */
         .notification {
             position: fixed;
             top: 20px;
@@ -727,7 +862,6 @@
             transform: translateX(-50%) translateY(0);
         }
 
-        /* Stats Page */
         .stats-page {
             display: none;
             padding: 20px;
@@ -742,7 +876,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
         }
 
         .stats-title {
@@ -758,39 +892,149 @@
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 12px;
+            margin-bottom: 20px;
         }
 
         .stats-card {
             background: linear-gradient(135deg, var(--bg-card), var(--bg-light));
             border-radius: 18px;
-            padding: 25px 20px;
+            padding: 20px 15px;
             border: 1px solid rgba(255, 255, 255, 0.1);
             text-align: center;
         }
 
         .stats-card-value {
-            font-size: 44px;
+            font-size: 36px;
             font-weight: 700;
             background: linear-gradient(135deg, var(--accent-neon), var(--accent-gold));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-bottom: 8px;
+            margin-bottom: 5px;
         }
 
         .stats-card-label {
-            font-size: 11px;
+            font-size: 10px;
             color: var(--text-secondary);
             text-transform: uppercase;
             letter-spacing: 1px;
+        }
+
+        .victories-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .victory-card {
+            background: linear-gradient(135deg, var(--bg-card), var(--bg-light));
+            border-radius: 15px;
+            padding: 15px 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+
+        .victory-card-value {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .victory-card.novice .victory-card-value {
+            background: linear-gradient(135deg, var(--accent-neon), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .victory-card.seeker .victory-card-value {
+            background: linear-gradient(135deg, var(--accent-gold), var(--accent-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .victory-card.master .victory-card-value {
+            background: linear-gradient(135deg, var(--accent-pink), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .victory-card-label {
+            font-size: 9px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Chart Container */
+        .chart-container {
+            background: linear-gradient(135deg, var(--bg-card), var(--bg-light));
+            border-radius: 20px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .chart-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .chart-canvas {
+            width: 100%;
+            height: 200px;
+            position: relative;
+        }
+
+        .chart-legend {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
         }
     </style>
 </head>
 <body>
     <div class="container">
+        <!-- Wizard Name Modal -->
+        <div id="wizardModal" class="wizard-modal">
+            <div class="wizard-content">
+                <div class="wizard-icon">🧙‍♂️</div>
+                <div class="wizard-title">Choose Your Wizard Name</div>
+                <div class="wizard-subtitle">Join the daily quest and track your progress over time!</div>
+                <input 
+                    type="text" 
+                    id="wizardNameInput" 
+                    class="wizard-input"
+                    placeholder="Enter your wizard name..."
+                    maxlength="20"
+                >
+                <button class="wizard-btn" onclick="saveWizardName()">Begin Quest</button>
+            </div>
+        </div>
+
         <!-- Header -->
         <div class="header">
+            <div id="wizardNameDisplay" class="wizard-name-display"></div>
             <div class="logo">WordQuest</div>
-            <div class="tagline">Challenge Your Mind</div>
+            <div class="tagline">Daily Word Challenge</div>
             <button class="stats-btn" onclick="showStats()">📊 Stats</button>
         </div>
 
@@ -798,67 +1042,69 @@
         <div id="mainContent">
             <!-- Level Selector -->
             <div id="levelSelector" class="level-selector">
-                <div class="level-card novice" onclick="startLevel('novice')">
+                <div class="daily-indicator" id="dailyDate">Today's Quest: Loading...</div>
+                
+                <div class="level-card novice" id="noviceCard" onclick="startLevel('novice')">
                     <div class="level-header">
                         <div class="level-title">Novice Quest</div>
                         <div class="level-icon">🌟</div>
                     </div>
                     <div class="level-description">
-                        Begin your journey with gentle word mysteries
+                        Begin with simple nouns - names, places, animals, and things
                     </div>
                     <div class="level-stats">
                         <div class="stat-pill">
                             <span>⚡</span>
-                            <span class="stat-value">5</span>
+                            <span class="stat-value" id="noviceTries">5</span>
                             <span>tries</span>
                         </div>
                         <div class="stat-pill">
                             <span>💎</span>
-                            <span class="stat-value">100</span>
+                            <span class="stat-value">10</span>
                             <span>pts</span>
                         </div>
                     </div>
                 </div>
 
-                <div class="level-card seeker" onclick="startLevel('seeker')">
+                <div class="level-card seeker" id="seekerCard" onclick="startLevel('seeker')">
                     <div class="level-header">
                         <div class="level-title">Seeker's Path</div>
                         <div class="level-icon">🔮</div>
                     </div>
                     <div class="level-description">
-                        Test your wit with challenging vocabulary
+                        Add actions to your arsenal - nouns and verbs combined
                     </div>
                     <div class="level-stats">
                         <div class="stat-pill">
                             <span>⚡</span>
-                            <span class="stat-value">5</span>
+                            <span class="stat-value" id="seekerTries">5</span>
                             <span>tries</span>
                         </div>
                         <div class="stat-pill">
                             <span>💎</span>
-                            <span class="stat-value">150</span>
+                            <span class="stat-value">15</span>
                             <span>pts</span>
                         </div>
                     </div>
                 </div>
 
-                <div class="level-card master" onclick="startLevel('master')">
+                <div class="level-card master" id="masterCard" onclick="startLevel('master')">
                     <div class="level-header">
                         <div class="level-title">Master's Trial</div>
                         <div class="level-icon">👑</div>
                     </div>
                     <div class="level-description">
-                        Only the boldest minds dare venture here
+                        Ultimate challenge - abstract concepts and complex words
                     </div>
                     <div class="level-stats">
                         <div class="stat-pill">
                             <span>⚡</span>
-                            <span class="stat-value">5</span>
+                            <span class="stat-value" id="masterTries">5</span>
                             <span>tries</span>
                         </div>
                         <div class="stat-pill">
                             <span>💎</span>
-                            <span class="stat-value">200</span>
+                            <span class="stat-value">20</span>
                             <span>pts</span>
                         </div>
                     </div>
@@ -890,32 +1136,23 @@
                         <!-- Categories - LEFT -->
                         <div class="categories-panel">
                             <div class="panel-title">Quest Paths</div>
-                            <div class="category-item" data-category="name">👤 Name</div>
-                            <div class="category-item" data-category="place">🌍 Place</div>
-                            <div class="category-item" data-category="animal">🐾 Animal</div>
-                            <div class="category-item" data-category="thing">📦 Thing</div>
-                            <div class="category-item" data-category="action">⚡ Action</div>
-                            <div class="category-item" data-category="concept">💭 Idea</div>
+                            <div id="categoriesList"></div>
                         </div>
 
-                        <!-- Stats & Hints - RIGHT -->
-                        <div class="stats-hints-panel">
-                            <div class="stat-row">
-                                <div class="stat-label">Tries</div>
+                        <!-- Stats - RIGHT -->
+                        <div class="stats-panel">
+                            <div class="stat-box">
+                                <div class="stat-label">Tries Left</div>
                                 <div class="stat-value" id="triesDisplay">5</div>
                             </div>
                             
-                            <div class="divider"></div>
-                            
-                            <div class="stat-row">
+                            <div class="stat-box">
                                 <div class="stat-label">Score</div>
                                 <div class="stat-value" id="scoreDisplay" style="font-size: 20px;">0</div>
                             </div>
 
-                            <div class="divider"></div>
-
-                            <div class="hints-mini">
-                                <div class="panel-title" style="font-size: 9px;">Whispers</div>
+                            <div class="whispers-box">
+                                <div class="whispers-title">✨ Whispers</div>
                                 <div id="hintsContainer">
                                     <div class="hint-mini-item hint-locked">🔒 ???</div>
                                     <div class="hint-mini-item hint-locked">🔒 ?</div>
@@ -959,16 +1196,58 @@
                     <div class="stats-card-label">Total Score</div>
                 </div>
                 <div class="stats-card">
-                    <div class="stats-card-value" id="gamesPlayed">0</div>
-                    <div class="stats-card-label">Quests</div>
+                    <div class="stats-card-value" id="journeyDays">0</div>
+                    <div class="stats-card-label">Journey Days</div>
                 </div>
+            </div>
+
+            <div class="victories-grid">
+                <div class="victory-card novice">
+                    <div class="victory-card-value" id="noviceWins">0</div>
+                    <div class="victory-card-label">Novice Wins</div>
+                </div>
+                <div class="victory-card seeker">
+                    <div class="victory-card-value" id="seekerWins">0</div>
+                    <div class="victory-card-label">Seeker Wins</div>
+                </div>
+                <div class="victory-card master">
+                    <div class="victory-card-value" id="masterWins">0</div>
+                    <div class="victory-card-label">Master Wins</div>
+                </div>
+            </div>
+
+            <div class="stats-grid">
                 <div class="stats-card">
-                    <div class="stats-card-value" id="gamesWon">0</div>
-                    <div class="stats-card-label">Victories</div>
+                    <div class="stats-card-value" id="totalWins">0</div>
+                    <div class="stats-card-label">Total Victories</div>
                 </div>
                 <div class="stats-card">
                     <div class="stats-card-value" id="winRate">0%</div>
                     <div class="stats-card-label">Win Rate</div>
+                </div>
+            </div>
+
+            <!-- Progress Chart -->
+            <div class="chart-container">
+                <div class="chart-title">📈 Quest Progress</div>
+                <canvas id="progressChart" class="chart-canvas"></canvas>
+                <div class="chart-legend">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: rgba(0, 255, 194, 0.6);"></div>
+                        <span>Novice</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: rgba(255, 184, 0, 0.6);"></div>
+                        <span>Seeker</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: rgba(255, 46, 151, 0.6);"></div>
+                        <span>Master</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: rgba(168, 85, 247, 0.6);"></div>
+                        <span>Total</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -980,7 +1259,7 @@
             <div class="modal-icon" id="modalIcon">🎉</div>
             <div class="modal-title" id="modalTitle">Victory!</div>
             <div class="modal-message" id="modalMessage">You've conquered the quest!</div>
-            <div class="modal-score" id="modalScore">+500</div>
+            <div class="modal-score" id="modalScore">+10</div>
             <div class="modal-buttons">
                 <button class="modal-btn primary" id="nextBtn" onclick="handleNext()">
                     Next Quest
@@ -996,6 +1275,26 @@
     <div id="notification" class="notification"></div>
 
     <script>
+        // Daily Word System - Everyone gets same word
+        function getDailyWord(level, date) {
+            // Use date as seed for deterministic random selection
+            const seed = date.getFullYear() * 10000 + (date.getMonth() + 1) * 100 + date.getDate();
+            const words = wordDatabase[level].words;
+            const index = seed % words.length;
+            return words[index];
+        }
+
+        function getTodayString() {
+            const today = new Date();
+            return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+        }
+
+        function formatDate(dateStr) {
+            const [year, month, day] = dateStr.split('-');
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            return `${months[parseInt(month) - 1]} ${parseInt(day)}, ${year}`;
+        }
+
         // Word Database
         const wordDatabase = {
             novice: {
@@ -1004,24 +1303,33 @@
                     { word: 'dog', categories: ['animal', 'thing'] },
                     { word: 'paris', categories: ['place', 'name'] },
                     { word: 'john', categories: ['name'] },
-                    { word: 'run', categories: ['action'] },
                     { word: 'book', categories: ['thing'] },
-                    { word: 'love', categories: ['concept'] }
+                    { word: 'chair', categories: ['thing'] },
+                    { word: 'tree', categories: ['thing'] },
+                    { word: 'bird', categories: ['animal'] },
+                    { word: 'fish', categories: ['animal'] },
+                    { word: 'pen', categories: ['thing'] }
                 ],
+                availableCategories: ['name', 'place', 'animal', 'thing'],
                 maxTries: 5,
-                pointsPerTry: 100
+                pointsPerTry: 10
             },
             seeker: {
                 words: [
                     { word: 'ocean', categories: ['place', 'thing'] },
                     { word: 'tiger', categories: ['animal'] },
                     { word: 'london', categories: ['place', 'name'] },
-                    { word: 'wisdom', categories: ['concept'] },
-                    { word: 'journey', categories: ['action', 'concept'] },
-                    { word: 'mountain', categories: ['place', 'thing'] }
+                    { word: 'mountain', categories: ['place', 'thing'] },
+                    { word: 'run', categories: ['action'] },
+                    { word: 'jump', categories: ['action'] },
+                    { word: 'swim', categories: ['action'] },
+                    { word: 'dance', categories: ['action'] },
+                    { word: 'write', categories: ['action'] },
+                    { word: 'sing', categories: ['action'] }
                 ],
+                availableCategories: ['name', 'place', 'animal', 'thing', 'action'],
                 maxTries: 5,
-                pointsPerTry: 150
+                pointsPerTry: 15
             },
             master: {
                 words: [
@@ -1029,24 +1337,28 @@
                     { word: 'antarctica', categories: ['place'] },
                     { word: 'perseverance', categories: ['concept', 'action'] },
                     { word: 'serendipity', categories: ['concept'] },
-                    { word: 'renaissance', categories: ['concept'] }
+                    { word: 'renaissance', categories: ['concept'] },
+                    { word: 'wisdom', categories: ['concept'] },
+                    { word: 'journey', categories: ['concept', 'action'] },
+                    { word: 'courage', categories: ['concept'] },
+                    { word: 'harmony', categories: ['concept'] },
+                    { word: 'eloquence', categories: ['concept'] }
                 ],
+                availableCategories: ['name', 'place', 'animal', 'thing', 'action', 'concept'],
                 maxTries: 5,
-                pointsPerTry: 200
+                pointsPerTry: 20
             }
         };
 
-        // Category Rules
         const categoryRules = {
             name: ['john', 'mary', 'paris', 'london', 'james', 'david', 'sarah'],
             place: ['paris', 'london', 'ocean', 'mountain', 'beach', 'city', 'antarctica', 'desert', 'forest'],
             animal: ['cat', 'dog', 'tiger', 'lion', 'elephant', 'bird', 'fish', 'horse', 'bear'],
-            thing: ['book', 'chair', 'table', 'car', 'phone', 'pen', 'cat', 'dog', 'ocean', 'mountain'],
-            action: ['run', 'jump', 'walk', 'swim', 'fly', 'dance', 'journey', 'perseverance'],
-            concept: ['love', 'wisdom', 'freedom', 'peace', 'justice', 'philosophy', 'serendipity', 'perseverance', 'renaissance', 'journey']
+            thing: ['book', 'chair', 'table', 'car', 'phone', 'pen', 'cat', 'dog', 'ocean', 'mountain', 'tree'],
+            action: ['run', 'jump', 'walk', 'swim', 'fly', 'dance', 'sing', 'write', 'read', 'think', 'perseverance'],
+            concept: ['love', 'wisdom', 'freedom', 'peace', 'justice', 'philosophy', 'serendipity', 'perseverance', 'renaissance', 'journey', 'courage', 'harmony', 'eloquence']
         };
 
-        // Oracle Messages
         const oracleMessages = [
             "The threads of destiny shimmer, but the pattern remains hidden...",
             "Your spirit seeks truth, though the path is veiled in shadow.",
@@ -1060,64 +1372,192 @@
             "The universe acknowledges your effort, though victory awaits."
         ];
 
-        // Game State
         let gameState = {
+            wizardName: '',
             currentLevel: null,
             targetWord: '',
             targetCategories: [],
             guesses: [],
             triesLeft: 0,
+            bonusTries: { novice: 0, seeker: 0, master: 0 },
             unlockedCategories: [],
-            stats: {
-                totalScore: 0,
-                gamesPlayed: 0,
-                gamesWon: 0
-            }
+            playerStats: {},
+            todayString: getTodayString(),
+            dailyCompleted: {}
         };
 
-        // Initialize
         function init() {
-            loadGameState();
-            updateStatsDisplay();
+            loadPlayerData();
+            updateDailyIndicator();
             
             document.getElementById('guessInput').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    makeGuess();
-                }
+                if (e.key === 'Enter') makeGuess();
+            });
+
+            document.getElementById('wizardNameInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') saveWizardName();
             });
         }
 
-        function loadGameState() {
-            const saved = localStorage.getItem('wordQuestStats');
-            if (saved) {
-                gameState.stats = JSON.parse(saved);
+        function updateDailyIndicator() {
+            const today = new Date();
+            const formatted = formatDate(getTodayString());
+            document.getElementById('dailyDate').textContent = `Today's Quest: ${formatted}`;
+        }
+
+        function loadPlayerData() {
+            const savedName = localStorage.getItem('wordQuestWizardName');
+            
+            if (savedName) {
+                gameState.wizardName = savedName;
+                document.getElementById('wizardNameDisplay').textContent = `🧙 ${savedName}`;
+                document.getElementById('wizardModal').classList.add('hidden');
+                
+                const savedStats = localStorage.getItem(`wordQuest_${savedName}`);
+                if (savedStats) {
+                    gameState.playerStats = JSON.parse(savedStats);
+                } else {
+                    initializePlayerStats();
+                }
+                
+                // Load daily completion status
+                const today = getTodayString();
+                if (!gameState.playerStats.dailyHistory) gameState.playerStats.dailyHistory = {};
+                gameState.dailyCompleted = gameState.playerStats.dailyHistory[today] || {};
+                
+                // Load bonus tries
+                gameState.bonusTries = gameState.playerStats.bonusTries || { novice: 0, seeker: 0, master: 0 };
+                
+                updateLevelCards();
+                updateStatsDisplay();
+            } else {
+                document.getElementById('wizardModal').classList.remove('hidden');
             }
         }
 
-        function saveGameState() {
-            localStorage.setItem('wordQuestStats', JSON.stringify(gameState.stats));
+        function initializePlayerStats() {
+            gameState.playerStats = {
+                totalScore: 0,
+                journeyDays: 0,
+                victories: { novice: 0, seeker: 0, master: 0 },
+                totalWins: 0,
+                gamesPlayed: 0,
+                dailyHistory: {},
+                scoreHistory: [],
+                bonusTries: { novice: 0, seeker: 0, master: 0 }
+            };
         }
 
-        // Start Level
+        function saveWizardName() {
+            const name = document.getElementById('wizardNameInput').value.trim();
+            
+            if (!name) {
+                showNotification('❌ Please enter a wizard name!');
+                return;
+            }
+            
+            gameState.wizardName = name;
+            localStorage.setItem('wordQuestWizardName', name);
+            document.getElementById('wizardNameDisplay').textContent = `🧙 ${name}`;
+            document.getElementById('wizardModal').classList.add('hidden');
+            
+            initializePlayerStats();
+            savePlayerData();
+            updateStatsDisplay();
+            
+            // Submit to global leaderboard
+            submitToLeaderboard(name, 0);
+            
+            showNotification(`✨ Welcome, ${name}! Your legend begins!`);
+        }
+
+        function savePlayerData() {
+            gameState.playerStats.bonusTries = gameState.bonusTries;
+            localStorage.setItem(`wordQuest_${gameState.wizardName}`, JSON.stringify(gameState.playerStats));
+            
+            // Submit to global leaderboard
+            submitToLeaderboard(gameState.wizardName, gameState.playerStats.totalScore);
+        }
+
+        function submitToLeaderboard(wizardName, score) {
+            // Get global leaderboard
+            let leaderboard = JSON.parse(localStorage.getItem('wordQuest_GlobalLeaderboard') || '{}');
+            leaderboard[wizardName] = {
+                score: score,
+                lastPlayed: getTodayString()
+            };
+            localStorage.setItem('wordQuest_GlobalLeaderboard', JSON.stringify(leaderboard));
+        }
+
+        function updateLevelCards() {
+            const levels = ['novice', 'seeker', 'master'];
+            levels.forEach(level => {
+                const card = document.getElementById(`${level}Card`);
+                const triesDisplay = document.getElementById(`${level}Tries`);
+                
+                if (gameState.dailyCompleted[level]) {
+                    card.classList.add('completed');
+                    card.onclick = null;
+                } else {
+                    card.classList.remove('completed');
+                    card.onclick = () => startLevel(level);
+                }
+                
+                // Update tries display with bonus
+                const bonusTries = gameState.bonusTries[level] || 0;
+                const totalTries = 5 + bonusTries;
+                triesDisplay.textContent = totalTries;
+            });
+        }
+
         function startLevel(level) {
+            if (gameState.dailyCompleted[level]) {
+                showNotification('✅ You already completed this level today!');
+                return;
+            }
+            
             gameState.currentLevel = level;
             const levelData = wordDatabase[level];
             
-            const wordObj = levelData.words[Math.floor(Math.random() * levelData.words.length)];
+            // Get daily word
+            const today = new Date();
+            const wordObj = getDailyWord(level, today);
             gameState.targetWord = wordObj.word;
             gameState.targetCategories = wordObj.categories;
             gameState.guesses = [];
-            gameState.triesLeft = levelData.maxTries;
+            
+            // Set tries with bonus
+            const bonusTries = gameState.bonusTries[level] || 0;
+            gameState.triesLeft = levelData.maxTries + bonusTries;
+            
             gameState.unlockedCategories = [];
             
             document.getElementById('levelSelector').style.display = 'none';
             document.getElementById('gameArea').classList.add('active');
             document.getElementById('triesDisplay').textContent = gameState.triesLeft;
-            document.getElementById('scoreDisplay').textContent = gameState.stats.totalScore;
+            document.getElementById('scoreDisplay').textContent = gameState.playerStats.totalScore;
             document.getElementById('guessInput').value = '';
             
+            setupCategories(levelData.availableCategories);
             resetPanels();
-            showNotification(`✨ ${level.charAt(0).toUpperCase() + level.slice(1)} Quest begins! Find the hidden word.`);
+            
+            showNotification(`✨ ${level.charAt(0).toUpperCase() + level.slice(1)} Quest begins! ${bonusTries > 0 ? `+${bonusTries} bonus tries!` : ''}`);
+        }
+
+        function setupCategories(categories) {
+            const container = document.getElementById('categoriesList');
+            const categoryIcons = {
+                name: '👤', place: '🌍', animal: '🐾',
+                thing: '📦', action: '⚡', concept: '💭'
+            };
+            const categoryLabels = {
+                name: 'Name', place: 'Place', animal: 'Animal',
+                thing: 'Thing', action: 'Action', concept: 'Idea'
+            };
+            
+            container.innerHTML = categories.map(cat => 
+                `<div class="category-item" data-category="${cat}">${categoryIcons[cat]} ${categoryLabels[cat]}</div>`
+            ).join('');
         }
 
         function resetPanels() {
@@ -1132,7 +1572,6 @@
             document.getElementById('connectionsSvg').innerHTML = '';
         }
 
-        // Make Guess
         function makeGuess() {
             const input = document.getElementById('guessInput');
             const guess = input.value.toLowerCase().trim();
@@ -1163,13 +1602,9 @@
             } else if (gameState.triesLeft === 0) {
                 loseGame();
             } else {
-                if (similarity > 0.7) {
-                    showNotification('🔥 The Oracle trembles! Victory is near!');
-                } else if (similarity > 0.4) {
-                    showNotification('✨ The path becomes clearer...');
-                } else {
-                    showNotification('🌙 The journey continues...');
-                }
+                if (similarity > 0.7) showNotification('🔥 The Oracle trembles! Victory is near!');
+                else if (similarity > 0.4) showNotification('✨ The path becomes clearer...');
+                else showNotification('🌙 The journey continues...');
             }
         }
 
@@ -1202,7 +1637,6 @@
             return matrix[str2.length][str1.length];
         }
 
-        // Check Categories
         function checkCategories(guess) {
             for (const category in categoryRules) {
                 if (categoryRules[category].includes(guess)) {
@@ -1218,7 +1652,6 @@
             }
         }
 
-        // Update Oracle
         function updateOraclePanel(guess, similarity) {
             const container = document.getElementById('oracleContainer');
             
@@ -1239,33 +1672,22 @@
             container.scrollTop = container.scrollHeight;
         }
 
-        // Update Hints
         function updateHintsPanel() {
             const wrong = gameState.guesses.length;
             let html = '';
             
-            if (wrong >= 2) {
-                html += `<div class="hint-mini-item hint-unlocked">${gameState.targetWord.length} letters</div>`;
-            } else {
-                html += `<div class="hint-mini-item hint-locked">🔒 ???</div>`;
-            }
+            if (wrong >= 2) html += `<div class="hint-mini-item hint-unlocked">${gameState.targetWord.length} letters</div>`;
+            else html += `<div class="hint-mini-item hint-locked">🔒 ???</div>`;
             
-            if (wrong >= 3) {
-                html += `<div class="hint-mini-item hint-unlocked">Starts: ${gameState.targetWord[0].toUpperCase()}</div>`;
-            } else {
-                html += `<div class="hint-mini-item hint-locked">🔒 ?</div>`;
-            }
+            if (wrong >= 3) html += `<div class="hint-mini-item hint-unlocked">First: ${gameState.targetWord[0].toUpperCase()}</div>`;
+            else html += `<div class="hint-mini-item hint-locked">🔒 ?</div>`;
             
-            if (wrong >= 4) {
-                html += `<div class="hint-mini-item hint-unlocked">Ends: ${gameState.targetWord[gameState.targetWord.length - 1].toUpperCase()}</div>`;
-            } else {
-                html += `<div class="hint-mini-item hint-locked">🔒 ?</div>`;
-            }
+            if (wrong >= 4) html += `<div class="hint-mini-item hint-unlocked">Last: ${gameState.targetWord[gameState.targetWord.length - 1].toUpperCase()}</div>`;
+            else html += `<div class="hint-mini-item hint-locked">🔒 ?</div>`;
             
             document.getElementById('hintsContainer').innerHTML = html;
         }
 
-        // Update Spatial Map
         function updateSpatialMap() {
             const mapContainer = document.getElementById('guessesMap');
             const svg = document.getElementById('connectionsSvg');
@@ -1312,23 +1734,72 @@
             });
         }
 
-        // Win/Lose
         function winGame() {
             const levelData = wordDatabase[gameState.currentLevel];
             const points = gameState.triesLeft * levelData.pointsPerTry;
+            const level = gameState.currentLevel;
             
-            gameState.stats.totalScore += points;
-            gameState.stats.gamesPlayed++;
-            gameState.stats.gamesWon++;
-            saveGameState();
+            // Calculate bonus tries for next level
+            const levels = ['novice', 'seeker', 'master'];
+            const currentIndex = levels.indexOf(level);
+            if (currentIndex < levels.length - 1) {
+                const nextLevel = levels[currentIndex + 1];
+                gameState.bonusTries[nextLevel] = gameState.triesLeft;
+            }
             
-            showModal('🎉', 'Victory!', `You found "${gameState.targetWord}" with ${gameState.triesLeft} ${gameState.triesLeft === 1 ? 'try' : 'tries'} remaining!`, `+${points}`, true);
+            // Mark level as completed for today
+            const today = getTodayString();
+            if (!gameState.playerStats.dailyHistory[today]) {
+                gameState.playerStats.dailyHistory[today] = {};
+            }
+            gameState.playerStats.dailyHistory[today][level] = { won: true, points, tries: gameState.triesLeft };
+            gameState.dailyCompleted[level] = true;
+            
+            // Update stats
+            gameState.playerStats.totalScore += points;
+            gameState.playerStats.victories[level]++;
+            gameState.playerStats.totalWins++;
+            gameState.playerStats.gamesPlayed++;
+            
+            // Check if this is a new day
+            const uniqueDays = Object.keys(gameState.playerStats.dailyHistory).length;
+            gameState.playerStats.journeyDays = uniqueDays;
+            
+            // Add to score history
+            if (!gameState.playerStats.scoreHistory) gameState.playerStats.scoreHistory = [];
+            gameState.playerStats.scoreHistory.push({
+                date: today,
+                level: level,
+                points: points,
+                totalScore: gameState.playerStats.totalScore
+            });
+            
+            savePlayerData();
+            updateLevelCards();
+            
+            showModal('🎉', 'Victory!', `You found "${gameState.targetWord}" with ${gameState.triesLeft} ${gameState.triesLeft === 1 ? 'try' : 'tries'} remaining!${currentIndex < levels.length - 1 ? ` +${gameState.triesLeft} bonus tries for next level!` : ''}`, `+${points}`, true);
         }
 
         function loseGame() {
-            gameState.stats.gamesPlayed++;
-            saveGameState();
-            showModal('😢', 'Quest Failed', `The word was "${gameState.targetWord}". Return stronger!`, '+0', false);
+            const level = gameState.currentLevel;
+            
+            // Mark level as completed (failed) for today
+            const today = getTodayString();
+            if (!gameState.playerStats.dailyHistory[today]) {
+                gameState.playerStats.dailyHistory[today] = {};
+            }
+            gameState.playerStats.dailyHistory[today][level] = { won: false, points: 0 };
+            gameState.dailyCompleted[level] = true;
+            
+            gameState.playerStats.gamesPlayed++;
+            
+            // Reset bonus tries for this level
+            gameState.bonusTries[level] = 0;
+            
+            savePlayerData();
+            updateLevelCards();
+            
+            showModal('😢', 'Quest Failed', `The word was "${gameState.targetWord}". Return stronger tomorrow, ${gameState.wizardName}!`, '+0', false);
         }
 
         function showModal(icon, title, message, score, won) {
@@ -1336,7 +1807,7 @@
             document.getElementById('modalTitle').textContent = title;
             document.getElementById('modalMessage').textContent = message;
             document.getElementById('modalScore').textContent = score;
-            document.getElementById('scoreDisplay').textContent = gameState.stats.totalScore;
+            document.getElementById('scoreDisplay').textContent = gameState.playerStats.totalScore;
             
             document.getElementById('nextBtn').style.display = won ? 'block' : 'none';
             document.getElementById('resultModal').classList.add('active');
@@ -1347,11 +1818,11 @@
             const levels = ['novice', 'seeker', 'master'];
             const currentIndex = levels.indexOf(gameState.currentLevel);
             
-            if (currentIndex < levels.length - 1) {
+            if (currentIndex < levels.length - 1 && !gameState.dailyCompleted[levels[currentIndex + 1]]) {
                 startLevel(levels[currentIndex + 1]);
             } else {
                 backToMenu();
-                showNotification('👑 All quests conquered! You are a true Master!');
+                showNotification('🏆 All available quests completed!');
             }
         }
 
@@ -1359,13 +1830,14 @@
             document.getElementById('resultModal').classList.remove('active');
             document.getElementById('gameArea').classList.remove('active');
             document.getElementById('levelSelector').style.display = 'block';
+            updateLevelCards();
         }
 
-        // Stats
         function showStats() {
             document.getElementById('mainContent').style.display = 'none';
             document.getElementById('statsPage').classList.add('active');
             updateStatsDisplay();
+            drawProgressChart();
         }
 
         function hideStats() {
@@ -1374,14 +1846,138 @@
         }
 
         function updateStatsDisplay() {
-            document.getElementById('totalScore').textContent = gameState.stats.totalScore;
-            document.getElementById('gamesPlayed').textContent = gameState.stats.gamesPlayed;
-            document.getElementById('gamesWon').textContent = gameState.stats.gamesWon;
+            document.getElementById('totalScore').textContent = gameState.playerStats.totalScore || 0;
+            document.getElementById('journeyDays').textContent = gameState.playerStats.journeyDays || 0;
             
-            const winRate = gameState.stats.gamesPlayed > 0 
-                ? Math.round((gameState.stats.gamesWon / gameState.stats.gamesPlayed) * 100)
+            document.getElementById('noviceWins').textContent = gameState.playerStats.victories?.novice || 0;
+            document.getElementById('seekerWins').textContent = gameState.playerStats.victories?.seeker || 0;
+            document.getElementById('masterWins').textContent = gameState.playerStats.victories?.master || 0;
+            
+            document.getElementById('totalWins').textContent = gameState.playerStats.totalWins || 0;
+            
+            const winRate = gameState.playerStats.gamesPlayed > 0 
+                ? Math.round((gameState.playerStats.totalWins / gameState.playerStats.gamesPlayed) * 100)
                 : 0;
             document.getElementById('winRate').textContent = winRate + '%';
+        }
+
+        function drawProgressChart() {
+            const canvas = document.getElementById('progressChart');
+            const ctx = canvas.getContext('2d');
+            const dpr = window.devicePixelRatio || 1;
+            
+            // Set actual canvas size
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = rect.width * dpr;
+            canvas.height = rect.height * dpr;
+            ctx.scale(dpr, dpr);
+            
+            const width = rect.width;
+            const height = rect.height;
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, width, height);
+            
+            if (!gameState.playerStats.scoreHistory || gameState.playerStats.scoreHistory.length === 0) {
+                ctx.fillStyle = '#7C6BA3';
+                ctx.font = '14px Space Mono';
+                ctx.textAlign = 'center';
+                ctx.fillText('Play games to see your progress!', width / 2, height / 2);
+                return;
+            }
+            
+            // Prepare data
+            const history = gameState.playerStats.scoreHistory;
+            const padding = 40;
+            const chartWidth = width - padding * 2;
+            const chartHeight = height - padding * 2;
+            
+            // Group by date and level
+            const dateMap = {};
+            history.forEach(entry => {
+                if (!dateMap[entry.date]) {
+                    dateMap[entry.date] = { novice: 0, seeker: 0, master: 0, total: 0 };
+                }
+                dateMap[entry.date][entry.level] += entry.points;
+                dateMap[entry.date].total += entry.points;
+            });
+            
+            const dates = Object.keys(dateMap).sort();
+            const maxScore = Math.max(...dates.map(d => dateMap[d].total));
+            
+            // Draw areas (bottom to top: novice, seeker, master)
+            const levels = ['novice', 'seeker', 'master'];
+            const colors = {
+                novice: 'rgba(0, 255, 194, 0.6)',
+                seeker: 'rgba(255, 184, 0, 0.6)',
+                master: 'rgba(255, 46, 151, 0.6)'
+            };
+            
+            // Draw each level as stacked area
+            ['master', 'seeker', 'novice'].forEach(level => {
+                ctx.beginPath();
+                ctx.fillStyle = colors[level];
+                
+                dates.forEach((date, i) => {
+                    const x = padding + (i / (dates.length - 1)) * chartWidth;
+                    let cumulativeScore = 0;
+                    
+                    if (level === 'novice') {
+                        cumulativeScore = dateMap[date].novice;
+                    } else if (level === 'seeker') {
+                        cumulativeScore = dateMap[date].novice + dateMap[date].seeker;
+                    } else {
+                        cumulativeScore = dateMap[date].total;
+                    }
+                    
+                    const y = padding + chartHeight - (cumulativeScore / maxScore) * chartHeight;
+                    
+                    if (i === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                });
+                
+                // Close path to bottom
+                ctx.lineTo(padding + chartWidth, padding + chartHeight);
+                ctx.lineTo(padding, padding + chartHeight);
+                ctx.closePath();
+                ctx.fill();
+            });
+            
+            // Draw total line
+            ctx.beginPath();
+            ctx.strokeStyle = 'rgba(168, 85, 247, 1)';
+            ctx.lineWidth = 2;
+            
+            dates.forEach((date, i) => {
+                const x = padding + (i / (dates.length - 1)) * chartWidth;
+                const y = padding + chartHeight - (dateMap[date].total / maxScore) * chartHeight;
+                
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            });
+            ctx.stroke();
+            
+            // Draw axes
+            ctx.strokeStyle = '#7C6BA3';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(padding, padding);
+            ctx.lineTo(padding, padding + chartHeight);
+            ctx.lineTo(padding + chartWidth, padding + chartHeight);
+            ctx.stroke();
+            
+            // Labels
+            ctx.fillStyle = '#B4A5D8';
+            ctx.font = '10px Space Mono';
+            ctx.textAlign = 'center';
+            
+            dates.forEach((date, i) => {
+                if (i % Math.max(1, Math.floor(dates.length / 5)) === 0) {
+                    const x = padding + (i / (dates.length - 1)) * chartWidth;
+                    const shortDate = date.split('-').slice(1).join('/');
+                    ctx.fillText(shortDate, x, padding + chartHeight + 15);
+                }
+            });
         }
 
         function showNotification(message) {
