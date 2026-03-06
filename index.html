@@ -1,0 +1,1397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#0D0221">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>WordQuest - Daily Word Challenge</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+
+        :root {
+            --bg-deep: #0D0221;
+            --bg-dark: #160A3A;
+            --bg-card: #1E1243;
+            --bg-light: #2D1B69;
+            
+            --accent-neon: #00FFC2;
+            --accent-pink: #FF2E97;
+            --accent-gold: #FFB800;
+            --accent-purple: #A855F7;
+            
+            --text-primary: #FFFFFF;
+            --text-secondary: #B4A5D8;
+            --text-dim: #7C6BA3;
+            
+            --glow-neon: rgba(0, 255, 194, 0.4);
+            --glow-pink: rgba(255, 46, 151, 0.4);
+        }
+
+        body {
+            font-family: 'Space Mono', monospace;
+            background: var(--bg-deep);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Animated Background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(ellipse at 20% 30%, rgba(0, 255, 194, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 70%, rgba(255, 46, 151, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(168, 85, 247, 0.03) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+            animation: bgPulse 8s ease-in-out infinite;
+        }
+
+        @keyframes bgPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 0;
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 25px 20px 20px;
+            background: linear-gradient(180deg, var(--bg-dark) 0%, transparent 100%);
+            position: relative;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 38px;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--accent-neon) 0%, var(--accent-pink) 50%, var(--accent-purple) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 5px;
+            letter-spacing: -1px;
+            text-shadow: 0 0 40px var(--glow-neon);
+            animation: titleGlow 3s ease-in-out infinite;
+        }
+
+        @keyframes titleGlow {
+            0%, 100% { filter: brightness(1); }
+            50% { filter: brightness(1.3); }
+        }
+
+        .tagline {
+            font-size: 11px;
+            color: var(--text-secondary);
+            font-weight: 400;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+
+        .stats-btn {
+            position: absolute;
+            top: 25px;
+            right: 20px;
+            background: rgba(0, 255, 194, 0.1);
+            color: var(--accent-neon);
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            border: 1px solid rgba(0, 255, 194, 0.3);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .stats-btn:active {
+            transform: scale(0.95);
+            box-shadow: 0 0 20px var(--glow-neon);
+        }
+
+        /* Level Selector */
+        .level-selector {
+            padding: 20px;
+            animation: fadeIn 0.6s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .level-card {
+            background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-light) 100%);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .level-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--accent);
+            box-shadow: 0 0 20px var(--accent);
+        }
+
+        .level-card.novice { --accent: var(--accent-neon); }
+        .level-card.seeker { --accent: var(--accent-gold); }
+        .level-card.master { --accent: var(--accent-pink); }
+
+        .level-card:active {
+            transform: scale(0.98);
+        }
+
+        .level-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .level-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 26px;
+            font-weight: 900;
+            color: var(--accent);
+            text-shadow: 0 0 20px var(--accent);
+        }
+
+        .level-icon {
+            font-size: 36px;
+            filter: drop-shadow(0 0 10px var(--accent));
+        }
+
+        .level-description {
+            color: var(--text-secondary);
+            font-size: 13px;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .level-stats {
+            display: flex;
+            gap: 20px;
+            font-size: 12px;
+        }
+
+        .stat-pill {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 6px 12px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: var(--text-secondary);
+        }
+
+        .stat-value {
+            color: var(--accent);
+            font-weight: 700;
+        }
+
+        /* Game Area */
+        .game-area {
+            display: none;
+        }
+
+        .game-area.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .back-btn {
+            margin: 15px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 10px 18px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+
+        .back-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Main Game Layout */
+        .game-layout {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0;
+            padding: 0 15px 20px;
+        }
+
+        /* Guess Input Section */
+        .guess-section {
+            background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-light) 100%);
+            border-radius: 18px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(0, 255, 194, 0.2);
+            box-shadow: 0 0 30px rgba(0, 255, 194, 0.1);
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        #guessInput {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(0, 255, 194, 0.3);
+            color: var(--text-primary);
+            padding: 14px 18px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-family: 'Space Mono', monospace;
+            transition: all 0.3s;
+        }
+
+        #guessInput:focus {
+            outline: none;
+            border-color: var(--accent-neon);
+            box-shadow: 0 0 20px var(--glow-neon);
+        }
+
+        #guessInput::placeholder {
+            color: var(--text-dim);
+        }
+
+        #submitBtn {
+            background: linear-gradient(135deg, var(--accent-neon) 0%, var(--accent-purple) 100%);
+            color: var(--bg-deep);
+            border: none;
+            padding: 14px 24px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 20px var(--glow-neon);
+        }
+
+        #submitBtn:active {
+            transform: scale(0.95);
+        }
+
+        /* Side Panels Container */
+        .side-panels {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        /* Categories Panel - LEFT */
+        .categories-panel {
+            background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-light) 100%);
+            border-radius: 15px;
+            padding: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .panel-title {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--accent-neon);
+            margin-bottom: 10px;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .category-item {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 8px 10px;
+            border-radius: 8px;
+            margin-bottom: 6px;
+            text-align: center;
+            font-size: 11px;
+            color: var(--text-dim);
+            border: 1px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .category-item.unlocked {
+            background: rgba(0, 255, 194, 0.15);
+            border-color: var(--accent-neon);
+            color: var(--accent-neon);
+            font-weight: 700;
+            animation: categoryUnlock 0.5s ease;
+            box-shadow: 0 0 15px var(--glow-neon);
+        }
+
+        @keyframes categoryUnlock {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+        }
+
+        /* Stats & Hints Panel - RIGHT */
+        .stats-hints-panel {
+            background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-light) 100%);
+            border-radius: 15px;
+            padding: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .stat-row {
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 9px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent-neon) 0%, var(--accent-purple) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .divider {
+            height: 1px;
+            background: rgba(255, 255, 255, 0.1);
+            margin: 12px 0;
+        }
+
+        .hints-mini {
+            margin-top: 10px;
+        }
+
+        .hint-mini-item {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 6px 10px;
+            border-radius: 6px;
+            margin-bottom: 5px;
+            font-size: 10px;
+            text-align: center;
+            border-left: 2px solid var(--accent-gold);
+        }
+
+        .hint-locked {
+            color: var(--text-dim);
+            opacity: 0.4;
+        }
+
+        .hint-unlocked {
+            color: var(--accent-gold);
+            font-weight: 700;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        /* Word Spatial Map */
+        .spatial-map {
+            background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-light) 100%);
+            border-radius: 18px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+        }
+
+        .map-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--accent-neon);
+            margin-bottom: 12px;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .map-container {
+            position: relative;
+            width: 100%;
+            height: 280px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(0, 255, 194, 0.2);
+        }
+
+        .target-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, var(--accent-neon) 0%, var(--accent-purple) 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            box-shadow: 
+                0 0 40px var(--glow-neon),
+                0 0 80px var(--glow-pink);
+            z-index: 10;
+            animation: targetPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes targetPulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.05); }
+        }
+
+        .guess-bubble {
+            position: absolute;
+            padding: 6px 14px;
+            background: rgba(13, 2, 33, 0.9);
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            border: 2px solid;
+            transition: all 0.3s;
+            cursor: pointer;
+            transform: translate(-50%, -50%);
+            animation: bubbleIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            white-space: nowrap;
+            backdrop-filter: blur(10px);
+        }
+
+        @keyframes bubbleIn {
+            from { 
+                opacity: 0; 
+                transform: translate(-50%, -50%) scale(0.3);
+            }
+            to { 
+                opacity: 1; 
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+
+        .guess-bubble:active {
+            transform: translate(-50%, -50%) scale(1.15);
+        }
+
+        .connections-svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .connection-line {
+            stroke-width: 1.5;
+            stroke-dasharray: 4 4;
+            animation: dash 20s linear infinite;
+        }
+
+        @keyframes dash {
+            to { stroke-dashoffset: -100; }
+        }
+
+        /* Oracle Panel */
+        .oracle-panel {
+            background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-light) 100%);
+            border-radius: 18px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(255, 46, 151, 0.2);
+            box-shadow: 0 0 30px rgba(255, 46, 151, 0.1);
+            min-height: 140px;
+        }
+
+        .oracle-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--accent-pink);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .oracle-message {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 12px 15px;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            font-size: 13px;
+            color: var(--text-primary);
+            line-height: 1.6;
+            border-left: 3px solid var(--accent-pink);
+            animation: messageSlide 0.4s ease;
+        }
+
+        @keyframes messageSlide {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .oracle-message strong {
+            color: var(--accent-pink);
+            font-weight: 700;
+        }
+
+        .oracle-empty {
+            text-align: center;
+            color: var(--text-dim);
+            padding: 30px 20px;
+            font-size: 13px;
+            font-style: italic;
+        }
+
+        /* Modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(10px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-light) 100%);
+            border-radius: 25px;
+            padding: 40px 30px;
+            max-width: 360px;
+            width: 100%;
+            text-align: center;
+            border: 2px solid rgba(0, 255, 194, 0.3);
+            box-shadow: 0 0 60px var(--glow-neon);
+            animation: modalPop 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        @keyframes modalPop {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .modal-icon {
+            font-size: 72px;
+            margin-bottom: 20px;
+            animation: iconBounce 0.6s ease infinite;
+        }
+
+        @keyframes iconBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .modal-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 32px;
+            font-weight: 900;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, var(--accent-neon), var(--accent-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .modal-message {
+            font-size: 15px;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .modal-score {
+            font-size: 56px;
+            font-weight: 700;
+            margin-bottom: 30px;
+            background: linear-gradient(135deg, var(--accent-neon), var(--accent-gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            flex-direction: column;
+        }
+
+        .modal-btn {
+            padding: 14px 30px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .modal-btn.primary {
+            background: linear-gradient(135deg, var(--accent-neon), var(--accent-purple));
+            color: var(--bg-deep);
+            box-shadow: 0 4px 20px var(--glow-neon);
+        }
+
+        .modal-btn.secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .modal-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Notification */
+        .notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-120px);
+            background: linear-gradient(135deg, var(--bg-card), var(--bg-light));
+            color: var(--text-primary);
+            padding: 14px 24px;
+            border-radius: 12px;
+            border: 1px solid var(--accent-neon);
+            box-shadow: 0 0 40px var(--glow-neon);
+            z-index: 2000;
+            transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            max-width: 90%;
+            text-align: center;
+            font-weight: 600;
+            font-size: 13px;
+            backdrop-filter: blur(10px);
+        }
+
+        .notification.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* Stats Page */
+        .stats-page {
+            display: none;
+            padding: 20px;
+        }
+
+        .stats-page.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .stats-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .stats-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 32px;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--accent-neon), var(--accent-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .stats-card {
+            background: linear-gradient(135deg, var(--bg-card), var(--bg-light));
+            border-radius: 18px;
+            padding: 25px 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+
+        .stats-card-value {
+            font-size: 44px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent-neon), var(--accent-gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+        }
+
+        .stats-card-label {
+            font-size: 11px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">WordQuest</div>
+            <div class="tagline">Challenge Your Mind</div>
+            <button class="stats-btn" onclick="showStats()">📊 Stats</button>
+        </div>
+
+        <!-- Main Content -->
+        <div id="mainContent">
+            <!-- Level Selector -->
+            <div id="levelSelector" class="level-selector">
+                <div class="level-card novice" onclick="startLevel('novice')">
+                    <div class="level-header">
+                        <div class="level-title">Novice Quest</div>
+                        <div class="level-icon">🌟</div>
+                    </div>
+                    <div class="level-description">
+                        Begin your journey with gentle word mysteries
+                    </div>
+                    <div class="level-stats">
+                        <div class="stat-pill">
+                            <span>⚡</span>
+                            <span class="stat-value">5</span>
+                            <span>tries</span>
+                        </div>
+                        <div class="stat-pill">
+                            <span>💎</span>
+                            <span class="stat-value">100</span>
+                            <span>pts</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="level-card seeker" onclick="startLevel('seeker')">
+                    <div class="level-header">
+                        <div class="level-title">Seeker's Path</div>
+                        <div class="level-icon">🔮</div>
+                    </div>
+                    <div class="level-description">
+                        Test your wit with challenging vocabulary
+                    </div>
+                    <div class="level-stats">
+                        <div class="stat-pill">
+                            <span>⚡</span>
+                            <span class="stat-value">5</span>
+                            <span>tries</span>
+                        </div>
+                        <div class="stat-pill">
+                            <span>💎</span>
+                            <span class="stat-value">150</span>
+                            <span>pts</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="level-card master" onclick="startLevel('master')">
+                    <div class="level-header">
+                        <div class="level-title">Master's Trial</div>
+                        <div class="level-icon">👑</div>
+                    </div>
+                    <div class="level-description">
+                        Only the boldest minds dare venture here
+                    </div>
+                    <div class="level-stats">
+                        <div class="stat-pill">
+                            <span>⚡</span>
+                            <span class="stat-value">5</span>
+                            <span>tries</span>
+                        </div>
+                        <div class="stat-pill">
+                            <span>💎</span>
+                            <span class="stat-value">200</span>
+                            <span>pts</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Game Area -->
+            <div id="gameArea" class="game-area">
+                <button class="back-btn" onclick="backToMenu()">
+                    ← Retreat
+                </button>
+
+                <div class="game-layout">
+                    <!-- Guess Input (Top) -->
+                    <div class="guess-section">
+                        <div class="input-group">
+                            <input 
+                                type="text" 
+                                id="guessInput" 
+                                placeholder="Enter your word..."
+                                autocomplete="off"
+                            >
+                            <button id="submitBtn" onclick="makeGuess()">Cast</button>
+                        </div>
+                    </div>
+
+                    <!-- Side Panels -->
+                    <div class="side-panels">
+                        <!-- Categories - LEFT -->
+                        <div class="categories-panel">
+                            <div class="panel-title">Quest Paths</div>
+                            <div class="category-item" data-category="name">👤 Name</div>
+                            <div class="category-item" data-category="place">🌍 Place</div>
+                            <div class="category-item" data-category="animal">🐾 Animal</div>
+                            <div class="category-item" data-category="thing">📦 Thing</div>
+                            <div class="category-item" data-category="action">⚡ Action</div>
+                            <div class="category-item" data-category="concept">💭 Idea</div>
+                        </div>
+
+                        <!-- Stats & Hints - RIGHT -->
+                        <div class="stats-hints-panel">
+                            <div class="stat-row">
+                                <div class="stat-label">Tries</div>
+                                <div class="stat-value" id="triesDisplay">5</div>
+                            </div>
+                            
+                            <div class="divider"></div>
+                            
+                            <div class="stat-row">
+                                <div class="stat-label">Score</div>
+                                <div class="stat-value" id="scoreDisplay" style="font-size: 20px;">0</div>
+                            </div>
+
+                            <div class="divider"></div>
+
+                            <div class="hints-mini">
+                                <div class="panel-title" style="font-size: 9px;">Whispers</div>
+                                <div id="hintsContainer">
+                                    <div class="hint-mini-item hint-locked">🔒 ???</div>
+                                    <div class="hint-mini-item hint-locked">🔒 ?</div>
+                                    <div class="hint-mini-item hint-locked">🔒 ?</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Word Spatial Map -->
+                    <div class="spatial-map">
+                        <div class="map-title">Word Constellation</div>
+                        <div class="map-container">
+                            <svg class="connections-svg" id="connectionsSvg"></svg>
+                            <div class="target-center">🎯</div>
+                            <div id="guessesMap"></div>
+                        </div>
+                    </div>
+
+                    <!-- Oracle Panel -->
+                    <div class="oracle-panel">
+                        <div class="oracle-title">🔮 Oracle's Wisdom</div>
+                        <div id="oracleContainer">
+                            <div class="oracle-empty">The Oracle awaits your first venture into the unknown...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Page -->
+        <div id="statsPage" class="stats-page">
+            <div class="stats-header">
+                <div class="stats-title">Journey</div>
+                <button class="back-btn" onclick="hideStats()">← Back</button>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stats-card">
+                    <div class="stats-card-value" id="totalScore">0</div>
+                    <div class="stats-card-label">Total Score</div>
+                </div>
+                <div class="stats-card">
+                    <div class="stats-card-value" id="gamesPlayed">0</div>
+                    <div class="stats-card-label">Quests</div>
+                </div>
+                <div class="stats-card">
+                    <div class="stats-card-value" id="gamesWon">0</div>
+                    <div class="stats-card-label">Victories</div>
+                </div>
+                <div class="stats-card">
+                    <div class="stats-card-value" id="winRate">0%</div>
+                    <div class="stats-card-label">Win Rate</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Result Modal -->
+    <div id="resultModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-icon" id="modalIcon">🎉</div>
+            <div class="modal-title" id="modalTitle">Victory!</div>
+            <div class="modal-message" id="modalMessage">You've conquered the quest!</div>
+            <div class="modal-score" id="modalScore">+500</div>
+            <div class="modal-buttons">
+                <button class="modal-btn primary" id="nextBtn" onclick="handleNext()">
+                    Next Quest
+                </button>
+                <button class="modal-btn secondary" onclick="backToMenu()">
+                    Return
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div id="notification" class="notification"></div>
+
+    <script>
+        // Word Database
+        const wordDatabase = {
+            novice: {
+                words: [
+                    { word: 'cat', categories: ['animal', 'thing'] },
+                    { word: 'dog', categories: ['animal', 'thing'] },
+                    { word: 'paris', categories: ['place', 'name'] },
+                    { word: 'john', categories: ['name'] },
+                    { word: 'run', categories: ['action'] },
+                    { word: 'book', categories: ['thing'] },
+                    { word: 'love', categories: ['concept'] }
+                ],
+                maxTries: 5,
+                pointsPerTry: 100
+            },
+            seeker: {
+                words: [
+                    { word: 'ocean', categories: ['place', 'thing'] },
+                    { word: 'tiger', categories: ['animal'] },
+                    { word: 'london', categories: ['place', 'name'] },
+                    { word: 'wisdom', categories: ['concept'] },
+                    { word: 'journey', categories: ['action', 'concept'] },
+                    { word: 'mountain', categories: ['place', 'thing'] }
+                ],
+                maxTries: 5,
+                pointsPerTry: 150
+            },
+            master: {
+                words: [
+                    { word: 'philosophy', categories: ['concept'] },
+                    { word: 'antarctica', categories: ['place'] },
+                    { word: 'perseverance', categories: ['concept', 'action'] },
+                    { word: 'serendipity', categories: ['concept'] },
+                    { word: 'renaissance', categories: ['concept'] }
+                ],
+                maxTries: 5,
+                pointsPerTry: 200
+            }
+        };
+
+        // Category Rules
+        const categoryRules = {
+            name: ['john', 'mary', 'paris', 'london', 'james', 'david', 'sarah'],
+            place: ['paris', 'london', 'ocean', 'mountain', 'beach', 'city', 'antarctica', 'desert', 'forest'],
+            animal: ['cat', 'dog', 'tiger', 'lion', 'elephant', 'bird', 'fish', 'horse', 'bear'],
+            thing: ['book', 'chair', 'table', 'car', 'phone', 'pen', 'cat', 'dog', 'ocean', 'mountain'],
+            action: ['run', 'jump', 'walk', 'swim', 'fly', 'dance', 'journey', 'perseverance'],
+            concept: ['love', 'wisdom', 'freedom', 'peace', 'justice', 'philosophy', 'serendipity', 'perseverance', 'renaissance', 'journey']
+        };
+
+        // Oracle Messages
+        const oracleMessages = [
+            "The threads of destiny shimmer, but the pattern remains hidden...",
+            "Your spirit seeks truth, though the path is veiled in shadow.",
+            "The cosmic tapestry shifts with your guess, yet clarity eludes you.",
+            "Interesting choice, seeker. The word dances just beyond your grasp.",
+            "The Oracle sees potential in your approach. Continue your quest!",
+            "Close, yet the mystery deepens like starlight in twilight...",
+            "Your intuition grows stronger with each attempt.",
+            "The word whispers secrets, but speaks not in clear voice yet.",
+            "Patience, brave soul. Each guess illuminates the path ahead.",
+            "The universe acknowledges your effort, though victory awaits."
+        ];
+
+        // Game State
+        let gameState = {
+            currentLevel: null,
+            targetWord: '',
+            targetCategories: [],
+            guesses: [],
+            triesLeft: 0,
+            unlockedCategories: [],
+            stats: {
+                totalScore: 0,
+                gamesPlayed: 0,
+                gamesWon: 0
+            }
+        };
+
+        // Initialize
+        function init() {
+            loadGameState();
+            updateStatsDisplay();
+            
+            document.getElementById('guessInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    makeGuess();
+                }
+            });
+        }
+
+        function loadGameState() {
+            const saved = localStorage.getItem('wordQuestStats');
+            if (saved) {
+                gameState.stats = JSON.parse(saved);
+            }
+        }
+
+        function saveGameState() {
+            localStorage.setItem('wordQuestStats', JSON.stringify(gameState.stats));
+        }
+
+        // Start Level
+        function startLevel(level) {
+            gameState.currentLevel = level;
+            const levelData = wordDatabase[level];
+            
+            const wordObj = levelData.words[Math.floor(Math.random() * levelData.words.length)];
+            gameState.targetWord = wordObj.word;
+            gameState.targetCategories = wordObj.categories;
+            gameState.guesses = [];
+            gameState.triesLeft = levelData.maxTries;
+            gameState.unlockedCategories = [];
+            
+            document.getElementById('levelSelector').style.display = 'none';
+            document.getElementById('gameArea').classList.add('active');
+            document.getElementById('triesDisplay').textContent = gameState.triesLeft;
+            document.getElementById('scoreDisplay').textContent = gameState.stats.totalScore;
+            document.getElementById('guessInput').value = '';
+            
+            resetPanels();
+            showNotification(`✨ ${level.charAt(0).toUpperCase() + level.slice(1)} Quest begins! Find the hidden word.`);
+        }
+
+        function resetPanels() {
+            document.getElementById('oracleContainer').innerHTML = '<div class="oracle-empty">The Oracle awaits your first venture into the unknown...</div>';
+            document.querySelectorAll('.category-item').forEach(item => item.classList.remove('unlocked'));
+            document.getElementById('hintsContainer').innerHTML = `
+                <div class="hint-mini-item hint-locked">🔒 ???</div>
+                <div class="hint-mini-item hint-locked">🔒 ?</div>
+                <div class="hint-mini-item hint-locked">🔒 ?</div>
+            `;
+            document.getElementById('guessesMap').innerHTML = '';
+            document.getElementById('connectionsSvg').innerHTML = '';
+        }
+
+        // Make Guess
+        function makeGuess() {
+            const input = document.getElementById('guessInput');
+            const guess = input.value.toLowerCase().trim();
+            
+            if (!guess) {
+                showNotification('❌ The Oracle requires a word!');
+                return;
+            }
+            
+            if (gameState.guesses.some(g => g.word === guess)) {
+                showNotification('⚠️ This path has been walked before!');
+                return;
+            }
+            
+            const similarity = calculateSimilarity(guess, gameState.targetWord);
+            gameState.guesses.push({ word: guess, similarity });
+            gameState.triesLeft--;
+            
+            input.value = '';
+            updateSpatialMap();
+            updateOraclePanel(guess, similarity);
+            updateHintsPanel();
+            checkCategories(guess);
+            document.getElementById('triesDisplay').textContent = gameState.triesLeft;
+            
+            if (guess === gameState.targetWord) {
+                winGame();
+            } else if (gameState.triesLeft === 0) {
+                loseGame();
+            } else {
+                if (similarity > 0.7) {
+                    showNotification('🔥 The Oracle trembles! Victory is near!');
+                } else if (similarity > 0.4) {
+                    showNotification('✨ The path becomes clearer...');
+                } else {
+                    showNotification('🌙 The journey continues...');
+                }
+            }
+        }
+
+        function calculateSimilarity(word1, word2) {
+            const longer = word1.length > word2.length ? word1 : word2;
+            const shorter = word1.length > word2.length ? word2 : word1;
+            if (longer.length === 0) return 1.0;
+            const editDistance = levenshteinDistance(longer, shorter);
+            return (longer.length - editDistance) / longer.length;
+        }
+
+        function levenshteinDistance(str1, str2) {
+            const matrix = [];
+            for (let i = 0; i <= str2.length; i++) matrix[i] = [i];
+            for (let j = 0; j <= str1.length; j++) matrix[0][j] = j;
+            
+            for (let i = 1; i <= str2.length; i++) {
+                for (let j = 1; j <= str1.length; j++) {
+                    if (str2.charAt(i - 1) === str1.charAt(j - 1)) {
+                        matrix[i][j] = matrix[i - 1][j - 1];
+                    } else {
+                        matrix[i][j] = Math.min(
+                            matrix[i - 1][j - 1] + 1,
+                            matrix[i][j - 1] + 1,
+                            matrix[i - 1][j] + 1
+                        );
+                    }
+                }
+            }
+            return matrix[str2.length][str1.length];
+        }
+
+        // Check Categories
+        function checkCategories(guess) {
+            for (const category in categoryRules) {
+                if (categoryRules[category].includes(guess)) {
+                    if (gameState.targetCategories.includes(category) && !gameState.unlockedCategories.includes(category)) {
+                        gameState.unlockedCategories.push(category);
+                        const item = document.querySelector(`[data-category="${category}"]`);
+                        if (item) {
+                            item.classList.add('unlocked');
+                            showNotification(`🎯 Path Revealed: ${category.toUpperCase()}!`);
+                        }
+                    }
+                }
+            }
+        }
+
+        // Update Oracle
+        function updateOraclePanel(guess, similarity) {
+            const container = document.getElementById('oracleContainer');
+            
+            let message = oracleMessages[Math.floor(Math.random() * oracleMessages.length)];
+            if (similarity > 0.8) message = "🔥 The cosmic veil lifts! You stand at truth's doorstep!";
+            else if (similarity > 0.6) message = "✨ The Oracle's vision sharpens! You draw ever closer!";
+            else if (similarity > 0.4) message = "💫 A glimmer of insight pierces the darkness...";
+            
+            const div = document.createElement('div');
+            div.className = 'oracle-message';
+            div.innerHTML = `<strong>"${guess}"</strong> — ${message}`;
+            
+            if (container.querySelector('.oracle-empty')) container.innerHTML = '';
+            container.appendChild(div);
+            
+            const messages = container.querySelectorAll('.oracle-message');
+            if (messages.length > 4) messages[0].remove();
+            container.scrollTop = container.scrollHeight;
+        }
+
+        // Update Hints
+        function updateHintsPanel() {
+            const wrong = gameState.guesses.length;
+            let html = '';
+            
+            if (wrong >= 2) {
+                html += `<div class="hint-mini-item hint-unlocked">${gameState.targetWord.length} letters</div>`;
+            } else {
+                html += `<div class="hint-mini-item hint-locked">🔒 ???</div>`;
+            }
+            
+            if (wrong >= 3) {
+                html += `<div class="hint-mini-item hint-unlocked">Starts: ${gameState.targetWord[0].toUpperCase()}</div>`;
+            } else {
+                html += `<div class="hint-mini-item hint-locked">🔒 ?</div>`;
+            }
+            
+            if (wrong >= 4) {
+                html += `<div class="hint-mini-item hint-unlocked">Ends: ${gameState.targetWord[gameState.targetWord.length - 1].toUpperCase()}</div>`;
+            } else {
+                html += `<div class="hint-mini-item hint-locked">🔒 ?</div>`;
+            }
+            
+            document.getElementById('hintsContainer').innerHTML = html;
+        }
+
+        // Update Spatial Map
+        function updateSpatialMap() {
+            const mapContainer = document.getElementById('guessesMap');
+            const svg = document.getElementById('connectionsSvg');
+            
+            mapContainer.innerHTML = '';
+            svg.innerHTML = '';
+            
+            const centerX = 50;
+            const centerY = 50;
+            
+            const sorted = [...gameState.guesses].sort((a, b) => b.similarity - a.similarity);
+            
+            sorted.forEach((guess, index) => {
+                const angle = (index / Math.max(gameState.guesses.length, 1)) * Math.PI * 2;
+                const maxDistance = 40;
+                const distance = (1 - guess.similarity) * maxDistance;
+                
+                const x = centerX + Math.cos(angle) * distance;
+                const y = centerY + Math.sin(angle) * distance;
+                
+                const bubble = document.createElement('div');
+                bubble.className = 'guess-bubble';
+                bubble.textContent = guess.word;
+                bubble.style.left = x + '%';
+                bubble.style.top = y + '%';
+                
+                const hue = guess.similarity * 120;
+                bubble.style.borderColor = `hsl(${hue}, 80%, 60%)`;
+                bubble.style.color = `hsl(${hue}, 80%, 70%)`;
+                bubble.style.boxShadow = `0 0 20px hsla(${hue}, 80%, 60%, 0.4)`;
+                bubble.title = `${(guess.similarity * 100).toFixed(0)}% match`;
+                
+                mapContainer.appendChild(bubble);
+                
+                const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                line.setAttribute('x1', '50%');
+                line.setAttribute('y1', '50%');
+                line.setAttribute('x2', x + '%');
+                line.setAttribute('y2', y + '%');
+                line.setAttribute('class', 'connection-line');
+                line.style.stroke = `hsl(${hue}, 70%, 50%)`;
+                line.style.opacity = 0.2 + (guess.similarity * 0.6);
+                svg.appendChild(line);
+            });
+        }
+
+        // Win/Lose
+        function winGame() {
+            const levelData = wordDatabase[gameState.currentLevel];
+            const points = gameState.triesLeft * levelData.pointsPerTry;
+            
+            gameState.stats.totalScore += points;
+            gameState.stats.gamesPlayed++;
+            gameState.stats.gamesWon++;
+            saveGameState();
+            
+            showModal('🎉', 'Victory!', `You found "${gameState.targetWord}" with ${gameState.triesLeft} ${gameState.triesLeft === 1 ? 'try' : 'tries'} remaining!`, `+${points}`, true);
+        }
+
+        function loseGame() {
+            gameState.stats.gamesPlayed++;
+            saveGameState();
+            showModal('😢', 'Quest Failed', `The word was "${gameState.targetWord}". Return stronger!`, '+0', false);
+        }
+
+        function showModal(icon, title, message, score, won) {
+            document.getElementById('modalIcon').textContent = icon;
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalMessage').textContent = message;
+            document.getElementById('modalScore').textContent = score;
+            document.getElementById('scoreDisplay').textContent = gameState.stats.totalScore;
+            
+            document.getElementById('nextBtn').style.display = won ? 'block' : 'none';
+            document.getElementById('resultModal').classList.add('active');
+        }
+
+        function handleNext() {
+            document.getElementById('resultModal').classList.remove('active');
+            const levels = ['novice', 'seeker', 'master'];
+            const currentIndex = levels.indexOf(gameState.currentLevel);
+            
+            if (currentIndex < levels.length - 1) {
+                startLevel(levels[currentIndex + 1]);
+            } else {
+                backToMenu();
+                showNotification('👑 All quests conquered! You are a true Master!');
+            }
+        }
+
+        function backToMenu() {
+            document.getElementById('resultModal').classList.remove('active');
+            document.getElementById('gameArea').classList.remove('active');
+            document.getElementById('levelSelector').style.display = 'block';
+        }
+
+        // Stats
+        function showStats() {
+            document.getElementById('mainContent').style.display = 'none';
+            document.getElementById('statsPage').classList.add('active');
+            updateStatsDisplay();
+        }
+
+        function hideStats() {
+            document.getElementById('statsPage').classList.remove('active');
+            document.getElementById('mainContent').style.display = 'block';
+        }
+
+        function updateStatsDisplay() {
+            document.getElementById('totalScore').textContent = gameState.stats.totalScore;
+            document.getElementById('gamesPlayed').textContent = gameState.stats.gamesPlayed;
+            document.getElementById('gamesWon').textContent = gameState.stats.gamesWon;
+            
+            const winRate = gameState.stats.gamesPlayed > 0 
+                ? Math.round((gameState.stats.gamesWon / gameState.stats.gamesPlayed) * 100)
+                : 0;
+            document.getElementById('winRate').textContent = winRate + '%';
+        }
+
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.classList.add('show');
+            setTimeout(() => notification.classList.remove('show'), 3500);
+        }
+
+        init();
+    </script>
+</body>
+</html>
