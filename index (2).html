@@ -1,0 +1,2212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>WordQuest - Daily Word Challenge</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        :root {
+            --bg-primary: #0a0e27;
+            --bg-secondary: #141938;
+            --bg-tertiary: #1e2449;
+            --accent-easy: #00ff88;
+            --accent-medium: #ffaa00;
+            --accent-hard: #ff3366;
+            --text-primary: #ffffff;
+            --text-secondary: #8892b0;
+            --text-hint: #64ffda;
+            --glow-easy: rgba(0, 255, 136, 0.3);
+            --glow-medium: rgba(255, 170, 0, 0.3);
+            --glow-hard: rgba(255, 51, 102, 0.3);
+        }
+
+        body {
+            font-family: Georgia, 'Times New Roman', serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(0, 255, 136, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(255, 51, 102, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            text-align: center;
+            padding: 15px 0 10px;
+            animation: slideDown 0.6s ease;
+            position: relative;
+        }
+
+        .logo {
+            font-family: Georgia, 'Times New Roman', serif;
+            font-size: clamp(24px, 6vw, 32px);
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent-easy), var(--accent-medium), var(--accent-hard));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 4px;
+            letter-spacing: -1px;
+        }
+
+        .tagline {
+            font-size: 11px;
+            color: var(--text-secondary);
+            font-weight: 300;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .stats-link {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background: var(--bg-secondary);
+            color: var(--accent-easy);
+            padding: 8px 16px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 700;
+            border: 2px solid var(--bg-tertiary);
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .stats-link:hover {
+            border-color: var(--accent-easy);
+            box-shadow: 0 0 20px var(--glow-easy);
+            transform: translateY(-2px);
+        }
+
+        /* Stats Page */
+        .stats-page {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .stats-page.active {
+            display: block;
+        }
+
+        .stats-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .stats-title {
+            font-size: 28px;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--accent-easy), var(--accent-medium), var(--accent-hard));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .calendar-container {
+            background: var(--bg-secondary);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 2px solid var(--bg-tertiary);
+        }
+
+        .calendar-header {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .calendar-day-label {
+            text-align: center;
+            font-size: 11px;
+            color: var(--text-secondary);
+            font-weight: 600;
+            padding: 8px;
+        }
+
+        .calendar-day {
+            aspect-ratio: 1;
+            background: var(--bg-tertiary);
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            border: 2px solid transparent;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .calendar-day:hover {
+            transform: scale(1.05);
+        }
+
+        .calendar-day.has-data {
+            border-color: var(--accent-easy);
+            background: var(--bg-primary);
+        }
+
+        .calendar-day.has-data:hover {
+            box-shadow: 0 0 15px var(--glow-easy);
+        }
+
+        .calendar-day-number {
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .calendar-day-score {
+            font-size: 9px;
+            color: var(--accent-easy);
+            margin-top: 2px;
+            font-weight: 600;
+        }
+
+        .calendar-day.empty {
+            opacity: 0.3;
+        }
+
+        .graphs-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .graph-card {
+            background: var(--bg-secondary);
+            border-radius: 20px;
+            padding: 20px;
+            border: 2px solid var(--bg-tertiary);
+        }
+
+        .graph-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 15px;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 200px;
+        }
+
+        .level-stats-container {
+            background: var(--bg-secondary);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 2px solid var(--bg-tertiary);
+        }
+
+        .level-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .level-stat-card {
+            background: var(--bg-tertiary);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            border: 2px solid transparent;
+        }
+
+        .level-stat-card.easy { border-color: var(--accent-easy); }
+        .level-stat-card.medium { border-color: var(--accent-medium); }
+        .level-stat-card.hard { border-color: var(--accent-hard); }
+
+        .level-stat-name {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .level-stat-card.easy .level-stat-name { color: var(--accent-easy); }
+        .level-stat-card.medium .level-stat-name { color: var(--accent-medium); }
+        .level-stat-card.hard .level-stat-name { color: var(--accent-hard); }
+
+        .level-stat-value {
+            font-size: 32px;
+            font-weight: 900;
+            font-family: 'Space Mono', monospace;
+            color: var(--text-primary);
+        }
+
+        .level-stat-label {
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-top: 5px;
+        }
+
+        .leaderboard-container {
+            background: var(--bg-secondary);
+            border-radius: 20px;
+            padding: 20px;
+            border: 2px solid var(--bg-tertiary);
+            margin-bottom: 20px;
+        }
+
+        .leaderboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .percentile-badge {
+            background: var(--accent-easy);
+            color: var(--bg-primary);
+            padding: 6px 12px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .leaderboard-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .leaderboard-item {
+            background: var(--bg-tertiary);
+            border-radius: 12px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border: 2px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .leaderboard-item.user {
+            border-color: var(--accent-easy);
+            box-shadow: 0 0 20px var(--glow-easy);
+        }
+
+        .leaderboard-rank {
+            font-size: 20px;
+            font-weight: 900;
+            font-family: 'Space Mono', monospace;
+            color: var(--accent-medium);
+            min-width: 40px;
+            text-align: center;
+        }
+
+        .leaderboard-name {
+            flex: 1;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .leaderboard-score {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--accent-easy);
+            font-family: 'Space Mono', monospace;
+        }
+
+        .level-selector {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            margin: 30px 0;
+            animation: fadeIn 0.8s ease 0.2s both;
+        }
+
+        .level-card {
+            background: var(--bg-secondary);
+            border: 2px solid transparent;
+            border-radius: 20px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .level-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 20px;
+            padding: 2px;
+            background: linear-gradient(135deg, var(--level-color), transparent);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .level-card:hover::before, .level-card.active::before {
+            opacity: 1;
+        }
+
+        .level-card.locked {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .level-card:not(.locked):hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .level-card.active {
+            border-color: var(--level-color);
+            box-shadow: 0 0 30px var(--level-glow);
+        }
+
+        .level-card.easy { --level-color: var(--accent-easy); --level-glow: var(--glow-easy); }
+        .level-card.medium { --level-color: var(--accent-medium); --level-glow: var(--glow-medium); }
+        .level-card.hard { --level-color: var(--accent-hard); --level-glow: var(--glow-hard); }
+
+        .level-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .level-name {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--level-color);
+        }
+
+        .level-status {
+            font-size: 12px;
+            padding: 4px 12px;
+            background: var(--level-color);
+            color: var(--bg-primary);
+            border-radius: 12px;
+            font-weight: 700;
+        }
+
+        .level-info {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .game-area {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .game-area.active {
+            display: block;
+        }
+
+        .game-layout {
+            display: grid;
+            grid-template-columns: 100px 1fr 100px;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        /* Left Sidebar - Quest Path */
+        .quest-sidebar {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .quest-panel {
+            background: var(--bg-secondary);
+            border-radius: 20px;
+            padding: 15px;
+            border: 2px solid var(--bg-tertiary);
+            position: sticky;
+            top: 20px;
+        }
+
+        .quest-title {
+            font-size: 11px;
+            color: var(--accent-medium);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            font-weight: 700;
+            text-align: center;
+            writing-mode: horizontal-tb;
+        }
+
+        .quest-icon {
+            font-size: 16px;
+            display: block;
+            text-align: center;
+            margin-bottom: 5px;
+        }
+
+        .category-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .category-item {
+            background: var(--bg-tertiary);
+            border-radius: 12px;
+            padding: 12px 8px;
+            text-align: center;
+            border: 2px solid transparent;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .category-item::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: var(--level-color);
+            opacity: 0;
+            transition: opacity 0.4s;
+        }
+
+        .category-item.unlocked {
+            border-color: var(--level-color);
+            background: var(--bg-primary);
+            transform: scale(1.05);
+            box-shadow: 0 0 20px var(--level-glow);
+        }
+
+        .category-item.unlocked::before {
+            opacity: 0.1;
+        }
+
+        .category-item.unlocked .category-icon {
+            animation: bounce 0.6s ease;
+        }
+
+        .category-icon {
+            font-size: 20px;
+            display: block;
+            filter: grayscale(1);
+            opacity: 0.5;
+            transition: all 0.4s;
+        }
+
+        .category-item.unlocked .category-icon {
+            filter: grayscale(0);
+            opacity: 1;
+        }
+
+        .category-label {
+            font-size: 9px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+            position: relative;
+            z-index: 1;
+            margin-top: 4px;
+        }
+
+        .category-item.unlocked .category-label {
+            color: var(--level-color);
+            font-weight: 700;
+        }
+
+        /* Right Sidebar - Stats */
+        .stats-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .stat-card {
+            background: var(--bg-secondary);
+            border-radius: 15px;
+            padding: 15px 10px;
+            text-align: center;
+            border: 2px solid var(--bg-tertiary);
+            position: sticky;
+            top: 20px;
+        }
+
+        .stat-card .stat-value {
+            font-size: 32px;
+            font-weight: 900;
+            color: var(--level-color);
+            font-family: 'Space Mono', monospace;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .stat-card .stat-label {
+            font-size: 9px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Hints Panel */
+        .hints-panel {
+            background: var(--bg-secondary);
+            border-radius: 15px;
+            padding: 15px;
+            border: 2px solid var(--bg-tertiary);
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            position: sticky;
+            top: 280px;
+        }
+
+        .hints-panel-title {
+            font-size: 11px;
+            color: var(--text-hint);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+            font-weight: 700;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .hints-panel-icon {
+            font-size: 14px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .hint-item {
+            background: var(--bg-tertiary);
+            border-radius: 10px;
+            padding: 10px;
+            margin-bottom: 8px;
+            border-left: 3px solid var(--level-color);
+            animation: slideInRight 0.4s ease;
+            opacity: 0;
+            animation-fill-mode: forwards;
+        }
+
+        .hint-item-label {
+            font-size: 9px;
+            color: var(--level-color);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .hint-item-value {
+            font-size: 16px;
+            color: var(--text-primary);
+            font-weight: 700;
+            font-family: 'Space Mono', monospace;
+            text-align: center;
+        }
+
+        .hints-empty {
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 11px;
+            font-style: italic;
+            padding: 20px 5px;
+            line-height: 1.4;
+        }
+
+        /* Main Content Area */
+        .game-main {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .game-header {
+            background: var(--bg-secondary);
+            border-radius: 15px;
+            padding: 15px;
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: var(--bg-tertiary);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--level-color), var(--level-color));
+            border-radius: 10px;
+            transition: width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 0 15px var(--level-glow);
+        }
+
+        .stats {
+            display: none; /* Hidden - moved to sidebar */
+        }
+
+        .input-area {
+            background: var(--bg-secondary);
+            border-radius: 15px;
+            padding: 15px;
+        }
+
+        .input-wrapper {
+            display: flex;
+            gap: 8px;
+        }
+
+        .guess-input {
+            flex: 1;
+            background: var(--bg-tertiary);
+            border: 2px solid transparent;
+            border-radius: 12px;
+            padding: 12px 15px;
+            font-size: 15px;
+            color: var(--text-primary);
+            font-family: 'Outfit', sans-serif;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .guess-input:focus {
+            outline: none;
+            border-color: var(--level-color);
+            box-shadow: 0 0 20px var(--level-glow);
+        }
+
+        .guess-button {
+            background: var(--level-color);
+            color: var(--bg-primary);
+            border: none;
+            border-radius: 12px;
+            padding: 12px 25px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .guess-button:active {
+            transform: scale(0.95);
+        }
+
+        .game-panels {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .similarity-map {
+            background: var(--bg-secondary);
+            border-radius: 20px;
+            padding: 15px;
+            min-height: 250px;
+            position: relative;
+        }
+
+        .map-title {
+            font-size: 12px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+            font-weight: 700;
+        }
+
+        .guess-items {
+            position: relative;
+            height: 220px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .target-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--level-color), var(--bg-primary));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: 900;
+            color: var(--text-primary);
+            border: 3px solid var(--level-color);
+            box-shadow: 0 0 30px var(--level-glow);
+            z-index: 10;
+        }
+
+        .connection-lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .connection-line {
+            stroke: var(--level-color);
+            stroke-width: 2;
+            opacity: 0.3;
+            stroke-dasharray: 5, 5;
+            animation: dashAnimation 20s linear infinite;
+        }
+
+        @keyframes dashAnimation {
+            to {
+                stroke-dashoffset: -1000;
+            }
+        }
+
+        .guess-item {
+            position: absolute;
+            padding: 6px 12px;
+            background: var(--bg-tertiary);
+            border-radius: 10px;
+            font-size: 12px;
+            border: 2px solid;
+            transition: all 0.3s;
+            animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            cursor: pointer;
+            z-index: 5;
+        }
+
+        .guess-item:hover {
+            transform: scale(1.15);
+            z-index: 15;
+        }
+
+        /* Oracle's Whispers Panel */
+        .oracle-panel {
+            background: var(--bg-secondary);
+            border-radius: 20px;
+            padding: 20px;
+            min-height: 250px;
+            max-height: 400px;
+            overflow-y: auto;
+            border: 2px solid var(--bg-tertiary);
+        }
+
+        /* Oracle's Whispers Panel */
+        .oracle-panel {
+            background: var(--bg-secondary);
+            border-radius: 20px;
+            padding: 20px;
+            min-height: 250px;
+            max-height: 400px;
+            overflow-y: auto;
+            border: 2px solid var(--bg-tertiary);
+        }
+
+        .oracle-title {
+            font-size: 16px;
+            color: var(--text-hint);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 15px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .oracle-icon {
+            font-size: 20px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .oracle-messages {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .oracle-message {
+            background: var(--bg-tertiary);
+            border-radius: 12px;
+            padding: 12px 15px;
+            border-left: 4px solid var(--level-color);
+            animation: slideInRight 0.4s ease;
+            opacity: 0;
+            animation-fill-mode: forwards;
+        }
+
+        .oracle-alert {
+            font-size: 11px;
+            color: var(--level-color);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .oracle-text {
+            font-size: 13px;
+            color: var(--text-primary);
+            line-height: 1.5;
+            font-style: italic;
+        }
+
+        .oracle-empty {
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 13px;
+            padding: 40px 20px;
+            font-style: italic;
+        }
+
+        .modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(10, 14, 39, 0.95);
+            backdrop-filter: blur(10px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-content {
+            background: var(--bg-secondary);
+            border-radius: 30px;
+            padding: 40px 30px;
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+            border: 2px solid var(--level-color);
+            box-shadow: 0 0 50px var(--level-glow);
+            animation: scaleIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .modal-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            animation: bounce 1s ease infinite;
+        }
+
+        .modal-title {
+            font-size: 28px;
+            font-weight: 900;
+            margin-bottom: 10px;
+            color: var(--level-color);
+        }
+
+        .modal-message {
+            font-size: 16px;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .modal-score {
+            font-size: 48px;
+            font-weight: 900;
+            color: var(--level-color);
+            font-family: 'Space Mono', monospace;
+            margin: 20px 0;
+        }
+
+        .modal-button {
+            background: var(--level-color);
+            color: var(--bg-primary);
+            border: none;
+            border-radius: 15px;
+            padding: 15px 40px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Outfit', sans-serif;
+            margin: 5px;
+        }
+
+        .modal-button:active {
+            transform: scale(0.95);
+        }
+
+        .back-button {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: none;
+            border-radius: 12px;
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .back-button:active {
+            transform: scale(0.95);
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes popIn {
+            from {
+                opacity: 0;
+                transform: scale(0.5);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            background: var(--bg-secondary);
+            padding: 15px 25px;
+            border-radius: 15px;
+            border: 2px solid var(--accent-easy);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            max-width: 90%;
+            text-align: center;
+        }
+
+        .notification.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        @media (max-width: 768px) {
+            .game-layout {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .quest-sidebar {
+                order: 3;
+            }
+
+            .stats-sidebar {
+                order: 1;
+                flex-direction: row;
+                justify-content: space-between;
+            }
+
+            .stat-card {
+                flex: 1;
+                position: static;
+            }
+
+            .game-main {
+                order: 2;
+            }
+
+            .quest-panel {
+                position: static;
+            }
+
+            .quest-title {
+                writing-mode: horizontal-tb;
+                text-align: left;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+
+            .category-grid {
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+
+            .category-item {
+                flex: 1;
+                min-width: 80px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 15px;
+            }
+
+            .guess-input {
+                font-size: 16px; /* Prevents zoom on iOS */
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="#" class="stats-link" id="statsLink">📊 Stats</a>
+            <div class="logo">WORDQUEST</div>
+            <div class="tagline">Daily Word Challenge</div>
+        </div>
+
+        <!-- Level Selection Screen -->
+        <div id="levelSelector" class="level-selector">
+            <div class="level-card easy" data-level="easy">
+                <div class="level-header">
+                    <div class="level-name">🌱 Sprout</div>
+                    <div class="level-status">OPEN</div>
+                </div>
+                <div class="level-info">Gentle words to warm up your mind. Perfect for beginners!</div>
+            </div>
+
+            <div class="level-card medium locked" data-level="medium">
+                <div class="level-header">
+                    <div class="level-name">🔥 Blaze</div>
+                    <div class="level-status">🔒 LOCKED</div>
+                </div>
+                <div class="level-info">Moderate challenge. Complete Sprout level to unlock!</div>
+            </div>
+
+            <div class="level-card hard locked" data-level="hard">
+                <div class="level-header">
+                    <div class="level-name">💎 Legend</div>
+                    <div class="level-status">🔒 LOCKED</div>
+                </div>
+                <div class="level-info">Ultimate test. Only for word masters!</div>
+            </div>
+        </div>
+
+        <!-- Game Area -->
+        <div id="gameArea" class="game-area">
+            <button class="back-button" id="backButton">← Back to Levels</button>
+
+            <div class="game-layout">
+                <!-- Left Sidebar - Quest Path -->
+                <div class="quest-sidebar">
+                    <div class="quest-panel">
+                        <span class="quest-icon">🎯</span>
+                        <div class="quest-title">Quest Path</div>
+                        <div class="category-grid" id="categoryGrid">
+                            <div class="category-item" data-category="noun">
+                                <span class="category-icon">📦</span>
+                                <div class="category-label">Noun</div>
+                            </div>
+                            <div class="category-item" data-category="place">
+                                <span class="category-icon">📍</span>
+                                <div class="category-label">Place</div>
+                            </div>
+                            <div class="category-item" data-category="living">
+                                <span class="category-icon">🌱</span>
+                                <div class="category-label">Living</div>
+                            </div>
+                            <div class="category-item" data-category="action">
+                                <span class="category-icon">⚡</span>
+                                <div class="category-label">Action</div>
+                            </div>
+                            <div class="category-item" data-category="abstract">
+                                <span class="category-icon">💭</span>
+                                <div class="category-label">Abstract</div>
+                            </div>
+                            <div class="category-item" data-category="object">
+                                <span class="category-icon">🔧</span>
+                                <div class="category-label">Object</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Content -->
+                <div class="game-main">
+                    <div class="game-header">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+                        <div class="stats">
+                            <div class="stat">
+                                <div class="stat-value" id="triesLeft">5</div>
+                                <div class="stat-label">Tries Left</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-value" id="currentScore">0</div>
+                                <div class="stat-label">Score</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-value" id="bonusLife">0</div>
+                                <div class="stat-label">Bonus Try</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="input-area">
+                        <div class="input-wrapper">
+                            <input 
+                                type="text" 
+                                id="guessInput" 
+                                class="guess-input" 
+                                placeholder="Enter your guess..."
+                                autocomplete="off"
+                                autocorrect="off"
+                                autocapitalize="off"
+                            >
+                            <button class="guess-button" id="guessButton">GUESS</button>
+                        </div>
+                    </div>
+
+                    <div class="game-panels">
+                        <div class="similarity-map">
+                            <div class="map-title">🗺️ Discovery Map</div>
+                            <div class="guess-items" id="guessItems">
+                                <svg class="connection-lines" id="connectionLines"></svg>
+                                <div class="target-center" id="targetCenter">?</div>
+                            </div>
+                        </div>
+
+                        <div class="oracle-panel">
+                            <div class="oracle-title">
+                                <span class="oracle-icon">🔮</span>
+                                Oracle's Whispers
+                            </div>
+                            <div class="oracle-messages" id="oracleMessages">
+                                <div class="oracle-empty">The oracle awaits your first guess...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Sidebar - Stats -->
+                <div class="stats-sidebar">
+                    <div class="stat-card">
+                        <span class="stat-value" id="triesLeftSidebar">5</span>
+                        <div class="stat-label">Tries</div>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-value" id="currentScoreSidebar">0</span>
+                        <div class="stat-label">Score</div>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-value" id="bonusLifeSidebar">0</span>
+                        <div class="stat-label">Bonus</div>
+                    </div>
+                    <div class="hints-panel">
+                        <div class="hints-panel-title">
+                            <span class="hints-panel-icon">💡</span>
+                            Oracle's Clues
+                        </div>
+                        <div id="progressiveHints">
+                            <div class="hints-empty">Hints will appear as you guess...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success/Failure Modal -->
+    <div class="modal" id="resultModal">
+        <div class="modal-content">
+            <div class="modal-icon" id="modalIcon">🎉</div>
+            <div class="modal-title" id="modalTitle">Brilliant!</div>
+            <div class="modal-message" id="modalMessage">You found the word!</div>
+            <div class="modal-score" id="modalScore">+500</div>
+            <button class="modal-button" id="nextButton">CONTINUE</button>
+            <button class="modal-button" id="retryButton" style="background: var(--bg-tertiary); color: var(--text-primary);">RETRY</button>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div class="notification" id="notification"></div>
+
+    <!-- Stats Page -->
+    <div class="container" id="statsPageContainer" style="display: none;">
+        <div class="stats-header">
+            <div class="stats-title">📊 Your Statistics</div>
+            <button class="back-button" id="backFromStats">← Back</button>
+        </div>
+
+        <!-- Calendar View -->
+        <div class="calendar-container">
+            <div class="calendar-header">
+                <span id="calendarMonth">February 2026</span>
+            </div>
+            <div class="calendar-grid">
+                <div class="calendar-day-label">Sun</div>
+                <div class="calendar-day-label">Mon</div>
+                <div class="calendar-day-label">Tue</div>
+                <div class="calendar-day-label">Wed</div>
+                <div class="calendar-day-label">Thu</div>
+                <div class="calendar-day-label">Fri</div>
+                <div class="calendar-day-label">Sat</div>
+                <div id="calendarDays"></div>
+            </div>
+        </div>
+
+        <!-- Graphs -->
+        <div class="graphs-container">
+            <div class="graph-card">
+                <div class="graph-title">Daily Points Trend</div>
+                <div class="chart-container">
+                    <canvas id="dailyChart"></canvas>
+                </div>
+            </div>
+            <div class="graph-card">
+                <div class="graph-title">Aggregate Score</div>
+                <div class="chart-container">
+                    <canvas id="aggregateChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Level Stats -->
+        <div class="level-stats-container">
+            <div class="graph-title">Level Performance</div>
+            <div class="level-stats-grid">
+                <div class="level-stat-card easy">
+                    <div class="level-stat-name">🌱 Sprout</div>
+                    <div class="level-stat-value" id="easyWins">0</div>
+                    <div class="level-stat-label">Completed</div>
+                </div>
+                <div class="level-stat-card medium">
+                    <div class="level-stat-name">🔥 Blaze</div>
+                    <div class="level-stat-value" id="mediumWins">0</div>
+                    <div class="level-stat-label">Completed</div>
+                </div>
+                <div class="level-stat-card hard">
+                    <div class="level-stat-name">💎 Legend</div>
+                    <div class="level-stat-value" id="hardWins">0</div>
+                    <div class="level-stat-label">Completed</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Leaderboard -->
+        <div class="leaderboard-container">
+            <div class="leaderboard-header">
+                <div class="graph-title">🏆 Leaderboard</div>
+                <div class="percentile-badge" id="percentileBadge">Top 0%</div>
+            </div>
+            <div class="leaderboard-list" id="leaderboardList">
+                <!-- Leaderboard items will be inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        // Game State
+        const gameState = {
+            currentLevel: null,
+            targetWord: '',
+            guesses: [],
+            oracleMessages: [],
+            unlockedCategories: [],
+            triesLeft: 5,
+            score: 0,
+            hasPlayedYesterday: false,
+            bonusLifeUsed: false,
+            completedLevels: {
+                easy: false,
+                medium: false,
+                hard: false
+            }
+        };
+
+        // Word database with similarity scores and categories
+        const wordDatabase = {
+            easy: {
+                target: 'cat',
+                categories: ['living', 'noun'],
+                hints: [
+                    "I purr when content, and I love to nap in sunny spots.",
+                    "Whiskers guide me, and I land on my feet.",
+                    "I chase mice and balls of yarn with equal joy.",
+                    "Nine lives they say, though I'm skeptical.",
+                    "Meow is my language, scratches are my signature."
+                ],
+                similarWords: {
+                    'dog': { similarity: 0.75, hint: "Close! You're in the right family - domestic animals. Think smaller, more independent, climbs instead of fetches." },
+                    'kitten': { similarity: 0.90, hint: "You've found my baby form! You're incredibly close. Think of the adult version." },
+                    'pet': { similarity: 0.70, hint: "Yes, I'm a type of pet! Now think specific - which pet is known for independence and purring?" },
+                    'meow': { similarity: 0.85, hint: "That's my signature sound! Who makes this sound? Think of the creature, not the noise." },
+                    'feline': { similarity: 0.95, hint: "Perfect! That's my scientific name. Now think of the common, everyday word for me." },
+                    'mouse': { similarity: 0.60, hint: "That's my prey! Now think - who hunts mice? A small, furry predator..." },
+                    'whiskers': { similarity: 0.80, hint: "Yes, I have those! Think about which animal is most famous for whiskers and purring." },
+                    'fur': { similarity: 0.65, hint: "I'm definitely covered in fur! Many animals are. Think smaller, domestic, says 'meow'..." },
+                    'paw': { similarity: 0.75, hint: "Correct, I have four of those! With retractable claws. What pet has velvet paws?" },
+                    'tail': { similarity: 0.70, hint: "Yes, and I use mine for balance! Think of which domestic pet is most graceful and independent." },
+                    'animal': { similarity: 0.60, hint: "Right, I'm an animal! Narrow it down - a small domestic one that purrs and hunts mice." },
+                    'tiger': { similarity: 0.80, hint: "Same family! But think much smaller, domesticated, lives in your home..." },
+                    'lion': { similarity: 0.78, hint: "We're related! But I'm the miniature version that sits on your lap, not in the savanna." }
+                }
+            },
+            medium: {
+                target: 'ocean',
+                categories: ['place', 'noun'],
+                hints: [
+                    "I cover most of Earth, yet humans have explored so little of me.",
+                    "Waves are my breath, tides are my heartbeat.",
+                    "Salt runs through me, and life began in my depths.",
+                    "I connect all continents, yet I divide them too.",
+                    "Blue is my color, vastness is my nature."
+                ],
+                similarWords: {
+                    'sea': { similarity: 0.92, hint: "So close! That's what many call me, but think bigger. The massive expanse - Atlantic, Pacific..." },
+                    'water': { similarity: 0.75, hint: "Yes, I'm made of water! But what do we call the HUGE salty water body covering most of Earth?" },
+                    'beach': { similarity: 0.70, hint: "That's where I meet the land! Now think of the vast blue expanse beyond the beach." },
+                    'wave': { similarity: 0.85, hint: "Those are my movements! But what creates waves? The massive body of salty water itself..." },
+                    'tide': { similarity: 0.80, hint: "Yes, my rhythmic pulse! What large body of water has tides? Think massive and salty." },
+                    'fish': { similarity: 0.65, hint: "They live in me! Where do most fish live? The vast saltwater expanse..." },
+                    'blue': { similarity: 0.70, hint: "That's my color! What massive blue thing covers 70% of Earth and is salty?" },
+                    'deep': { similarity: 0.75, hint: "I am very deep! The deepest waters on Earth. Pacific, Atlantic, Indian..." },
+                    'salt': { similarity: 0.80, hint: "I'm full of it! What's the name for the huge salty water bodies between continents?" },
+                    'atlantic': { similarity: 0.88, hint: "Perfect! That's ONE of me. What's the general term for Atlantic, Pacific, Indian?" },
+                    'lake': { similarity: 0.60, hint: "Similar, but I'm MUCH bigger and salty! Lakes are freshwater. Think saltwater giant." },
+                    'river': { similarity: 0.55, hint: "I'm related but vastly larger and salty! Rivers flow TO me. What am I?" },
+                    'pool': { similarity: 0.45, hint: "Much too small! Think the LARGEST bodies of water on Earth - salty, deep, enormous..." }
+                }
+            },
+            hard: {
+                target: 'philosophy',
+                categories: ['abstract', 'noun'],
+                hints: [
+                    "I seek truth through questions, not always through answers.",
+                    "Socrates, Plato, and Aristotle were my early champions.",
+                    "I ask 'why' when others ask 'how'.",
+                    "Love of wisdom is my literal translation.",
+                    "I ponder existence, ethics, and the nature of reality itself."
+                ],
+                similarWords: {
+                    'wisdom': { similarity: 0.88, hint: "Yes! My name literally means 'love of' this. What's the Greek word for 'love of wisdom'?" },
+                    'thinking': { similarity: 0.75, hint: "I involve deep thinking! But what's the formal study of existence, knowledge, and ethics called?" },
+                    'knowledge': { similarity: 0.80, hint: "I seek this! The ancient Greeks had a word for the love of wisdom and pursuit of truth..." },
+                    'ethics': { similarity: 0.85, hint: "That's one of my branches! What's the parent discipline that studies ethics, logic, and existence?" },
+                    'logic': { similarity: 0.82, hint: "A key tool of mine! I'm the broader discipline that uses logic to study reality itself. Greek origin..." },
+                    'metaphysics': { similarity: 0.90, hint: "That's my branch studying existence! What's the overarching discipline? Socrates and Plato practiced..." },
+                    'socrates': { similarity: 0.85, hint: "He's a master of my craft! What discipline did Socrates, Plato, Aristotle practice?" },
+                    'truth': { similarity: 0.78, hint: "What I seek! The ancient study seeking truth through reason. Starts with 'phil-' meaning love..." },
+                    'reason': { similarity: 0.80, hint: "My primary tool! What's the discipline that uses reason to examine existence? Greek: love of wisdom..." },
+                    'question': { similarity: 0.75, hint: "How I begin! What field asks fundamental questions about reality, ethics, knowledge? Ancient Greek..." },
+                    'science': { similarity: 0.70, hint: "Related but different! I'm more abstract - the LOVE of wisdom, not empirical study. Greek word..." },
+                    'psychology': { similarity: 0.72, hint: "Related field! But I'm older, more fundamental - the study of existence and wisdom itself." }
+                }
+            }
+        };
+
+        // Initialize game
+        function init() {
+            loadGameState();
+            checkDailyProgress();
+            updateLevelCards();
+            setupEventListeners();
+        }
+
+        function loadGameState() {
+            const saved = localStorage.getItem('wordquest_state');
+            if (saved) {
+                const data = JSON.parse(saved);
+                gameState.completedLevels = data.completedLevels || gameState.completedLevels;
+                gameState.score = data.totalScore || 0;
+                
+                // Check if player played yesterday
+                const lastPlayed = data.lastPlayed;
+                const today = new Date().toDateString();
+                const yesterday = new Date(Date.now() - 86400000).toDateString();
+                
+                if (lastPlayed === yesterday) {
+                    gameState.hasPlayedYesterday = true;
+                }
+            }
+        }
+
+        function saveGameState() {
+            const data = {
+                completedLevels: gameState.completedLevels,
+                totalScore: gameState.score,
+                lastPlayed: new Date().toDateString(),
+                dailyHistory: getDailyHistory(),
+                levelStats: getLevelStats()
+            };
+            localStorage.setItem('wordquest_state', JSON.stringify(data));
+        }
+
+        function getDailyHistory() {
+            const saved = localStorage.getItem('wordquest_daily_history');
+            return saved ? JSON.parse(saved) : {};
+        }
+
+        function saveDailyScore(score) {
+            const history = getDailyHistory();
+            const today = new Date().toDateString();
+            history[today] = (history[today] || 0) + score;
+            localStorage.setItem('wordquest_daily_history', JSON.stringify(history));
+        }
+
+        function getLevelStats() {
+            const saved = localStorage.getItem('wordquest_level_stats');
+            return saved ? JSON.parse(saved) : { easy: 0, medium: 0, hard: 0 };
+        }
+
+        function incrementLevelStat(level) {
+            const stats = getLevelStats();
+            stats[level]++;
+            localStorage.setItem('wordquest_level_stats', JSON.stringify(stats));
+        }
+
+        function showStatsPage() {
+            document.querySelector('.container').style.display = 'none';
+            document.getElementById('statsPageContainer').style.display = 'block';
+            
+            renderCalendar();
+            renderCharts();
+            renderLevelStats();
+            renderLeaderboard();
+        }
+
+        function hideStatsPage() {
+            document.getElementById('statsPageContainer').style.display = 'none';
+            document.querySelector('.container').style.display = 'block';
+        }
+
+        function renderCalendar() {
+            const history = getDailyHistory();
+            const calendarDays = document.getElementById('calendarDays');
+            calendarDays.innerHTML = '';
+
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = today.getMonth();
+            
+            // Update month header
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December'];
+            document.getElementById('calendarMonth').textContent = `${monthNames[month]} ${year}`;
+
+            // Get first day of month and total days
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+            // Add empty cells for days before month starts
+            for (let i = 0; i < firstDay; i++) {
+                const emptyDay = document.createElement('div');
+                emptyDay.className = 'calendar-day empty';
+                calendarDays.appendChild(emptyDay);
+            }
+
+            // Add days of the month
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dayDiv = document.createElement('div');
+                const dateStr = new Date(year, month, day).toDateString();
+                const score = history[dateStr] || 0;
+
+                dayDiv.className = score > 0 ? 'calendar-day has-data' : 'calendar-day';
+                dayDiv.innerHTML = `
+                    <div class="calendar-day-number">${day}</div>
+                    ${score > 0 ? `<div class="calendar-day-score">${score}pts</div>` : ''}
+                `;
+                
+                calendarDays.appendChild(dayDiv);
+            }
+        }
+
+        function renderCharts() {
+            const history = getDailyHistory();
+            
+            // Get last 7 days data
+            const dates = [];
+            const scores = [];
+            const aggregateScores = [];
+            let cumulativeScore = 0;
+
+            for (let i = 6; i >= 0; i--) {
+                const date = new Date();
+                date.setDate(date.getDate() - i);
+                const dateStr = date.toDateString();
+                const score = history[dateStr] || 0;
+                
+                dates.push(date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+                scores.push(score);
+                cumulativeScore += score;
+                aggregateScores.push(cumulativeScore);
+            }
+
+            // Daily Chart
+            const dailyCtx = document.getElementById('dailyChart');
+            if (dailyCtx && dailyCtx.getContext) {
+                new Chart(dailyCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: dates,
+                        datasets: [{
+                            label: 'Daily Points',
+                            data: scores,
+                            backgroundColor: 'rgba(0, 255, 136, 0.5)',
+                            borderColor: 'rgba(0, 255, 136, 1)',
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false }
+                        },
+                        scales: {
+                            y: { beginAtZero: true, ticks: { color: '#8892b0' }, grid: { color: 'rgba(136, 146, 176, 0.1)' } },
+                            x: { ticks: { color: '#8892b0' }, grid: { display: false } }
+                        }
+                    }
+                });
+            }
+
+            // Aggregate Chart
+            const aggCtx = document.getElementById('aggregateChart');
+            if (aggCtx && aggCtx.getContext) {
+                new Chart(aggCtx, {
+                    type: 'line',
+                    data: {
+                        labels: dates,
+                        datasets: [{
+                            label: 'Total Points',
+                            data: aggregateScores,
+                            backgroundColor: 'rgba(255, 170, 0, 0.1)',
+                            borderColor: 'rgba(255, 170, 0, 1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false }
+                        },
+                        scales: {
+                            y: { beginAtZero: true, ticks: { color: '#8892b0' }, grid: { color: 'rgba(136, 146, 176, 0.1)' } },
+                            x: { ticks: { color: '#8892b0' }, grid: { display: false } }
+                        }
+                    }
+                });
+            }
+        }
+
+        function renderLevelStats() {
+            const stats = getLevelStats();
+            document.getElementById('easyWins').textContent = stats.easy || 0;
+            document.getElementById('mediumWins').textContent = stats.medium || 0;
+            document.getElementById('hardWins').textContent = stats.hard || 0;
+        }
+
+        function renderLeaderboard() {
+            const leaderboardList = document.getElementById('leaderboardList');
+            
+            // Mock leaderboard data (in real app, this would come from a server)
+            const mockLeaderboard = [
+                { name: 'WordMaster99', score: 2450 },
+                { name: 'QuizWhiz', score: 2280 },
+                { name: 'BrainTeaser', score: 2150 },
+                { name: 'You', score: gameState.score, isUser: true },
+                { name: 'PuzzlePro', score: 1890 },
+                { name: 'ThinkFast', score: 1750 },
+                { name: 'SmartCookie', score: 1620 },
+                { name: 'MindBender', score: 1480 }
+            ];
+
+            // Sort by score
+            mockLeaderboard.sort((a, b) => b.score - a.score);
+
+            // Calculate percentile
+            const userRank = mockLeaderboard.findIndex(p => p.isUser) + 1;
+            const percentile = Math.round((1 - userRank / mockLeaderboard.length) * 100);
+            document.getElementById('percentileBadge').textContent = `Top ${percentile}%`;
+
+            // Render leaderboard
+            leaderboardList.innerHTML = mockLeaderboard.slice(0, 8).map((player, index) => `
+                <div class="leaderboard-item ${player.isUser ? 'user' : ''}">
+                    <div class="leaderboard-rank">#${index + 1}</div>
+                    <div class="leaderboard-name">${player.name}${player.isUser ? ' 👈' : ''}</div>
+                    <div class="leaderboard-score">${player.score}</div>
+                </div>
+            `).join('');
+        }
+
+        function checkDailyProgress() {
+            const today = new Date().toDateString();
+            const lastDaily = localStorage.getItem('wordquest_daily');
+            
+            if (lastDaily !== today) {
+                // New day - reset daily progress
+                localStorage.setItem('wordquest_daily', today);
+                gameState.completedLevels = {
+                    easy: false,
+                    medium: false,
+                    hard: false
+                };
+            }
+        }
+
+        function updateLevelCards() {
+            const cards = document.querySelectorAll('.level-card');
+            
+            cards.forEach(card => {
+                const level = card.dataset.level;
+                const status = card.querySelector('.level-status');
+                
+                if (level === 'easy') {
+                    card.classList.remove('locked');
+                    status.textContent = gameState.completedLevels.easy ? '✓ DONE' : 'OPEN';
+                } else if (level === 'medium') {
+                    if (gameState.completedLevels.easy) {
+                        card.classList.remove('locked');
+                        status.textContent = gameState.completedLevels.medium ? '✓ DONE' : 'OPEN';
+                    } else {
+                        card.classList.add('locked');
+                        status.textContent = '🔒 LOCKED';
+                    }
+                } else if (level === 'hard') {
+                    if (gameState.completedLevels.medium) {
+                        card.classList.remove('locked');
+                        status.textContent = gameState.completedLevels.hard ? '✓ DONE' : 'OPEN';
+                    } else {
+                        card.classList.add('locked');
+                        status.textContent = '🔒 LOCKED';
+                    }
+                }
+            });
+        }
+
+        function setupEventListeners() {
+            // Level selection
+            document.querySelectorAll('.level-card').forEach(card => {
+                card.addEventListener('click', () => {
+                    if (!card.classList.contains('locked')) {
+                        startLevel(card.dataset.level);
+                    }
+                });
+            });
+
+            // Back button
+            document.getElementById('backButton').addEventListener('click', backToLevels);
+
+            // Guess submission
+            document.getElementById('guessButton').addEventListener('click', submitGuess);
+            document.getElementById('guessInput').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') submitGuess();
+            });
+
+            // Modal buttons
+            document.getElementById('nextButton').addEventListener('click', handleNext);
+            document.getElementById('retryButton').addEventListener('click', retryLevel);
+
+            // Stats page
+            document.getElementById('statsLink').addEventListener('click', (e) => {
+                e.preventDefault();
+                showStatsPage();
+            });
+            document.getElementById('backFromStats').addEventListener('click', hideStatsPage);
+        }
+
+        function startLevel(level) {
+            gameState.currentLevel = level;
+            gameState.targetWord = wordDatabase[level].target;
+            gameState.guesses = [];
+            gameState.oracleMessages = [];
+            gameState.unlockedCategories = [];
+            gameState.triesLeft = 5;
+            gameState.bonusLifeUsed = false;
+
+            // Update UI
+            document.getElementById('levelSelector').style.display = 'none';
+            document.getElementById('gameArea').classList.add('active');
+            
+            // Set color scheme
+            document.documentElement.style.setProperty('--level-color', 
+                level === 'easy' ? 'var(--accent-easy)' :
+                level === 'medium' ? 'var(--accent-medium)' : 'var(--accent-hard)'
+            );
+
+            // Reset UI panels
+            resetOraclePanel();
+            resetCategoryPanel();
+            resetProgressiveHints();
+
+            updateGameUI();
+        }
+
+        function updateGameUI() {
+            // Update sidebar stats
+            document.getElementById('triesLeftSidebar').textContent = gameState.triesLeft;
+            document.getElementById('currentScoreSidebar').textContent = gameState.score;
+            document.getElementById('bonusLifeSidebar').textContent = gameState.hasPlayedYesterday && !gameState.bonusLifeUsed ? '1' : '0';
+            
+            const progress = ((5 - gameState.triesLeft) / 5) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+
+            renderGuesses();
+        }
+
+        function submitGuess() {
+            const input = document.getElementById('guessInput');
+            const guess = input.value.trim().toLowerCase();
+            
+            if (!guess) return;
+
+            input.value = '';
+
+            // Check if correct
+            if (guess === gameState.targetWord) {
+                winGame();
+                return;
+            }
+
+            // Count wrong tries (before decrementing)
+            const wrongTryNumber = 6 - gameState.triesLeft;
+
+            // Add to guesses
+            const levelData = wordDatabase[gameState.currentLevel];
+            const similarWord = levelData.similarWords[guess];
+            
+            if (similarWord) {
+                gameState.guesses.push({
+                    word: guess,
+                    similarity: similarWord.similarity,
+                    hint: similarWord.hint
+                });
+
+                // Add to Oracle's Whispers with normal hint
+                addOracleMessage(guess.toUpperCase(), similarWord.hint);
+
+                // Check for category match
+                checkCategories(guess);
+            } else {
+                // Generate creative hint for unknown words
+                const randomSimilarity = Math.random() * 0.3;
+                const creativeHints = [
+                    "The oracle senses no strong connection... Try thinking about the categories unlocked in the Quest Path!",
+                    "This path leads astray. Focus on what you know - check which categories you've discovered.",
+                    "The threads of fate are weak here. Consider: what type of word are you looking for?",
+                    "Distant... very distant. Examine the Discovery Map - which guesses got closer?",
+                    "The spirits whisper: you're wandering far. Look at your previous guesses.",
+                    "This word walks a different realm. What categories make sense for this mystery?",
+                    "The oracle sees fog. Try a completely different approach!",
+                    "Wrong dimension. Use unlocked categories as guides!"
+                ];
+                
+                const randomHint = creativeHints[Math.floor(Math.random() * creativeHints.length)];
+                
+                gameState.guesses.push({
+                    word: guess,
+                    similarity: randomSimilarity,
+                    hint: randomHint
+                });
+
+                addOracleMessage(guess.toUpperCase(), randomHint);
+                checkCategories(guess);
+            }
+
+            // Show progressive hints in the hints panel
+            updateProgressiveHints(wrongTryNumber);
+
+            gameState.triesLeft--;
+
+            if (gameState.triesLeft === 0) {
+                if (gameState.hasPlayedYesterday && !gameState.bonusLifeUsed) {
+                    useBonusLife();
+                } else {
+                    loseGame();
+                }
+            }
+
+            updateGameUI();
+        }
+
+-item-label">📏 Word Length</div>
+                        <div class="hint-item-value">${letterCount} letters</div>
+                    </div>
+                    <div class="hint-item" style="animation-delay: 0.1s">
+                        <div class="hint-item-label">🔤 Starts With</div>
+                        <div class="hint-item-value">${firstLetter}___</div>
+                    </div>
+                    <div class="hint-item" style="animation-delay: 0.2s">
+                        <div class="hint-item-label">🎯 Ends With</div>
+                        <div class="hint-item-value">${lastLetter}</div>
+                    </div>
+                `;
+            }
+        }
+
+        function useBonusLife() {
+            gameState.bonusLifeUsed = true;
+            gameState.triesLeft = 1;
+            showNotification('🎁 Bonus life activated! One more chance!');
+            updateGameUI();
+        }
+
+        function addOracleMessage(alertWord, hintText) {
+            gameState.oracleMessages.push({
+                alert: alertWord,
+                hint: hintText
+            });
+
+            renderOracleMessages();
+        }
+
+        function renderOracleMessages() {
+            const container = document.getElementById('oracleMessages');
+            
+            if (gameState.oracleMessages.length === 0) {
+                container.innerHTML = '<div class="oracle-empty">The oracle awaits your first guess...</div>';
+                return;
+            }
+
+            container.innerHTML = gameState.oracleMessages.map((msg, index) => `
+                <div class="oracle-message" style="animation-delay: ${index * 0.1}s">
+                    <div class="oracle-alert">
+                        ⚠️ ALERT: ${msg.alert}
+                    </div>
+                    <div class="oracle-text">${msg.hint}</div>
+                </div>
+            `).join('');
+
+            // Scroll to bottom
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function resetOraclePanel() {
+            const container = document.getElementById('oracleMessages');
+            container.innerHTML = '<div class="oracle-empty">The oracle awaits your first guess...</div>';
+        }
+
+        function resetProgressiveHints() {
+            const hintsContainer = document.getElementById('progressiveHints');
+            hintsContainer.innerHTML = '<div class="hints-empty">Hints will appear as you guess...</div>';
+        }
+
+        function checkCategories(guess) {
+            // Simple category detection (you can expand this with more sophisticated logic)
+            const categoryRules = {
+                living: ['cat', 'dog', 'kitten', 'fish', 'animal', 'pet', 'feline', 'mouse'],
+                place: ['ocean', 'sea', 'beach', 'atlantic', 'pacific', 'lake', 'river', 'place'],
+                noun: ['cat', 'ocean', 'philosophy', 'wisdom', 'knowledge', 'pet', 'sea'],
+                action: ['running', 'thinking', 'swimming', 'walking', 'jumping'],
+                abstract: ['philosophy', 'wisdom', 'knowledge', 'ethics', 'logic', 'truth', 'reason', 'thought'],
+                object: ['ball', 'chair', 'table', 'tool', 'item']
+            };
+
+            const levelData = wordDatabase[gameState.currentLevel];
+            const targetCategories = levelData.categories;
+
+            // Check if the guess belongs to one of the target categories
+            for (const category of targetCategories) {
+                if (categoryRules[category] && categoryRules[category].includes(guess)) {
+                    if (!gameState.unlockedCategories.includes(category)) {
+                        gameState.unlockedCategories.push(category);
+                        unlockCategory(category);
+                    }
+                }
+            }
+        }
+
+        function unlockCategory(category) {
+            const categoryItem = document.querySelector(`[data-category="${category}"]`);
+            if (categoryItem) {
+                categoryItem.classList.add('unlocked');
+                showNotification(`🎯 Quest Path Unlocked: ${category.toUpperCase()}!`);
+            }
+        }
+
+        function resetCategoryPanel() {
+            document.querySelectorAll('.category-item').forEach(item => {
+                item.classList.remove('unlocked');
+            });
+        }
+
+        function renderGuesses() {
+            const container = document.getElementById('guessItems');
+            const svgLines = document.getElementById('connectionLines');
+            const targetCenter = document.getElementById('targetCenter');
+            
+            // Clear existing guesses (keep SVG and target center)
+            const existingGuesses = container.querySelectorAll('.guess-item');
+            existingGuesses.forEach(item => item.remove());
+            
+            // Clear SVG lines
+            svgLines.innerHTML = '';
+
+            // Get container dimensions
+            const containerRect = container.getBoundingClientRect();
+            const centerX = 150; // Half of 300px height
+            const centerY = 150;
+
+            gameState.guesses.forEach((guess, index) => {
+                const item = document.createElement('div');
+                item.className = 'guess-item';
+                item.textContent = guess.word;
+                
+                // Color based on similarity
+                const hue = guess.similarity * 120; // 0 (red) to 120 (green)
+                item.style.borderColor = `hsl(${hue}, 70%, 50%)`;
+                item.style.background = `hsla(${hue}, 70%, 50%, 0.1)`;
+                
+                // Position based on similarity (spatial map)
+                // Closer words are nearer to center
+                const angle = (index / Math.max(gameState.guesses.length, 1)) * Math.PI * 2;
+                const maxDistance = 120; // Maximum distance from center
+                const distance = (1 - guess.similarity) * maxDistance;
+                
+                const x = centerX + Math.cos(angle) * distance;
+                const y = centerY + Math.sin(angle) * distance;
+                
+                item.style.left = x + 'px';
+                item.style.top = y + 'px';
+                item.style.transform = 'translate(-50%, -50%)';
+
+                item.title = `Similarity: ${(guess.similarity * 100).toFixed(0)}%`;
+                
+                // Draw connection line from center to guess
+                const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                line.setAttribute('x1', centerX);
+                line.setAttribute('y1', centerY);
+                line.setAttribute('x2', x);
+                line.setAttribute('y2', y);
+                line.setAttribute('class', 'connection-line');
+                line.style.stroke = `hsl(${hue}, 70%, 50%)`;
+                line.style.opacity = 0.3 + (guess.similarity * 0.4); // More similar = more visible
+                
+                svgLines.appendChild(line);
+                container.appendChild(item);
+            });
+        }
+
+        function winGame() {
+            const pointsPerTry = 100;
+            const earnedPoints = gameState.triesLeft * pointsPerTry;
+            gameState.score += earnedPoints;
+            gameState.completedLevels[gameState.currentLevel] = true;
+
+            // Save to daily history
+            saveDailyScore(earnedPoints);
+            
+            // Increment level completion stat
+            incrementLevelStat(gameState.currentLevel);
+
+            saveGameState();
+
+            showModal(
+                '🎉',
+                'Brilliant!',
+                `You found "${gameState.targetWord}" with ${gameState.triesLeft} ${gameState.triesLeft === 1 ? 'try' : 'tries'} remaining!`,
+                `+${earnedPoints}`,
+                true
+            );
+        }
+
+        function loseGame() {
+            showModal(
+                '😢',
+                'So Close!',
+                `The word was "${gameState.targetWord}". Better luck next time!`,
+                '+0',
+                false
+            );
+
+            if (!gameState.hasPlayedYesterday) {
+                setTimeout(() => {
+                    showNotification('💡 Play tomorrow to earn a bonus life for future games!');
+                }, 2000);
+            }
+        }
+
+        function showModal(icon, title, message, score, won) {
+            document.getElementById('modalIcon').textContent = icon;
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalMessage').textContent = message;
+            document.getElementById('modalScore').textContent = score;
+            
+            const nextBtn = document.getElementById('nextButton');
+            const retryBtn = document.getElementById('retryButton');
+            
+            if (won) {
+                const levels = ['easy', 'medium', 'hard'];
+                const currentIndex = levels.indexOf(gameState.currentLevel);
+                
+                if (currentIndex < levels.length - 1) {
+                    nextBtn.textContent = '🚀 NEXT LEVEL';
+                    nextBtn.style.display = 'inline-block';
+                    retryBtn.textContent = 'Back to Menu';
+                    retryBtn.style.display = 'inline-block';
+                } else {
+                    // Completed all levels
+                    nextBtn.textContent = '🏆 COMPLETE!';
+                    nextBtn.style.display = 'inline-block';
+                    retryBtn.textContent = 'Back to Menu';
+                    retryBtn.style.display = 'inline-block';
+                }
+            } else {
+                nextBtn.style.display = 'none';
+                retryBtn.textContent = 'Try Again Tomorrow';
+                retryBtn.style.display = 'inline-block';
+            }
+
+            document.getElementById('resultModal').classList.add('active');
+        }
+
+        function handleNext() {
+            document.getElementById('resultModal').classList.remove('active');
+            
+            const levels = ['easy', 'medium', 'hard'];
+            const currentIndex = levels.indexOf(gameState.currentLevel);
+            
+            if (currentIndex < levels.length - 1) {
+                const nextLevel = levels[currentIndex + 1];
+                // Start next level immediately
+                startLevel(nextLevel);
+            } else {
+                // All levels complete - go back to menu
+                backToLevels();
+                showNotification('🏆 Congratulations! You conquered all levels today!');
+            }
+        }
+
+        function retryLevel() {
+            document.getElementById('resultModal').classList.remove('active');
+            backToLevels();
+        }
+
+        function backToLevels() {
+            document.getElementById('gameArea').classList.remove('active');
+            document.getElementById('levelSelector').style.display = 'grid';
+            resetOraclePanel();
+            resetCategoryPanel();
+            resetProgressiveHints();
+            updateLevelCards();
+        }
+
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.classList.add('show');
+
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 4000);
+        }
+
+        // Start the game
+        init();
+    </script>
+</body>
+</html>
