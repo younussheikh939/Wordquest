@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#0D0221">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>WordQuest - Daily Word Challenge</title>
     <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
     <style>
@@ -22,18 +20,13 @@
             --bg-dark: #160A3A;
             --bg-card: #1E1243;
             --bg-light: #2D1B69;
-            
             --accent-neon: #00FFC2;
             --accent-pink: #FF2E97;
             --accent-gold: #FFB800;
             --accent-purple: #A855F7;
-            
             --text-primary: #FFFFFF;
             --text-secondary: #B4A5D8;
             --text-dim: #7C6BA3;
-            
-            --glow-neon: rgba(0, 255, 194, 0.4);
-            --glow-pink: rgba(255, 46, 151, 0.4);
         }
 
         body {
@@ -42,20 +35,15 @@
             color: var(--text-primary);
             min-height: 100vh;
             overflow-x: hidden;
-            position: relative;
         }
 
         body::before {
             content: '';
             position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
+            top: 0; left: 0; right: 0; bottom: 0;
             background: 
                 radial-gradient(ellipse at 20% 30%, rgba(0, 255, 194, 0.08) 0%, transparent 50%),
-                radial-gradient(ellipse at 80% 70%, rgba(255, 46, 151, 0.08) 0%, transparent 50%),
-                radial-gradient(ellipse at 50% 50%, rgba(168, 85, 247, 0.03) 0%, transparent 70%);
+                radial-gradient(ellipse at 80% 70%, rgba(255, 46, 151, 0.08) 0%, transparent 50%);
             pointer-events: none;
             z-index: 0;
             animation: bgPulse 8s ease-in-out infinite;
@@ -69,7 +57,6 @@
         .container {
             max-width: 100%;
             margin: 0 auto;
-            padding: 0;
             position: relative;
             z-index: 1;
             min-height: 100vh;
@@ -90,23 +77,13 @@
             background: linear-gradient(135deg, var(--accent-neon) 0%, var(--accent-pink) 50%, var(--accent-purple) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            background-clip: text;
             margin-bottom: 5px;
-            letter-spacing: -1px;
             animation: titleGlow 3s ease-in-out infinite;
         }
 
         @keyframes titleGlow {
             0%, 100% { filter: brightness(1); }
             50% { filter: brightness(1.3); }
-        }
-
-        .tagline {
-            font-size: 11px;
-            color: var(--text-secondary);
-            font-weight: 400;
-            letter-spacing: 3px;
-            text-transform: uppercase;
         }
 
         .wizard-name-display {
@@ -118,7 +95,15 @@
             font-weight: 700;
         }
 
-        .stats-btn {
+        .header-buttons {
+            position: absolute;
+            top: 25px;
+            right: 20px;
+            display: flex;
+            gap: 8px;
+        }
+
+        .stats-btn, .leaderboard-btn {
             background: rgba(0, 255, 194, 0.1);
             color: var(--accent-neon);
             padding: 8px 14px;
@@ -130,807 +115,89 @@
             transition: all 0.3s;
         }
 
-        .stats-btn:active {
-            transform: scale(0.95);
-            box-shadow: 0 0 20px var(--glow-neon);
+        .leaderboard-btn {
+            background: rgba(255, 184, 0, 0.1);
+            color: var(--accent-gold);
+            border-color: rgba(255, 184, 0, 0.3);
         }
 
-        .level-selector {
-            padding: 20px;
-            animation: fadeIn 0.6s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .daily-indicator {
-            background: linear-gradient(135deg, var(--accent-gold), var(--accent-pink));
-            color: var(--bg-deep);
-            padding: 8px 16px;
-            border-radius: 12px;
-            font-size: 11px;
-            font-weight: 700;
-            text-align: center;
-            margin-bottom: 15px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .level-card {
-            background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-light) 100%);
-            border-radius: 20px;
-            padding: 25px;
-            margin-bottom: 15px;
-            cursor: pointer;
-            transition: all 0.3s;
-            position: relative;
-            overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .level-card.completed {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-
-        .level-card.completed::after {
-            content: '✓ Completed Today';
-            position: absolute;
+        /* Oracle Popup */
+        .oracle-popup {
+            position: fixed;
             top: 50%;
             left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(0, 255, 194, 0.9);
-            color: var(--bg-deep);
-            padding: 10px 20px;
-            border-radius: 10px;
-            font-size: 14px;
-            font-weight: 700;
-        }
-
-        .level-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: var(--accent);
-            box-shadow: 0 0 20px var(--accent);
-        }
-
-        .level-card.novice { --accent: var(--accent-neon); }
-        .level-card.seeker { --accent: var(--accent-gold); }
-        .level-card.master { --accent: var(--accent-pink); }
-
-        .level-card:active:not(.completed) {
-            transform: scale(0.98);
-        }
-
-        .level-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-        }
-
-        .level-title {
-            font-family: 'Playfair Display', serif;
-            font-size: 26px;
-            font-weight: 900;
-            color: var(--accent);
-            text-shadow: 0 0 20px var(--accent);
-        }
-
-        .level-icon {
-            font-size: 36px;
-            filter: drop-shadow(0 0 10px var(--accent));
-        }
-
-        .level-description {
-            color: var(--text-secondary);
-            font-size: 13px;
-            line-height: 1.6;
-            margin-bottom: 15px;
-        }
-
-        .level-stats {
-            display: flex;
-            gap: 20px;
-            font-size: 12px;
-        }
-
-        .stat-pill {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 6px 12px;
+            transform: translate(-50%, -50%) scale(0);
+            background: linear-gradient(135deg, rgba(255, 46, 151, 0.95), rgba(168, 85, 247, 0.95));
+            border: 2px solid var(--accent-pink);
             border-radius: 20px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            color: var(--text-secondary);
-        }
-
-        .stat-value {
-            color: var(--accent);
-            font-weight: 700;
-        }
-
-        .game-area {
-            display: none;
-        }
-
-        .game-area.active {
-            display: block;
-            animation: fadeIn 0.5s ease;
-        }
-
-        .back-btn {
-            margin: 15px 20px;
-            background: rgba(255, 255, 255, 0.05);
-            color: var(--text-primary);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 10px 18px;
-            border-radius: 10px;
-            font-size: 13px;
-            font-weight: 700;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.3s;
-        }
-
-        .back-btn:active {
-            transform: scale(0.95);
-        }
-
-        .game-layout {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 0;
-            padding: 0 15px 20px;
-        }
-
-        .guess-section {
-            background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-light) 100%);
-            border-radius: 18px;
-            padding: 20px;
-            margin-bottom: 15px;
-            border: 1px solid rgba(0, 255, 194, 0.2);
-            box-shadow: 0 0 30px rgba(0, 255, 194, 0.1);
-        }
-
-        .input-group {
-            display: flex;
-            gap: 10px;
-        }
-
-        #guessInput {
-            flex: 1;
-            background: rgba(0, 0, 0, 0.3);
-            border: 2px solid rgba(0, 255, 194, 0.3);
-            color: var(--text-primary);
-            padding: 14px 18px;
-            border-radius: 12px;
-            font-size: 15px;
-            font-family: 'Space Mono', monospace;
-            transition: all 0.3s;
-        }
-
-        #guessInput:focus {
-            outline: none;
-            border-color: var(--accent-neon);
-            box-shadow: 0 0 20px var(--glow-neon);
-        }
-
-        #guessInput::placeholder {
-            color: var(--text-dim);
-        }
-
-        #submitBtn {
-            background: linear-gradient(135deg, var(--accent-neon) 0%, var(--accent-purple) 100%);
-            color: var(--bg-deep);
-            border: none;
-            padding: 14px 24px;
-            border-radius: 12px;
-            font-size: 14px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            box-shadow: 0 4px 20px var(--glow-neon);
-        }
-
-        #submitBtn:active {
-            transform: scale(0.95);
-        }
-
-        .side-panels {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-
-        .categories-panel {
-            background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-light) 100%);
-            border-radius: 15px;
-            padding: 15px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .panel-title {
-            font-size: 11px;
-            font-weight: 700;
-            color: var(--accent-neon);
-            margin-bottom: 10px;
-            text-align: center;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .category-item {
-            background: rgba(0, 0, 0, 0.3);
-            padding: 8px 10px;
-            border-radius: 8px;
-            margin-bottom: 6px;
-            text-align: center;
-            font-size: 11px;
-            color: var(--text-dim);
-            border: 1px solid transparent;
-            transition: all 0.3s;
-        }
-
-        .category-item.unlocked {
-            background: rgba(0, 255, 194, 0.15);
-            border-color: var(--accent-neon);
-            color: var(--accent-neon);
-            font-weight: 700;
-            animation: categoryUnlock 0.5s ease;
-            box-shadow: 0 0 15px var(--glow-neon);
-        }
-
-        @keyframes categoryUnlock {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.08); }
-        }
-
-        .stats-panel {
-            background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-light) 100%);
-            border-radius: 15px;
-            padding: 15px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .stat-box {
-            background: rgba(0, 0, 0, 0.3);
-            padding: 10px;
-            border-radius: 10px;
-            text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .stat-label {
-            font-size: 9px;
-            color: var(--text-dim);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 4px;
-        }
-
-        .stat-value {
-            font-size: 24px;
-            font-weight: 700;
-            background: linear-gradient(135deg, var(--accent-neon) 0%, var(--accent-purple) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .whispers-box {
-            background: rgba(0, 0, 0, 0.3);
-            padding: 10px;
-            border-radius: 10px;
-            border: 1px solid rgba(255, 184, 0, 0.2);
-        }
-
-        .whispers-title {
-            font-size: 9px;
-            font-weight: 700;
-            color: var(--accent-gold);
-            text-align: center;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 8px;
-        }
-
-        .hint-mini-item {
-            background: rgba(0, 0, 0, 0.4);
-            padding: 5px 8px;
-            border-radius: 6px;
-            margin-bottom: 4px;
-            font-size: 10px;
-            text-align: center;
-            border-left: 2px solid var(--accent-gold);
-        }
-
-        .hint-locked {
-            color: var(--text-dim);
-            opacity: 0.4;
-        }
-
-        .hint-unlocked {
-            color: var(--accent-gold);
-            font-weight: 700;
-            animation: slideIn 0.3s ease;
-        }
-
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateX(10px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-
-        .spatial-map {
-            background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-light) 100%);
-            border-radius: 18px;
-            padding: 20px;
-            margin-bottom: 15px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            position: relative;
-        }
-
-        .map-title {
-            font-size: 12px;
-            font-weight: 700;
-            color: var(--accent-neon);
-            margin-bottom: 12px;
-            text-align: center;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .map-container {
-            position: relative;
-            width: 100%;
-            height: 280px;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 12px;
-            overflow: hidden;
-            border: 1px solid rgba(0, 255, 194, 0.2);
-        }
-
-        .target-center {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 70px;
-            height: 70px;
-            background: linear-gradient(135deg, var(--accent-neon) 0%, var(--accent-purple) 100%);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 32px;
-            box-shadow: 
-                0 0 40px var(--glow-neon),
-                0 0 80px var(--glow-pink);
-            z-index: 10;
-            animation: targetPulse 2s ease-in-out infinite;
-        }
-
-        @keyframes targetPulse {
-            0%, 100% { transform: translate(-50%, -50%) scale(1); }
-            50% { transform: translate(-50%, -50%) scale(1.05); }
-        }
-
-        .guess-bubble {
-            position: absolute;
-            padding: 6px 14px;
-            background: rgba(13, 2, 33, 0.9);
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            border: 2px solid;
-            transition: all 0.3s;
-            cursor: pointer;
-            transform: translate(-50%, -50%);
-            animation: bubbleIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-            white-space: nowrap;
-            backdrop-filter: blur(10px);
-        }
-
-        @keyframes bubbleIn {
-            from { 
-                opacity: 0; 
-                transform: translate(-50%, -50%) scale(0.3);
-            }
-            to { 
-                opacity: 1; 
-                transform: translate(-50%, -50%) scale(1);
-            }
-        }
-
-        .guess-bubble:active {
-            transform: translate(-50%, -50%) scale(1.15);
-        }
-
-        .connections-svg {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 1;
-        }
-
-        .connection-line {
-            stroke-width: 1.5;
-            stroke-dasharray: 4 4;
-            animation: dash 20s linear infinite;
-        }
-
-        @keyframes dash {
-            to { stroke-dashoffset: -100; }
-        }
-
-        .oracle-panel {
-            background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-light) 100%);
-            border-radius: 18px;
-            padding: 20px;
-            margin-bottom: 15px;
-            border: 1px solid rgba(255, 46, 151, 0.2);
-            box-shadow: 0 0 30px rgba(255, 46, 151, 0.1);
-            min-height: 140px;
-        }
-
-        .oracle-title {
-            font-size: 12px;
-            font-weight: 700;
-            color: var(--accent-pink);
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .oracle-message {
-            background: rgba(0, 0, 0, 0.3);
-            padding: 12px 15px;
-            border-radius: 10px;
-            margin-bottom: 8px;
-            font-size: 13px;
-            color: var(--text-primary);
-            line-height: 1.6;
-            border-left: 3px solid var(--accent-pink);
-            animation: messageSlide 0.4s ease;
-        }
-
-        @keyframes messageSlide {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .oracle-message strong {
-            color: var(--accent-pink);
-            font-weight: 700;
-        }
-
-        .oracle-empty {
-            text-align: center;
-            color: var(--text-dim);
-            padding: 30px 20px;
-            font-size: 13px;
-            font-style: italic;
-        }
-
-        /* Wizard Name Modal */
-        .wizard-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.95);
-            backdrop-filter: blur(10px);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 2000;
-            padding: 20px;
-        }
-
-        .wizard-modal.hidden {
-            display: none;
-        }
-
-        .wizard-content {
-            background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-light) 100%);
-            border-radius: 25px;
-            padding: 40px 30px;
-            max-width: 400px;
-            width: 100%;
-            text-align: center;
-            border: 2px solid rgba(255, 184, 0, 0.3);
-            box-shadow: 0 0 60px var(--glow-pink);
-            animation: modalPop 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-        }
-
-        @keyframes modalPop {
-            from { opacity: 0; transform: scale(0.8); }
-            to { opacity: 1; transform: scale(1); }
-        }
-
-        .wizard-icon {
-            font-size: 72px;
-            margin-bottom: 20px;
-        }
-
-        .wizard-title {
-            font-family: 'Playfair Display', serif;
-            font-size: 28px;
-            font-weight: 900;
-            margin-bottom: 10px;
-            background: linear-gradient(135deg, var(--accent-gold), var(--accent-pink));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .wizard-subtitle {
-            font-size: 13px;
-            color: var(--text-secondary);
-            margin-bottom: 25px;
-            line-height: 1.6;
-        }
-
-        .wizard-input {
-            width: 100%;
-            background: rgba(0, 0, 0, 0.3);
-            border: 2px solid rgba(255, 184, 0, 0.3);
-            color: var(--text-primary);
-            padding: 14px 18px;
-            border-radius: 12px;
-            font-size: 16px;
-            font-family: 'Space Mono', monospace;
-            margin-bottom: 20px;
-            text-align: center;
-            transition: all 0.3s;
-        }
-
-        .wizard-input:focus {
-            outline: none;
-            border-color: var(--accent-gold);
-            box-shadow: 0 0 20px rgba(255, 184, 0, 0.4);
-        }
-
-        .wizard-btn {
-            width: 100%;
-            background: linear-gradient(135deg, var(--accent-gold), var(--accent-pink));
-            color: var(--bg-deep);
-            border: none;
-            padding: 14px 30px;
-            border-radius: 12px;
-            font-size: 14px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            box-shadow: 0 4px 20px rgba(255, 184, 0, 0.4);
-        }
-
-        .wizard-btn:active {
-            transform: scale(0.95);
-        }
-
-        /* Modal */
-        .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.95);
-            backdrop-filter: blur(10px);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            padding: 20px;
-        }
-
-        .modal.active {
-            display: flex;
-            animation: fadeIn 0.3s ease;
-        }
-
-        .modal-content {
-            background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-light) 100%);
-            border-radius: 25px;
-            padding: 40px 30px;
-            max-width: 360px;
-            width: 100%;
-            text-align: center;
-            border: 2px solid rgba(0, 255, 194, 0.3);
-            box-shadow: 0 0 60px var(--glow-neon);
-            animation: modalPop 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-        }
-
-        .modal-icon {
-            font-size: 72px;
-            margin-bottom: 20px;
-            animation: iconBounce 0.6s ease infinite;
-        }
-
-        @keyframes iconBounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-
-        .modal-title {
-            font-family: 'Playfair Display', serif;
-            font-size: 32px;
-            font-weight: 900;
-            margin-bottom: 15px;
-            background: linear-gradient(135deg, var(--accent-neon), var(--accent-pink));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .modal-message {
-            font-size: 15px;
-            color: var(--text-secondary);
-            margin-bottom: 20px;
-            line-height: 1.6;
-        }
-
-        .modal-score {
-            font-size: 56px;
-            font-weight: 700;
-            margin-bottom: 30px;
-            background: linear-gradient(135deg, var(--accent-neon), var(--accent-gold));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .modal-buttons {
-            display: flex;
-            gap: 10px;
-            flex-direction: column;
-        }
-
-        .modal-btn {
-            padding: 14px 30px;
-            border-radius: 12px;
-            font-size: 14px;
-            font-weight: 700;
-            cursor: pointer;
-            border: none;
-            transition: all 0.3s;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .modal-btn.primary {
-            background: linear-gradient(135deg, var(--accent-neon), var(--accent-purple));
-            color: var(--bg-deep);
-            box-shadow: 0 4px 20px var(--glow-neon);
-        }
-
-        .modal-btn.secondary {
-            background: rgba(255, 255, 255, 0.1);
-            color: var(--text-primary);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .modal-btn:active {
-            transform: scale(0.95);
-        }
-
-        .notification {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%) translateY(-120px);
-            background: linear-gradient(135deg, var(--bg-card), var(--bg-light));
-            color: var(--text-primary);
-            padding: 14px 24px;
-            border-radius: 12px;
-            border: 1px solid var(--accent-neon);
-            box-shadow: 0 0 40px var(--glow-neon);
-            z-index: 2000;
-            transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            padding: 30px;
             max-width: 90%;
-            text-align: center;
-            font-weight: 600;
-            font-size: 13px;
+            width: 400px;
+            z-index: 3000;
+            box-shadow: 0 0 60px rgba(255, 46, 151, 0.6);
             backdrop-filter: blur(10px);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         }
 
-        .notification.show {
-            transform: translateX(-50%) translateY(0);
+        .oracle-popup.show {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
         }
 
-        .stats-page {
-            display: none;
-            padding: 20px;
+        .oracle-popup-icon {
+            font-size: 48px;
+            text-align: center;
+            margin-bottom: 15px;
         }
 
-        .stats-page.active {
-            display: block;
-            animation: fadeIn 0.5s ease;
+        .oracle-popup-message {
+            font-size: 16px;
+            line-height: 1.6;
+            text-align: center;
+            color: white;
+            font-weight: 600;
         }
 
-        .stats-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .stats-title {
-            font-family: 'Playfair Display', serif;
-            font-size: 32px;
-            font-weight: 900;
-            background: linear-gradient(135deg, var(--accent-neon), var(--accent-purple));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        /* ---- HERO STATS (Score + Days) ---- */
+        /* Enhanced Stats Hero Cards */
         .stats-hero {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-bottom: 20px;
+            gap: 15px;
+            margin-bottom: 25px;
         }
 
         .hero-card {
             position: relative;
-            padding: 24px 16px;
-            border-radius: 20px;
+            padding: 30px 20px;
+            border-radius: 22px;
             text-align: center;
             overflow: hidden;
-        }
-
-        .hero-card::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            opacity: 0.08;
-            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         }
 
         .hero-card.score-card {
-            background: linear-gradient(135deg, rgba(0, 255, 194, 0.15), rgba(168, 85, 247, 0.15));
-            border: 2px solid rgba(0, 255, 194, 0.4);
-            box-shadow: 0 0 30px rgba(0, 255, 194, 0.1);
+            background: linear-gradient(135deg, rgba(0, 255, 194, 0.25), rgba(168, 85, 247, 0.25));
+            border: 3px solid var(--accent-neon);
+            box-shadow: 0 0 40px rgba(0, 255, 194, 0.3);
         }
 
         .hero-card.days-card {
-            background: linear-gradient(135deg, rgba(255, 184, 0, 0.15), rgba(255, 46, 151, 0.15));
-            border: 2px solid rgba(255, 184, 0, 0.4);
-            box-shadow: 0 0 30px rgba(255, 184, 0, 0.1);
+            background: linear-gradient(135deg, rgba(255, 184, 0, 0.25), rgba(255, 46, 151, 0.25));
+            border: 3px solid var(--accent-gold);
+            box-shadow: 0 0 40px rgba(255, 184, 0, 0.3);
         }
 
         .hero-icon {
-            font-size: 28px;
-            margin-bottom: 6px;
+            font-size: 36px;
+            margin-bottom: 10px;
         }
 
         .hero-value {
-            font-size: 42px;
+            font-size: 56px;
             font-weight: 900;
             line-height: 1;
-            margin-bottom: 4px;
+            margin-bottom: 8px;
         }
 
         .hero-card.score-card .hero-value {
@@ -946,128 +213,103 @@
         }
 
         .hero-label {
-            font-size: 11px;
+            font-size: 13px;
             text-transform: uppercase;
             letter-spacing: 2px;
-            color: var(--text-secondary);
+            font-weight: 700;
+            color: var(--text-primary);
         }
 
-        .hero-sub {
-            font-size: 9px;
-            color: var(--text-dim);
-            margin-top: 4px;
-            font-style: italic;
+        /* Victories Section */
+        .victories-section {
+            background: linear-gradient(135deg, var(--bg-card), var(--bg-light));
+            border: 2px solid rgba(168, 85, 247, 0.3);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
         }
 
-        /* ---- TOTAL VICTORIES BANNER ---- */
-        .victories-banner {
-            background: linear-gradient(135deg, rgba(168, 85, 247, 0.15), rgba(255, 46, 151, 0.1));
-            border: 1px solid rgba(168, 85, 247, 0.3);
-            border-radius: 16px;
-            padding: 16px;
+        .victories-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 16px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        .victories-banner-left {
+        .victories-total {
             display: flex;
             align-items: center;
             gap: 12px;
         }
 
         .victories-trophy {
-            font-size: 32px;
+            font-size: 36px;
         }
 
-        .victories-banner-value {
-            font-size: 28px;
+        .victories-total-value {
+            font-size: 36px;
             font-weight: 900;
             color: var(--accent-purple);
         }
 
-        .victories-banner-label {
-            font-size: 10px;
+        .victories-total-label {
+            font-size: 11px;
             text-transform: uppercase;
             letter-spacing: 1.5px;
             color: var(--text-secondary);
         }
 
-        .victories-winrate {
-            text-align: right;
-        }
-
         .winrate-value {
-            font-size: 22px;
+            font-size: 28px;
             font-weight: 700;
             color: var(--accent-neon);
         }
 
         .winrate-label {
-            font-size: 9px;
+            font-size: 10px;
             text-transform: uppercase;
-            letter-spacing: 1px;
             color: var(--text-dim);
-        }
-
-        /* ---- LEVEL WINS BOX ---- */
-        .levels-box {
-            background: linear-gradient(135deg, var(--bg-card), var(--bg-light));
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 18px;
-            padding: 18px;
-            margin-bottom: 20px;
-        }
-
-        .levels-box-title {
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            color: var(--text-dim);
-            margin-bottom: 14px;
-            text-align: center;
         }
 
         .levels-trio {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
-            gap: 10px;
+            gap: 12px;
         }
 
         .level-win-card {
             text-align: center;
-            padding: 16px 8px;
-            border-radius: 14px;
-            position: relative;
-            overflow: hidden;
+            padding: 18px 10px;
+            border-radius: 16px;
         }
 
         .level-win-card.novice-card {
-            background: linear-gradient(135deg, rgba(0, 255, 194, 0.12), rgba(0, 255, 194, 0.03));
-            border: 1px solid rgba(0, 255, 194, 0.25);
+            background: linear-gradient(135deg, rgba(0, 255, 194, 0.15), rgba(0, 255, 194, 0.05));
+            border: 2px solid rgba(0, 255, 194, 0.3);
         }
 
         .level-win-card.seeker-card {
-            background: linear-gradient(135deg, rgba(255, 184, 0, 0.12), rgba(255, 184, 0, 0.03));
-            border: 1px solid rgba(255, 184, 0, 0.25);
+            background: linear-gradient(135deg, rgba(255, 184, 0, 0.15), rgba(255, 184, 0, 0.05));
+            border: 2px solid rgba(255, 184, 0, 0.3);
         }
 
         .level-win-card.master-card {
-            background: linear-gradient(135deg, rgba(255, 46, 151, 0.12), rgba(255, 46, 151, 0.03));
-            border: 1px solid rgba(255, 46, 151, 0.25);
+            background: linear-gradient(135deg, rgba(255, 46, 151, 0.15), rgba(255, 46, 151, 0.05));
+            border: 2px solid rgba(255, 46, 151, 0.3);
         }
 
         .level-win-icon {
-            font-size: 22px;
-            margin-bottom: 6px;
+            font-size: 28px;
+            margin-bottom: 8px;
         }
 
         .level-win-value {
-            font-size: 26px;
+            font-size: 32px;
             font-weight: 900;
             line-height: 1;
-            margin-bottom: 3px;
+            margin-bottom: 5px;
         }
 
         .novice-card .level-win-value { color: var(--accent-neon); }
@@ -1075,405 +317,308 @@
         .master-card .level-win-value { color: var(--accent-pink); }
 
         .level-win-label {
-            font-size: 9px;
+            font-size: 10px;
             text-transform: uppercase;
             letter-spacing: 1px;
             color: var(--text-dim);
         }
 
-        /* ---- EXTRA STATS ROW ---- */
-        .extra-stats-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .extra-stat-card {
-            background: linear-gradient(135deg, var(--bg-card), var(--bg-light));
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 14px;
-            padding: 14px 8px;
-            text-align: center;
-        }
-
-        .extra-stat-icon {
-            font-size: 18px;
-            margin-bottom: 4px;
-        }
-
-        .extra-stat-value {
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--text-primary);
-        }
-
-        .extra-stat-label {
-            font-size: 8px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--text-dim);
-        }
-
-        /* ---- CHART ---- */
+        /* Updated chart */
         .chart-container {
             background: linear-gradient(135deg, var(--bg-card), var(--bg-light));
             border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 18px;
+            border-radius: 20px;
             padding: 20px 16px;
-            margin-bottom: 15px;
-        }
-
-        .chart-title {
-            font-size: 14px;
-            font-weight: 700;
-            color: var(--text-secondary);
-            margin-bottom: 15px;
-            text-align: center;
-            letter-spacing: 1px;
-        }
-
-        .chart-canvas {
-            width: 100%;
-            height: 220px;
-            border-radius: 12px;
-        }
-
-        .chart-legend {
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 12px;
-            margin-top: 12px;
-        }
-
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            font-size: 10px;
-            color: var(--text-dim);
-        }
-
-        .legend-color {
-            width: 10px;
-            height: 10px;
-            border-radius: 3px;
-        }
-
-        /* ============ LEADERBOARD PAGE ============ */
-        .header-buttons {
-            position: absolute;
-            top: 25px;
-            right: 20px;
-            display: flex;
-            gap: 8px;
-        }
-
-        .leaderboard-btn {
-            background: rgba(255, 184, 0, 0.1);
-            color: var(--accent-gold);
-            padding: 8px 14px;
-            border-radius: 12px;
-            border: 1px solid rgba(255, 184, 0, 0.3);
-            font-family: 'Space Mono', monospace;
-            font-size: 12px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .leaderboard-btn:active {
-            transform: scale(0.95);
-            box-shadow: 0 0 20px rgba(255, 184, 0, 0.3);
-        }
-
-        .leaderboard-page {
-            display: none;
-            padding: 20px;
-        }
-
-        .leaderboard-page.active {
-            display: block;
-            animation: fadeIn 0.5s ease;
-        }
-
-        .lb-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-        }
-
-        .lb-title {
-            font-family: 'Playfair Display', serif;
-            font-size: 32px;
-            font-weight: 900;
-            background: linear-gradient(135deg, var(--accent-gold), var(--accent-pink));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .lb-subtitle {
-            color: var(--text-secondary);
-            font-size: 12px;
-            letter-spacing: 2px;
-            text-transform: uppercase;
             margin-bottom: 20px;
         }
 
-        .lb-podium {
-            display: flex;
-            justify-content: center;
-            align-items: flex-end;
-            gap: 10px;
-            margin-bottom: 30px;
-            padding: 0 10px;
+        .chart-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 15px;
+            text-align: center;
         }
 
-        .podium-card {
-            flex: 1;
-            max-width: 130px;
+        /* Improved Word Constellation */
+        .guess-bubble {
+            position: absolute;
+            padding: 8px 16px;
+            background: rgba(13, 2, 33, 0.9);
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            border: 2px solid;
+            transform: translate(-50%, -50%);
+            animation: bubbleIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            white-space: nowrap;
+            backdrop-filter: blur(10px);
+            cursor: pointer;
+        }
+
+        @keyframes bubbleIn {
+            from { opacity: 0; transform: translate(-50%, -50%) scale(0.3); }
+            to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+        }
+
+        /* Rest of styles remain similar but I'll include key game elements */
+        .level-selector { padding: 20px; }
+        .daily-indicator {
+            background: linear-gradient(135deg, var(--accent-gold), var(--accent-pink));
+            color: var(--bg-deep);
+            padding: 8px 16px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 700;
             text-align: center;
-            border-radius: 18px;
-            padding: 20px 10px 15px;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+
+        .level-card {
+            background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-light) 100%);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
             position: relative;
             border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: transform 0.3s;
         }
 
-        .podium-card:hover {
-            transform: translateY(-3px);
+        .level-card.completed::after {
+            content: '✓ Completed Today';
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 255, 194, 0.9);
+            color: var(--bg-deep);
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 700;
         }
 
-        .podium-card.gold {
-            background: linear-gradient(135deg, rgba(255, 184, 0, 0.25), rgba(255, 184, 0, 0.05));
-            border-color: rgba(255, 184, 0, 0.5);
-            order: 2;
-            min-height: 180px;
+        .game-area { display: none; }
+        .game-area.active { display: block; }
+
+        .game-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            padding: 15px;
         }
 
-        .podium-card.silver {
-            background: linear-gradient(135deg, rgba(192, 192, 192, 0.2), rgba(192, 192, 192, 0.05));
-            border-color: rgba(192, 192, 192, 0.4);
-            order: 1;
-            min-height: 155px;
+        .quest-path-section {
+            grid-row: span 2;
         }
 
-        .podium-card.bronze {
-            background: linear-gradient(135deg, rgba(205, 127, 50, 0.2), rgba(205, 127, 50, 0.05));
-            border-color: rgba(205, 127, 50, 0.4);
-            order: 3;
-            min-height: 135px;
+        .stats-boxes {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
         }
 
-        .podium-medal {
-            font-size: 36px;
+        .stat-box {
+            background: linear-gradient(135deg, var(--bg-card), var(--bg-light));
+            border-radius: 18px;
+            padding: 25px 20px;
+            text-align: center;
+            border: 2px solid rgba(0, 255, 194, 0.2);
+        }
+
+        .stat-box-label {
+            font-size: 11px;
+            color: var(--text-dim);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+
+        .stat-box-value {
+            font-size: 56px;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--accent-neon), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1;
+        }
+
+        .whispers-section {
+            background: linear-gradient(135deg, var(--bg-card), var(--bg-light));
+            border-radius: 18px;
+            padding: 20px;
+            border: 2px solid rgba(168, 85, 247, 0.2);
+        }
+
+        .whispers-title {
+            text-align: center;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--accent-purple);
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .whispers-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 12px;
+        }
+
+        .whisper-box {
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(168, 85, 247, 0.3);
+            border-radius: 14px;
+            padding: 20px 15px;
+            text-align: center;
+            opacity: 0.3;
+            transition: all 0.4s;
+        }
+
+        .whisper-box.revealed {
+            opacity: 1;
+            border-color: var(--accent-pink);
+            background: linear-gradient(135deg, rgba(255, 46, 151, 0.15), rgba(168, 85, 247, 0.15));
+            animation: whisperReveal 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        @keyframes whisperReveal {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .whisper-icon {
+            font-size: 24px;
             margin-bottom: 8px;
         }
 
-        .podium-name {
-            font-size: 13px;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin-bottom: 4px;
-            word-break: break-word;
+        .whisper-value {
+            font-size: 32px;
+            font-weight: 900;
+            color: var(--accent-pink);
+            margin-bottom: 5px;
         }
 
-        .podium-score {
-            font-size: 18px;
-            font-weight: 700;
-            margin-bottom: 4px;
-        }
-
-        .podium-card.gold .podium-score {
-            color: var(--accent-gold);
-        }
-
-        .podium-card.silver .podium-score {
-            color: #C0C0C0;
-        }
-
-        .podium-card.bronze .podium-score {
-            color: #CD7F32;
-        }
-
-        .podium-label {
+        .whisper-label {
             font-size: 9px;
             color: var(--text-dim);
             text-transform: uppercase;
             letter-spacing: 1px;
         }
 
-        .lb-list-title {
-            font-size: 14px;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        @media (max-width: 768px) {
+            .game-grid {
+                grid-template-columns: 1fr;
+            }
+            .quest-path-section {
+                grid-row: span 1;
+            }
         }
-
-        .lb-player-row {
-            display: grid;
-            grid-template-columns: 40px 1fr auto;
-            gap: 12px;
-            align-items: center;
-            padding: 14px 16px;
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-120px);
             background: linear-gradient(135deg, var(--bg-card), var(--bg-light));
-            border-radius: 14px;
-            margin-bottom: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            transition: all 0.3s;
-        }
-
-        .lb-player-row:hover {
-            border-color: rgba(0, 255, 194, 0.2);
-            transform: translateX(3px);
-        }
-
-        .lb-player-row.is-you {
-            background: linear-gradient(135deg, rgba(0, 255, 194, 0.1), rgba(168, 85, 247, 0.1));
-            border-color: rgba(0, 255, 194, 0.3);
-        }
-
-        .lb-rank {
-            font-size: 16px;
-            font-weight: 700;
-            color: var(--text-dim);
-            text-align: center;
-        }
-
-        .lb-player-info {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
-
-        .lb-player-name {
-            font-size: 14px;
-            font-weight: 700;
             color: var(--text-primary);
+            padding: 14px 24px;
+            border-radius: 12px;
+            border: 1px solid var(--accent-neon);
+            box-shadow: 0 0 40px rgba(0, 255, 194, 0.3);
+            z-index: 2000;
+            transition: transform 0.4s;
+            font-weight: 600;
+            font-size: 13px;
         }
 
-        .lb-player-date {
-            font-size: 10px;
-            color: var(--text-dim);
+        .notification.show {
+            transform: translateX(-50%) translateY(0);
         }
 
-        .lb-player-score {
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--accent-neon);
+        .wizard-modal {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.95);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            padding: 20px;
         }
 
-        .lb-empty {
-            text-align: center;
-            padding: 50px 20px;
-            color: var(--text-dim);
-        }
+        .wizard-modal.hidden { display: none; }
 
-        .lb-empty-icon {
-            font-size: 48px;
-            margin-bottom: 15px;
-        }
-
-        .lb-empty-text {
-            font-size: 14px;
-            margin-bottom: 5px;
-            color: var(--text-secondary);
-        }
-
-        .lb-empty-sub {
-            font-size: 11px;
-        }
-
-        .lb-refresh-btn {
+        .wizard-content {
+            background: linear-gradient(135deg, var(--bg-card), var(--bg-light));
+            border-radius: 25px;
+            padding: 40px 30px;
+            max-width: 400px;
             width: 100%;
-            margin-top: 20px;
-            padding: 14px;
-            background: linear-gradient(135deg, rgba(255, 184, 0, 0.2), rgba(255, 46, 151, 0.2));
-            color: var(--accent-gold);
-            border: 1px solid rgba(255, 184, 0, 0.3);
-            border-radius: 14px;
+            text-align: center;
+            border: 2px solid rgba(255, 184, 0, 0.3);
+            box-shadow: 0 0 60px rgba(255, 46, 151, 0.4);
+        }
+
+        .wizard-input {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(255, 184, 0, 0.3);
+            color: var(--text-primary);
+            padding: 14px 18px;
+            border-radius: 12px;
+            font-size: 16px;
             font-family: 'Space Mono', monospace;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .wizard-btn {
+            width: 100%;
+            background: linear-gradient(135deg, var(--accent-gold), var(--accent-pink));
+            color: var(--bg-deep);
+            border: none;
+            padding: 14px 30px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+
+        .stats-page, .leaderboard-page { display: none; padding: 20px; }
+        .stats-page.active, .leaderboard-page.active { display: block; }
+        
+        .back-btn {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 10px 18px;
+            border-radius: 10px;
             font-size: 13px;
             font-weight: 700;
             cursor: pointer;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            transition: all 0.3s;
+            margin-bottom: 20px;
         }
-
-        .lb-refresh-btn:active {
-            transform: scale(0.98);
-            box-shadow: 0 0 25px rgba(255, 184, 0, 0.2);
-        }
-
-        .lb-your-rank {
-            background: linear-gradient(135deg, rgba(0, 255, 194, 0.1), rgba(168, 85, 247, 0.1));
-            border: 1px solid rgba(0, 255, 194, 0.2);
-            border-radius: 16px;
-            padding: 18px;
-            margin-bottom: 25px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .lb-your-rank-label {
-            font-size: 11px;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .lb-your-rank-value {
-            font-size: 28px;
-            font-weight: 700;
-            color: var(--accent-neon);
-        }
-
-        .lb-your-rank-info {
-            text-align: right;
-        }
-
-        .lb-your-score {
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--accent-gold);
-        }
-
-        .lb-your-name-tag {
-            font-size: 10px;
-            color: var(--text-dim);
-        }
-
-        @media (max-width: 400px) {
-            .podium-card { padding: 15px 8px 12px; }
-            .podium-medal { font-size: 28px; }
-            .podium-name { font-size: 11px; }
-            .podium-score { font-size: 15px; }
-        }
-
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Wizard Name Modal -->
+        <!-- Oracle Popup -->
+        <div id="oraclePopup" class="oracle-popup">
+            <div class="oracle-popup-icon">🔮</div>
+            <div class="oracle-popup-message" id="oraclePopupMessage"></div>
+        </div>
+
+        <!-- Wizard Modal -->
         <div id="wizardModal" class="wizard-modal">
             <div class="wizard-content">
-                <div class="wizard-icon">🧙‍♂️</div>
-                <div class="wizard-title">Choose Your Wizard Name</div>
-                <div class="wizard-subtitle">Join the daily quest and track your progress over time!</div>
-                <input 
-                    type="text" 
-                    id="wizardNameInput" 
-                    class="wizard-input"
-                    placeholder="Enter your wizard name..."
-                    maxlength="20"
-                >
+                <div style="font-size: 72px; margin-bottom: 20px;">🧙‍♂️</div>
+                <h2 style="font-family: 'Playfair Display'; font-size: 28px; margin-bottom: 10px; background: linear-gradient(135deg, var(--accent-gold), var(--accent-pink)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Choose Your Wizard Name</h2>
+                <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 20px;">Join the daily quest and track your progress!</p>
+                <input type="text" id="wizardNameInput" class="wizard-input" placeholder="Enter your wizard name..." maxlength="20">
                 <button class="wizard-btn" onclick="saveWizardName()">Begin Quest</button>
             </div>
         </div>
@@ -1482,7 +627,7 @@
         <div class="header">
             <div id="wizardNameDisplay" class="wizard-name-display"></div>
             <div class="logo">WordQuest</div>
-            <div class="tagline">Daily Word Challenge</div>
+            <div style="font-size: 11px; color: var(--text-secondary); letter-spacing: 3px; text-transform: uppercase;">Daily Word Challenge</div>
             <div class="header-buttons">
                 <button class="leaderboard-btn" onclick="showLeaderboard()">🏆 Leaders</button>
                 <button class="stats-btn" onclick="showStats()">📊 Stats</button>
@@ -1491,143 +636,114 @@
 
         <!-- Main Content -->
         <div id="mainContent">
-            <!-- Level Selector -->
             <div id="levelSelector" class="level-selector">
-                <div class="daily-indicator" id="dailyDate">Today's Quest: Loading...</div>
+                <div class="daily-indicator" id="dailyDate">Today's Quest</div>
                 
-                <div class="level-card novice" id="noviceCard" onclick="startLevel('novice')">
-                    <div class="level-header">
-                        <div class="level-title">Novice Quest</div>
-                        <div class="level-icon">🌟</div>
+                <div class="level-card novice" id="noviceCard" onclick="startLevel('novice')" style="--accent: var(--accent-neon);">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+                        <div style="font-family: 'Playfair Display'; font-size: 26px; font-weight: 900; color: var(--accent); text-shadow: 0 0 20px var(--accent);">Novice Quest</div>
+                        <div style="font-size: 36px;">🌟</div>
                     </div>
-                    <div class="level-description">
-                        Begin with simple nouns - names, places, animals, and things
-                    </div>
-                    <div class="level-stats">
-                        <div class="stat-pill">
-                            <span>⚡</span>
-                            <span class="stat-value" id="noviceTries">5</span>
-                            <span>tries</span>
+                    <div style="display: flex; gap: 20px; font-size: 12px;">
+                        <div style="background: rgba(255, 255, 255, 0.05); padding: 6px 12px; border-radius: 20px;">
+                            <span>⚡</span> <span style="color: var(--accent); font-weight: 700;" id="noviceTries">5</span> <span>tries</span>
                         </div>
-                        <div class="stat-pill">
-                            <span>💎</span>
-                            <span class="stat-value">10</span>
-                            <span>pts</span>
+                        <div style="background: rgba(255, 255, 255, 0.05); padding: 6px 12px; border-radius: 20px;">
+                            <span>💎</span> <span style="color: var(--accent); font-weight: 700;">10</span> <span>pts</span>
                         </div>
                     </div>
                 </div>
 
-                <div class="level-card seeker" id="seekerCard" onclick="startLevel('seeker')">
-                    <div class="level-header">
-                        <div class="level-title">Seeker's Path</div>
-                        <div class="level-icon">🔮</div>
+                <div class="level-card seeker" id="seekerCard" onclick="startLevel('seeker')" style="--accent: var(--accent-gold);">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+                        <div style="font-family: 'Playfair Display'; font-size: 26px; font-weight: 900; color: var(--accent); text-shadow: 0 0 20px var(--accent);">Seeker's Path</div>
+                        <div style="font-size: 36px;">🔮</div>
                     </div>
-                    <div class="level-description">
-                        Add actions to your arsenal - nouns and verbs combined
-                    </div>
-                    <div class="level-stats">
-                        <div class="stat-pill">
-                            <span>⚡</span>
-                            <span class="stat-value" id="seekerTries">5</span>
-                            <span>tries</span>
+                    <div style="display: flex; gap: 20px; font-size: 12px;">
+                        <div style="background: rgba(255, 255, 255, 0.05); padding: 6px 12px; border-radius: 20px;">
+                            <span>⚡</span> <span style="color: var(--accent); font-weight: 700;" id="seekerTries">5</span> <span>tries</span>
                         </div>
-                        <div class="stat-pill">
-                            <span>💎</span>
-                            <span class="stat-value">15</span>
-                            <span>pts</span>
+                        <div style="background: rgba(255, 255, 255, 0.05); padding: 6px 12px; border-radius: 20px;">
+                            <span>💎</span> <span style="color: var(--accent); font-weight: 700;">15</span> <span>pts</span>
                         </div>
                     </div>
                 </div>
 
-                <div class="level-card master" id="masterCard" onclick="startLevel('master')">
-                    <div class="level-header">
-                        <div class="level-title">Master's Trial</div>
-                        <div class="level-icon">👑</div>
+                <div class="level-card master" id="masterCard" onclick="startLevel('master')" style="--accent: var(--accent-pink);">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+                        <div style="font-family: 'Playfair Display'; font-size: 26px; font-weight: 900; color: var(--accent); text-shadow: 0 0 20px var(--accent);">Master's Trial</div>
+                        <div style="font-size: 36px;">👑</div>
                     </div>
-                    <div class="level-description">
-                        Ultimate challenge - abstract concepts and complex words
-                    </div>
-                    <div class="level-stats">
-                        <div class="stat-pill">
-                            <span>⚡</span>
-                            <span class="stat-value" id="masterTries">5</span>
-                            <span>tries</span>
+                    <div style="display: flex; gap: 20px; font-size: 12px;">
+                        <div style="background: rgba(255, 255, 255, 0.05); padding: 6px 12px; border-radius: 20px;">
+                            <span>⚡</span> <span style="color: var(--accent); font-weight: 700;" id="masterTries">5</span> <span>tries</span>
                         </div>
-                        <div class="stat-pill">
-                            <span>💎</span>
-                            <span class="stat-value">20</span>
-                            <span>pts</span>
+                        <div style="background: rgba(255, 255, 255, 0.05); padding: 6px 12px; border-radius: 20px;">
+                            <span>💎</span> <span style="color: var(--accent); font-weight: 700;">20</span> <span>pts</span>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Game Area -->
+            <!-- Game Area (simplified for space) -->
             <div id="gameArea" class="game-area">
-                <button class="back-btn" onclick="backToMenu()">
-                    ← Retreat
-                </button>
-
-                <div class="game-layout">
-                    <!-- Guess Input (Top) -->
-                    <div class="guess-section">
-                        <div class="input-group">
-                            <input 
-                                type="text" 
-                                id="guessInput" 
-                                placeholder="Enter your word..."
-                                autocomplete="off"
-                            >
-                            <button id="submitBtn" onclick="makeGuess()">Cast</button>
+                <button class="back-btn" onclick="backToMenu()" style="margin: 15px 20px;">← Retreat</button>
+                
+                <!-- Input Section -->
+                <div style="padding: 0 15px 15px;">
+                    <div style="background: linear-gradient(135deg, var(--bg-card), var(--bg-light)); border-radius: 18px; padding: 20px; border: 1px solid rgba(0, 255, 194, 0.2);">
+                        <div style="display: flex; gap: 10px;">
+                            <input type="text" id="guessInput" placeholder="Enter your word..." style="flex: 1; background: rgba(0, 0, 0, 0.3); border: 2px solid rgba(0, 255, 194, 0.3); color: white; padding: 14px 18px; border-radius: 12px; font-size: 15px; font-family: 'Space Mono', monospace;">
+                            <button onclick="makeGuess()" style="background: linear-gradient(135deg, var(--accent-neon), var(--accent-purple)); color: var(--bg-deep); border: none; padding: 14px 24px; border-radius: 12px; font-size: 14px; font-weight: 700; cursor: pointer;">Cast</button>
                         </div>
                     </div>
+                </div>
 
-                    <!-- Side Panels -->
-                    <div class="side-panels">
-                        <!-- Categories - LEFT -->
-                        <div class="categories-panel">
-                            <div class="panel-title">Quest Paths</div>
-                            <div id="categoriesList"></div>
-                        </div>
-
-                        <!-- Stats - RIGHT -->
-                        <div class="stats-panel">
-                            <div class="stat-box">
-                                <div class="stat-label">Tries Left</div>
-                                <div class="stat-value" id="triesDisplay">5</div>
-                            </div>
-                            
-                            <div class="stat-box">
-                                <div class="stat-label">Score</div>
-                                <div class="stat-value" id="scoreDisplay" style="font-size: 20px;">0</div>
-                            </div>
-
-                            <div class="whispers-box">
-                                <div class="whispers-title">✨ Whispers</div>
-                                <div id="hintsContainer">
-                                    <div class="hint-mini-item hint-locked">🔒 ???</div>
-                                    <div class="hint-mini-item hint-locked">🔒 ?</div>
-                                    <div class="hint-mini-item hint-locked">🔒 ?</div>
-                                </div>
+                <!-- Game Grid -->
+                <div class="game-grid">
+                    <!-- Left: Quest Path -->
+                    <div class="quest-path-section">
+                        <div style="background: linear-gradient(135deg, var(--bg-card), var(--bg-light)); border-radius: 18px; padding: 20px; height: 100%; border: 2px solid rgba(0, 255, 194, 0.2);">
+                            <div style="text-align: center; font-size: 12px; font-weight: 700; color: var(--accent-neon); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 2px;">⚔️ Quest Path</div>
+                            <div style="position: relative; width: 100%; height: 340px; background: rgba(0, 0, 0, 0.3); border-radius: 12px; border: 1px solid rgba(0, 255, 194, 0.2);">
+                                <svg style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1;" id="connectionsSvg"></svg>
+                                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 70px; height: 70px; background: linear-gradient(135deg, var(--accent-neon), var(--accent-purple)); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px; z-index: 10; animation: targetPulse 2s ease-in-out infinite;">🎯</div>
+                                <div id="guessesMap"></div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Word Spatial Map -->
-                    <div class="spatial-map">
-                        <div class="map-title">Word Constellation</div>
-                        <div class="map-container">
-                            <svg class="connections-svg" id="connectionsSvg"></svg>
-                            <div class="target-center">🎯</div>
-                            <div id="guessesMap"></div>
+                    <!-- Right Top: Stats Boxes -->
+                    <div class="stats-boxes">
+                        <div class="stat-box">
+                            <div class="stat-box-label">Tries Left</div>
+                            <div class="stat-box-value" id="triesDisplay">5</div>
+                        </div>
+                        <div class="stat-box" style="border-color: rgba(255, 184, 0, 0.2);">
+                            <div class="stat-box-label">Score</div>
+                            <div class="stat-box-value" id="currentScore" style="background: linear-gradient(135deg, var(--accent-gold), var(--accent-pink)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">0</div>
                         </div>
                     </div>
 
-                    <!-- Oracle Panel -->
-                    <div class="oracle-panel">
-                        <div class="oracle-title">🔮 Oracle's Wisdom</div>
-                        <div id="oracleContainer">
-                            <div class="oracle-empty">The Oracle awaits your first venture into the unknown...</div>
+                    <!-- Right Bottom: Whispers -->
+                    <div class="whispers-section">
+                        <div class="whispers-title">🔮 Whispers of the Oracle</div>
+                        <div class="whispers-grid">
+                            <div class="whisper-box" id="whisperLetters">
+                                <div class="whisper-icon">📏</div>
+                                <div class="whisper-value" id="whisperLettersValue">?</div>
+                                <div class="whisper-label">Letters</div>
+                            </div>
+                            <div class="whisper-box" id="whisperStart">
+                                <div class="whisper-icon">🔤</div>
+                                <div class="whisper-value" id="whisperStartValue">?</div>
+                                <div class="whisper-label">Starts</div>
+                            </div>
+                            <div class="whisper-box" id="whisperEnd">
+                                <div class="whisper-icon">🔡</div>
+                                <div class="whisper-value" id="whisperEndValue">?</div>
+                                <div class="whisper-label">Ends</div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1636,45 +752,36 @@
 
         <!-- Stats Page -->
         <div id="statsPage" class="stats-page">
-            <div class="stats-header">
-                <div class="stats-title">📊 Wizard Stats</div>
-                <button class="lb-back-btn" onclick="showPage('gamePage')">← Back</button>
-            </div>
-
-            <!-- HERO: Total Score + Journey Days -->
+            <button class="back-btn" onclick="hideStats()">← Back</button>
+            
             <div class="stats-hero">
                 <div class="hero-card score-card">
                     <div class="hero-icon">⚡</div>
                     <div class="hero-value" id="statTotalScore">0</div>
                     <div class="hero-label">Total Score</div>
-                    <div class="hero-sub">Lifetime spell points</div>
                 </div>
                 <div class="hero-card days-card">
                     <div class="hero-icon">🗓️</div>
                     <div class="hero-value" id="statJourneyDays">0</div>
                     <div class="hero-label">Journey Days</div>
-                    <div class="hero-sub">Days of wizardry</div>
                 </div>
             </div>
 
-            <!-- Total Victories Banner -->
-            <div class="victories-banner">
-                <div class="victories-banner-left">
-                    <div class="victories-trophy">🏆</div>
-                    <div>
-                        <div class="victories-banner-value" id="statTotalWins">0</div>
-                        <div class="victories-banner-label">Total Victories</div>
+            <div class="victories-section">
+                <div class="victories-header">
+                    <div class="victories-total">
+                        <div class="victories-trophy">🏆</div>
+                        <div>
+                            <div class="victories-total-value" id="statTotalWins">0</div>
+                            <div class="victories-total-label">Total Victories</div>
+                        </div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div class="winrate-value" id="statWinRate">0%</div>
+                        <div class="winrate-label">Win Rate</div>
                     </div>
                 </div>
-                <div class="victories-winrate">
-                    <div class="winrate-value" id="statWinRate">0%</div>
-                    <div class="winrate-label">Win Rate</div>
-                </div>
-            </div>
 
-            <!-- Level Wins Trio Box -->
-            <div class="levels-box">
-                <div class="levels-box-title">⚔️ Victories by Realm</div>
                 <div class="levels-trio">
                     <div class="level-win-card novice-card">
                         <div class="level-win-icon">🌱</div>
@@ -1694,722 +801,135 @@
                 </div>
             </div>
 
-            <!-- Extra Stats Row -->
-            <div class="extra-stats-row">
-                <div class="extra-stat-card">
-                    <div class="extra-stat-icon">🎯</div>
-                    <div class="extra-stat-value" id="statGamesPlayed">0</div>
-                    <div class="extra-stat-label">Games Played</div>
-                </div>
-                <div class="extra-stat-card">
-                    <div class="extra-stat-icon">🔥</div>
-                    <div class="extra-stat-value" id="statBestStreak">0</div>
-                    <div class="extra-stat-label">Best Streak</div>
-                </div>
-                <div class="extra-stat-card">
-                    <div class="extra-stat-icon">✨</div>
-                    <div class="extra-stat-value" id="statAvgScore">0</div>
-                    <div class="extra-stat-label">Avg Score/Win</div>
-                </div>
-            </div>
-
-            <!-- Quest Journey Chart -->
             <div class="chart-container">
                 <div class="chart-title">🗺️ Quest Journey</div>
-                <canvas id="progressChart" class="chart-canvas"></canvas>
-                <div class="chart-legend">
-                    <div class="legend-item"><div class="legend-color" style="background: #00ffc2;"></div> Total</div>
-                    <div class="legend-item"><div class="legend-color" style="background: #7af5d4;"></div> Novice</div>
-                    <div class="legend-item"><div class="legend-color" style="background: #ffb800;"></div> Seeker</div>
-                    <div class="legend-item"><div class="legend-color" style="background: #ff2e97;"></div> Master</div>
-                </div>
+                <canvas id="progressChart" style="width: 100%; height: 220px;"></canvas>
             </div>
         </div>
 
         <!-- Leaderboard Page -->
         <div id="leaderboardPage" class="leaderboard-page">
-            <div class="lb-header">
-                <div class="lb-title">🏆 Leaderboard</div>
-                <button class="back-btn" onclick="hideLeaderboard()">← Back</button>
-            </div>
-            <div class="lb-subtitle">Top WordQuest Wizards</div>
-            <div id="lbCloudStatus" class="lb-cloud-status" style="text-align:center;font-size:10px;letter-spacing:1px;padding:6px 14px;border-radius:20px;margin-bottom:14px;display:block;background:rgba(0,255,194,0.1);color:var(--accent-neon);border:1px solid rgba(0,255,194,0.2);">🌐 LIVE — Global Cloud Leaderboard</div>
-
-            <!-- Your Rank Card -->
-            <div class="lb-your-rank" id="lbYourRank" style="display:none;">
-                <div>
-                    <div class="lb-your-rank-label">Your Rank</div>
-                    <div class="lb-your-rank-value" id="lbYourRankValue">#-</div>
-                </div>
-                <div class="lb-your-rank-info">
-                    <div class="lb-your-score" id="lbYourScoreValue">0 pts</div>
-                    <div class="lb-your-name-tag" id="lbYourNameTag">-</div>
-                </div>
-            </div>
-
-            <!-- Podium (Top 3) -->
-            <div id="lbPodium" class="lb-podium" style="display:none;"></div>
-
-            <!-- Full List -->
-            <div id="lbListSection">
-                <div class="lb-list-title" id="lbListTitle">All Wizards</div>
-                <div id="lbPlayerList"></div>
-            </div>
-
-            <button class="lb-refresh-btn" onclick="loadLeaderboardPage()">🔄 Refresh Leaderboard</button>
+            <button class="back-btn" onclick="hideLeaderboard()">← Back</button>
+            <h2 style="font-family: 'Playfair Display'; font-size: 32px; text-align: center; margin-bottom: 20px; background: linear-gradient(135deg, var(--accent-gold), var(--accent-pink)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">🏆 Leaderboard</h2>
+            <div id="lbPlayerList" style="max-width: 600px; margin: 0 auto;"></div>
         </div>
 
-    <!-- Result Modal -->
-    <div id="resultModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-icon" id="modalIcon">🎉</div>
-            <div class="modal-title" id="modalTitle">Victory!</div>
-            <div class="modal-message" id="modalMessage">You've conquered the quest!</div>
-            <div class="modal-score" id="modalScore">+10</div>
-            <div class="modal-buttons">
-                <button class="modal-btn primary" id="nextBtn" onclick="handleNext()">
-                    Next Quest
-                </button>
-                <button class="modal-btn secondary" onclick="backToMenu()">
-                    Return
-                </button>
-            </div>
-        </div>
+        <div id="notification" class="notification"></div>
     </div>
 
-    <!-- Notification -->
-    <div id="notification" class="notification"></div>
-
     <script>
-        // Daily Word System - Everyone gets same word
-        function getDailyWord(level, date) {
-            // Deterministic daily word: same word for everyone on same day, different each day
-            const seed = date.getFullYear() * 10000 + (date.getMonth() + 1) * 100 + date.getDate();
-            const words = wordDatabase[level];
-            // Seeded hash using golden ratio prime to scatter across list
-            const levelSalt = level === 'novice' ? 7 : level === 'seeker' ? 13 : 23;
-            const hash = ((seed * 2654435761 + levelSalt * 48271) >>> 0) % words.length;
-            const word = words[hash];
-            return { word: word, categories: getWordCategories(word) };
-        }
-
-        function getTodayString() {
-            const today = new Date();
-            return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-        }
-
-        function formatDate(dateStr) {
-            const [year, month, day] = dateStr.split('-');
-            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-            return `${months[parseInt(month) - 1]} ${parseInt(day)}, ${year}`;
-        }
-
-        // Word Database
-        const wordDatabase = {
-            novice: [
-                "ape", "arm", "ask", "axe", "back", "bag", "bake", "ball", "bank", "bark", "barn", "base",
-                "bat", "bath", "bay", "bean", "bear", "bed", "bee", "beet", "bell", "belt", "bend", "bird",
-                "bite", "blow", "boat", "bog", "boil", "bold", "bomb", "bone", "book", "boot", "bowl", "box",
-                "brew", "bug", "bulb", "burn", "bus", "busy", "buzz", "cafe", "cage", "cake", "call", "calm",
-                "camp", "can", "cap", "card", "cart", "case", "cash", "cat", "cave", "chew", "chin", "chip",
-                "chop", "city", "clap", "clay", "clip", "club", "coat", "coin", "cold", "comb", "cook", "cool",
-                "copy", "cord", "cork", "corn", "cow", "crab", "crop", "crow", "cry", "cup", "cut", "dark",
-                "dart", "dash", "date", "dawn", "deer", "den", "desk", "dew", "dial", "dice", "dig", "dip",
-                "dirt", "disc", "dish", "dive", "dock", "dog", "door", "dorm", "dove", "drag", "draw", "drip",
-                "drop", "drum", "dry", "duck", "dull", "dump", "dusk", "dust", "ear", "earn", "easy", "eat",
-                "edge", "eel", "egg", "elk", "evil", "eye", "face", "fact", "fade", "fair", "fall", "fame",
-                "fan", "farm", "fast", "fate", "fear", "feed", "fern", "fig", "fill", "find", "fire", "fish",
-                "fix", "flag", "flat", "flip", "flow", "fly", "fog", "fold", "foot", "fork", "fort", "fox",
-                "free", "frog", "fuel", "full", "fun", "gate", "gaze", "gem", "gift", "give", "glow", "glue",
-                "goal", "goat", "gold", "good", "gown", "grab", "gray", "grim", "grip", "grow", "gun", "gust",
-                "gym", "hair", "half", "hall", "ham", "hand", "hang", "hard", "harm", "hat", "hawk", "haze",
-                "head", "heal", "hear", "heat", "heel", "help", "hen", "hero", "hide", "high", "hike", "hill",
-                "hint", "hip", "hit", "hog", "hold", "hole", "home", "hook", "hop", "hope", "horn", "hose",
-                "hug", "huge", "hunt", "hurt", "hut", "ice", "idea", "ink", "inn", "iron", "isle", "ivy",
-                "jail", "jam", "jar", "jaw", "jay", "jog", "joy", "jug", "jump", "just", "keen", "keep",
-                "key", "kick", "kind", "kiss", "kite", "knee", "knit", "knob", "knot", "lack", "lake", "lamb",
-                "lamp", "lane", "lark", "last", "lava", "lazy", "lead", "leaf", "lean", "leg", "lend", "lens",
-                "lick", "lift", "lily", "lime", "limp", "link", "lion", "lip", "loaf", "lock", "loft", "log",
-                "long", "look", "lose", "loss", "lost", "loud", "love", "luck", "lust", "lynx", "make", "mall",
-                "map", "mare", "mask", "mat", "meat", "melt", "mild", "milk", "mill", "mind", "mine", "mint",
-                "mix", "moan", "moat", "mood", "moon", "moss", "moth", "move", "mud", "mug", "myth", "nail",
-                "name", "nap", "neat", "neck", "need", "net", "newt", "nice", "nod", "norm", "nose", "nut",
-                "oak", "oat", "obey", "odd", "old", "omen", "open", "oven", "owl", "pace", "pack", "pad",
-                "pail", "pain", "pale", "palm", "pan", "park", "pass", "past", "path", "pay", "pea", "peak",
-                "peel", "pen", "pick", "pie", "pier", "pig", "pin", "pine", "pipe", "plan", "play", "plea",
-                "plot", "ploy", "plug", "plum", "poke", "pole", "pond", "pony", "poor", "pork", "port", "pot",
-                "pour", "pray", "pub", "pull", "puma", "pump", "pure", "push", "quit", "race", "rack", "rage",
-                "rail", "rain", "ram", "rare", "rat", "raw", "read", "real", "reed", "reef", "rest", "rib",
-                "rice", "rich", "ride", "ring", "rip", "rise", "risk", "road", "roar", "rock", "rod", "role",
-                "roll", "room", "root", "rope", "rose", "row", "rub", "rude", "rug", "ruin", "rule", "run",
-                "rush", "sack", "safe", "sage", "sail", "salt", "sand", "sane", "save", "saw", "say", "seal",
-                "see", "seed", "seek", "sell", "send", "sew", "shed", "shin", "ship", "shop", "show", "shut",
-                "sigh", "sign", "sing", "sink", "sit", "site", "skin", "skip", "slam", "slap", "sled", "slim",
-                "slip", "slow", "slug", "snap", "snow", "snug", "soak", "soap", "soar", "sock", "sofa", "soft",
-                "soil", "sore", "sort", "soul", "soup", "sour", "sow", "spa", "spin", "spit", "star", "stay",
-                "stem", "step", "stir", "stop", "stun", "sun", "sure", "swan", "sway", "swim", "tab", "taco",
-                "talk", "tall", "tame", "tank", "tap", "tape", "task", "tea", "tear", "tell", "tent", "thin",
-                "tide", "tile", "tilt", "tin", "tiny", "toad", "toe", "tone", "tool", "top", "toss", "tow",
-                "town", "tray", "tree", "trim", "trip", "trot", "true", "try", "tub", "tube", "tug", "turn",
-                "type", "ugly", "unit", "urge", "use", "used", "vain", "vase", "vast", "vein", "vest", "vine",
-                "vote", "wade", "wait", "wake", "walk", "wall", "wand", "ward", "warm", "warn", "wary", "wash",
-                "wasp", "wave", "weak", "web", "weed", "weep", "well", "wick", "wide", "wild", "wind", "wine",
-                "wink", "wipe", "wire", "wise", "wish", "wolf", "wood", "worm", "worn", "wrap", "yak", "yam",
-                "yard", "yawn", "yell", "zeal", "zero", "zone"
-            ],
-            seeker: [
-                "adopt", "agree", "alarm", "anchor", "anger", "apply", "argue", "arrow", "avoid", "badge", "badger", "banner",
-                "basket", "beach", "beaver", "beetle", "begin", "bison", "blade", "blame", "bless", "bliss", "bloom", "board",
-                "boast", "bottle", "brave", "break", "breed", "bridge", "broom", "brush", "bucket", "build", "bundle", "burst",
-                "button", "cable", "camel", "camera", "candle", "canoe", "canyon", "carpet", "carve", "castle", "catch", "cause",
-                "cavern", "cellar", "chain", "chalk", "chaos", "chapel", "charm", "chase", "cheat", "check", "cheer", "chess",
-                "chief", "chill", "chisel", "cipher", "claim", "clash", "clean", "clever", "cliff", "climb", "cling", "close",
-                "cloth", "cloud", "coffin", "coral", "couch", "count", "cover", "crack", "cradle", "craft", "crane", "crash",
-                "crawl", "creek", "cross", "crown", "cruel", "crush", "curse", "cycle", "dagger", "dance", "debug", "decay",
-                "delta", "depth", "desert", "donkey", "doubt", "draft", "drama", "dread", "dream", "drift", "drill", "drink",
-                "drive", "drown", "eagle", "elite", "ember", "empty", "engine", "equal", "erase", "error", "evade", "event",
-                "exile", "exist", "fabric", "faith", "falcon", "feast", "ferret", "fetch", "fiber", "fiddle", "field", "fiery",
-                "fight", "final", "finch", "finger", "flair", "flame", "flesh", "float", "flood", "flute", "focus", "folly",
-                "force", "forest", "forge", "frame", "fresh", "frost", "funnel", "gadget", "garden", "garlic", "gecko", "geyser",
-                "ghost", "giant", "gibbon", "globe", "gopher", "grace", "grail", "grain", "grand", "grave", "greed", "greet",
-                "grief", "grind", "grove", "guard", "guess", "guide", "guilt", "guitar", "hammer", "harbor", "hasty", "hatch",
-                "haunt", "heart", "helmet", "heron", "honor", "horse", "hover", "human", "humor", "hyena", "ideal", "iguana",
-                "image", "irony", "island", "ivory", "jaguar", "jewel", "jungle", "karma", "knack", "koala", "labor", "ladder",
-                "lagoon", "latch", "learn", "leave", "legal", "lemur", "level", "lever", "light", "limit", "lizard", "llama",
-                "logic", "loyal", "lunar", "magic", "magnet", "magpie", "manor", "mantis", "marble", "march", "market", "marlin",
-                "marsh", "meadow", "medal", "mercy", "might", "minor", "mirror", "model", "monkey", "moose", "moral", "mortar",
-                "mourn", "mouse", "museum", "needle", "nerve", "noble", "novel", "oasis", "ocean", "order", "organ", "osprey",
-                "otter", "outer", "oxide", "paddle", "paint", "palace", "panda", "panel", "panic", "parrot", "pause", "peace",
-                "pearl", "pebble", "pencil", "phase", "piano", "pigeon", "pillar", "pillow", "pixel", "plain", "plank", "plant",
-                "plaque", "plate", "plead", "pluck", "plunge", "pocket", "point", "pouch", "power", "price", "pride", "prime",
-                "prism", "prison", "proof", "prove", "puppet", "python", "quest", "quiet", "quill", "rabbit", "racoon", "radar",
-                "radio", "rapid", "raven", "ravine", "razor", "reach", "realm", "rebel", "reign", "repay", "reply", "ribbon",
-                "riddle", "ridge", "risky", "rival", "river", "roast", "robin", "royal", "rusty", "saddle", "saint", "salmon",
-                "salute", "scarf", "scene", "school", "scrub", "search", "sense", "serve", "shade", "shark", "sharp", "shelf",
-                "shell", "shield", "shift", "shore", "shout", "shovel", "shrink", "sight", "signal", "silver", "sketch", "skill",
-                "sleep", "slice", "slope", "smile", "snake", "sneak", "socket", "solar", "solid", "solve", "sonic", "south",
-                "spark", "speak", "speed", "spend", "spicy", "spider", "spill", "spite", "split", "spoke", "sponge", "spray",
-                "squid", "stable", "stack", "stage", "stamp", "stare", "stark", "steal", "steam", "steel", "steer", "stern",
-                "sting", "stomp", "stone", "stool", "stork", "storm", "story", "string", "strum", "studio", "style", "suburb",
-                "sugar", "summit", "super", "swamp", "sweep", "swing", "sword", "sworn", "syrup", "table", "tackle", "target",
-                "tavern", "teach", "temple", "thank", "theme", "think", "thorn", "thread", "thrill", "throne", "throw", "ticket",
-                "tiger", "timber", "token", "torch", "total", "toucan", "touch", "tough", "tower", "toxic", "trace", "trade",
-                "trail", "train", "treat", "trend", "trial", "tribe", "trick", "trophy", "trunk", "trust", "truth", "tundra",
-                "tunnel", "turtle", "twist", "unite", "unity", "urban", "usage", "valid", "valley", "value", "valve", "vessel",
-                "vigor", "violin", "viper", "viral", "visit", "vivid", "vocal", "wagon", "wallet", "walrus", "wander", "waste",
-                "weasel", "weave", "weird", "whale", "wheel", "window", "worth", "wrath", "wrench", "write", "youth", "zebra"
-            ],
-            master: [
-                "absolute", "abstract", "academia", "affluent", "alchemy", "allegory", "ambition", "amnesty", "analogy", "anarchy", "anecdote", "anomaly",
-                "antidote", "apathy", "aperture", "appetite", "artifact", "audacity", "balance", "basilisk", "becoming", "benevolent", "betrayal", "bohemian",
-                "boundary", "bravery", "calculus", "campaign", "catalyst", "cathedral", "century", "champion", "charisma", "chronicle", "cinnamon", "civilize",
-                "clarity", "clemency", "cognition", "colossus", "commerce", "communal", "compound", "conflict", "conjecture", "conquest", "contempt", "corridor",
-                "courage", "covenant", "creation", "crescent", "crimson", "crusade", "culture", "cunning", "curiosity", "cynosure", "daffodil", "darkness",
-                "daybreak", "daylight", "decadent", "deception", "defiance", "delusion", "demeanor", "derelict", "destiny", "devotion", "dexterity", "dialogue",
-                "dilemma", "diligent", "diplomat", "discord", "discovery", "disguise", "doctrine", "dominion", "draconic", "dynamics", "dynasty", "eclectic",
-                "eclipse", "ecstasy", "effusion", "electron", "elegance", "eloquence", "eloquent", "emissary", "empathy", "emperor", "empyrean", "enchant",
-                "endeavor", "enigma", "entropy", "epidemic", "epiphany", "erosion", "essence", "eternity", "etiquette", "euphoria", "eventual", "evidence",
-                "evolve", "exploit", "exquisite", "fabulous", "fallacy", "fallible", "fantasy", "fathom", "fearless", "felicity", "festival", "fiction",
-                "fidelity", "figment", "filigree", "finesse", "firefly", "fission", "flourish", "folklore", "foothold", "forecast", "forensic", "formidable",
-                "fortune", "fractal", "fracture", "fragile", "fragrant", "freedom", "freight", "friction", "frontier", "frostbite", "fugitive", "furnace",
-                "galaxies", "garrison", "genesis", "geometry", "glacier", "gladiator", "glamour", "glimpse", "governor", "gradient", "grandeur", "granite",
-                "gratitude", "gravity", "guardian", "guidance", "habitat", "habitual", "hallmark", "handcraft", "handful", "harbinger", "hardship", "harmony",
-                "harvest", "heartbeat", "heirloom", "heritage", "heroism", "highland", "hologram", "homestead", "horizon", "hostage", "humility", "hydrogen",
-                "hypnosis", "iceberg", "idealism", "illusion", "imagery", "imminent", "immortal", "imperial", "impulse", "incident", "inferno", "infinite",
-                "inherent", "innocent", "inquiry", "inscribe", "insight", "instinct", "integral", "intrepid", "intrigue", "invasion", "inverse", "iridescent",
-                "javelin", "jeopardy", "journey", "jubilant", "justice", "keystone", "kingdom", "kinship", "labyrinth", "landmark", "lantern", "latitude",
-                "laughter", "layover", "lecture", "legacy", "leverage", "liberty", "lifetime", "lighthouse", "literate", "longevity", "loyalty", "luminous",
-                "machine", "madness", "magnetic", "majestic", "majesty", "mandate", "manifest", "mansion", "marathon", "marauder", "maritime", "martyr",
-                "mastery", "measure", "medieval", "melodrama", "memento", "mercury", "metaphor", "midnight", "minotaur", "miracle", "mischief", "momentum",
-                "monarch", "monopoly", "monsoon", "monument", "moonlight", "moreover", "mountain", "movement", "multitude", "myriad", "mystery", "mystique",
-                "navigate", "nebula", "nemesis", "neophyte", "neutral", "nirvana", "nitrogen", "nomadic", "nominate", "nostalgia", "novelty", "nucleus",
-                "nuisance", "obituary", "oblivion", "obstacle", "odyssey", "opinion", "optimism", "opulence", "oracle", "organic", "original", "orthodox",
-                "outcast", "outlook", "outrage", "overlook", "overture", "parabola", "paradigm", "paradox", "paragon", "paranoid", "parasite", "passage",
-                "passion", "pastoral", "pathway", "patience", "patriot", "pattern", "pedantic", "pendulum", "pension", "pentagon", "peridot", "persevere",
-                "persona", "petition", "phantom", "pheasant", "pilgrim", "pinnacle", "pioneer", "platform", "platinum", "pleasant", "plethora", "plunder",
-                "polaris", "polarity", "polygon", "populace", "portico", "portrait", "potion", "precept", "precious", "premiere", "prescient", "preserve",
-                "prestige", "pristine", "prodigy", "profound", "prophecy", "prophet", "protocol", "proverb", "province", "prowess", "prudence", "purchase",
-                "pyramid", "quadrant", "quandary", "quantify", "quantum", "quarrel", "radiance", "rampart", "rapture", "reckless", "reckoning", "recluse",
-                "reflect", "regiment", "remnant", "remnants", "renegade", "replica", "republic", "requiem", "resolve", "resonant", "resonate", "restless",
-                "revenge", "reverie", "rhetoric", "riveting", "romantic", "rosette", "rubicon", "sabbath", "sabotage", "safeguard", "salvage", "sanctity",
-                "sanctum", "sapphire", "scaffold", "scandal", "scenario", "scepter", "schedule", "scholar", "science", "scrutiny", "seclusion", "sediment",
-                "segment", "seismic", "semester", "sentinel", "sequence", "serenity", "serpent", "shelter", "silence", "sincere", "skeleton", "skeptic",
-                "skylight", "snowfall", "solitary", "solstice", "solution", "sorcerer", "sorcery", "souvenir", "spartan", "species", "specter", "spectrum",
-                "spindle", "splendor", "splinter", "squadron", "stamina", "stampede", "standard", "stardust", "steadfast", "stealth", "stellar", "stigma",
-                "stimulus", "stockade", "strategy", "stratum", "strength", "struggle", "stubborn", "sublime", "submerge", "suffice", "sunrise", "surplus",
-                "survival", "suspense", "symphony", "symptom", "synapse", "tactics", "talisman", "tangible", "tapestry", "telegram", "tempest", "tenacity",
-                "terminal", "terrific", "theology", "theorem", "therapy", "thought", "throttle", "thunder", "timeless", "titanium", "together", "topology",
-                "tornado", "tradition", "tragedy", "treason", "treasure", "tribunal", "tribune", "tribute", "trilogy", "trinity", "triumph", "tropics",
-                "twilight", "tycoon", "tyranny", "umbrella", "underdog", "unicorn", "universe", "utensil", "utopia", "vagrant", "valiant", "vampire",
-                "vanguard", "variety", "velocity", "vendetta", "venture", "veracity", "verdict", "vestige", "veteran", "villain", "vintage", "violate",
-                "virtual", "virtuoso", "volcano", "voltage", "vortex", "voyager", "wanderer", "wardrobe", "warrant", "waterfall", "whirlwind", "whisper",
-                "wildfire", "windmill", "wingspan", "wistful", "wizardry", "woodcraft", "worship", "yearning", "zealous", "zenith", "zeppelin"
-            ]
+        // OXFORD 5000 WORD DATABASE
+        const OXFORD_WORDS = {
+            novice: ["aim","ask","bag","bar","bat","bay","bed","bet","bid","bit","bow","box","boy","bug","bus","buy","car","cat","cup","cut","dam","day","den","dig","dot","due","ear","eat","egg","end","eye","fan","far","fat","fee","fig","fin","fit","fix","fly","fog","fox","fun","fur","gap","gas","gay","gem","god","gun","gut","guy","ham","hat","hen","hip","hit","hot","ice","ill","ink","inn","its","ivy","jam","jar","jaw","jet","job","joy","key","kid","kit","lab","lad","lap","law","lay","leg","let","lid","lie","lip","lot","low","mad","map","mat","may","mix","mob","mud","net","new","nod","nor","not","now","nut","oak","oat","odd","off","oil","old","one","opt","our","out","owe","own","pad","pan","pat","pea","pen","per","pet","pie","pig","pin","pit","pop","pot","pub","put","quo","rag","ran","rat","raw","ray","red","ref","rid","rig","rim","row","rub","rug","run","sad","saw","say","sea","see","set","sex","she","shy","sin","sir","sit","six","ski","sky","son","sow","spy","sum","sun","tab","tag","tap","tar","tax","tea","ten","the","tie","tin","tip","toe","ton","too","top","toy","try","tub","two","van","vet","via","war","was","way","web","wed","wet","who","why","wig","win","wit","won","yes","yet","you","zip","zoo"],
+            seeker: ["abuse","acute","adapt","admit","adopt","adult","agent","agree","alarm","alert","alien","align","alike","allow","alter","angel","anger","angle","ankle","apart","apple","apply","arena","argue","arise","array","arrow","aside","asset","award","aware","awful","badly","basis","beach","beard","beast","being","below","bench","black","blade","blame","blank","blast","bleed","blend","bless","blind","block","blood","bloom","board","boost","booth","bound","brain","brake","brand","brave","bread","break","breed","brick","bride","brief","bring","broad","brown","brush","build","built","bunch","cable","can't","canal","carry","carve","catch","cause","cease","chain","chair","chaos","charm","chart","chase","cheap","cheat","check","cheek","cheer","chess","chest","chief","child","china","chord","civil","claim","class","clean","clear","clerk","click","cliff","climb","cling","clock","close","cloth","cloud","coach","coast","count","county","court","cover","crack","craft","crash","crazy","cream","creep","crime","crisp","cross","crowd","crown","crude","crush","curve","cycle","daily","dance","death","debut","decay","depth","devil","diary","dirty","doing","doubt","dozen","draft","drain","drama","drank","drawn","dream","dress","dried","drill","drink","drive","drown","drunk","eager","early","earth","eight","elder","elect","elite","empty","enemy","enjoy","enter","entry","equal","equip","error","essay","ethic","event","every","exact","exist","extra","faith","false","fancy","fatal","fault","feast","fence","fever","fewer","field","fifth","fifty","fight","final","first","fixed","flash","fleet","flesh","float","flood","floor","flour","fluid","focus","force","forth","forty","forum","found","frame","frank","fraud","fresh","front","fruit","fully","funny","ghost","giant","given","glass","globe","glory","grace","grade","grain","grand","grant","graph","grasp","grass","grave","great","greed","green","greet","grief","gross","group","grown","guard","guess","guest","guide","guilt","happy","harsh","heart","heavy","hello","hence","forty","horse","hotel","house","human","humour","ideal","image","imply","index","inner","input","intro","irony","issue","joint","judge","knife","label","labor","large","laser","later","laugh","layer","learn","lease","least","leave","legal","lemon","level","light","limit","lobby","local","logic","loose","lower","lucky","lunar","lunch","lying","magic","major","maker","march","marry","match","maybe","mayor","means","media","merit","metal","midst","might","minor","mixed","model","money","month","moral","motor","mount","mouse","mouth","music","naked","nerve","never","newly","night","ninth","noble","noise","north","novel","nurse","occur","ocean","offer","often","onion","opera","orbit","order","organ","other","ought","outer","owner","paint","panel","panic","paper","party","pasta","patch","pause","peace","penny","phase","phone","photo","piano","piece","pilot","pitch","place","plain","plane","plant","plate","plaza","plead","point","poker","polar","pound","power","press","price","pride","prime","print","prior","prize","proof","proud","prove","pupil","purse","queen","quest","quick","quiet","quite","quote","radio","raise","rally","range","rapid","ratio","reach","react","ready","realm","rebel","refer","relax","relay","reply","rider","ridge","rifle","right","rigid","rival","river","robin","robot","rocky","roman","rough","round","route","royal","rugby","ruler","rural","scale","scare","scene","scope","score","scout","screw","sense","serve","seven","shall","shape","share","sharp","sheep","sheer","sheet","shelf","shell","shift","shine","shirt","shock","shoot","shore","short","shout","shown","sight","silly","since","sixth","sixty","ski","skill","slice","slide","slope","small","smart","smell","smile","smoke","snake","so-called","solar","solid","solve","sorry","sound","south","space","spare","speak","speed","spell","spend","spill","split","spoke","sport","squad","staff","stage","stake","stall","stamp","stand","stark","start","state","steak","steal","steam","steel","steep","steer","stick","still","stock","stone","stood","store","storm","story","strip","stuck","study","stuff","style","sugar","super","surge","sweet","swept","swift","swing","sword","table","taste","teach","tears","tenth","terms","thank","theft","their","theme","there","these","thick","thing","think","third","thirty","those","three","threw","throw","thumb","tiger","tight","title","to-day","total","touch","tough","tower","track","trade","trail","train","trait","trash","treat","trend","trial","tribe","trick","troop","truck","truly","trunk","trust","truth","tumor","twice","twist","under","union","unity","until","upper","upset","urban","usage","usual","valid","value","venue","video","virus","visit","vital","vocal","voice","voter","wages","waste","watch","water","wave","weave","weird","where","which","while","white","whole","whose","win","woman","world","worry","worse","worst","worth","would","wound","write","wrong","wrote","yield","young","yours","youth"],
+            master: ["abandon","abstract","academic","accuracy","accurate","accusation","addiction","adequate","advanced","advocate","aesthetic","affection","aftermath","aggregate","aggressive","allocation","alongside","ambiguous","ambitious","analogous","analytical","anonymous","apparatus","appealing","applicable","arbitrary","architect","articulate","aspiration","assemble","assertion","assessment","assignment","assumption","astonishing","asymmetric","attachment","attainment","attribute","authentic","authorise","automate","automation","autonomous","awareness","awkwardly","bacteria","balanced","battlefield","behavioral","benchmark","beneficial","biography","biological","blessing","boundary","breakdown","broadcast","bureaucracy","capability","cathedral","cautious","celebrate","certainty","challenge","champion","channel","chaotic","characterize","cholesterol","chronicle","circulation","circumstance","citizenship","clarify","classification","coalition","cognitive","coherent","coincide","collaboration","collapse","colleague","collective","colonial","columnist","combination","commence","commentary","commission","commitment","commodity","compelling","compensate","competence","compilation","complement","complexity","compliance","complicate","component","comprehend","comprehensive","compromise","compulsory","conceal","conceive","concentrate","conception","conceptual","conclusion","concurrent","condemn","confer","confess","configuration","confirmation","conform","confrontation","confusion","congregate","congressional","conjunction","conscience","conscious","consecutive","consensus","consent","consequence","consequent","consequential","conservation","consistency","consistent","consolidate","conspiracy","constitute","constitution","constitutional","constraint","construct","construction","consult","consumption","contemplate","contemporary","contend","continuation","contractor","contradiction","contrary","contrast","contribute","contribution","controversial","convention","conventional","convergence","conversely","conversion","cooperate","coordinate","corporation","correction","correlate","correlation","correspond","correspondence","corresponding","corruption","councillor","countless","coverage","creativity","credibility","credible","criterion","critical","criticism","cultivation","curiosity","curriculum","cylindrical","darkness","deadline","decisive","declaration","dedication","defensive","deficiency","deficit","defining","definite","definition","delegate","delegation","deliberate","delicate","democratic","demographic","demonstration","departure","dependence","dependent","depict","deployment","depression","derivation","descriptive","designation","desperately","destruction","destructive","detachment","detection","deteriorate","determination","devastating","deviation","diagnosis","differentiate","diffusion","dilemma","dimension","diminish","diplomatic","disability","disagreement","disappoint","disastrous","disclosure","discourse","discretion","discrimination","disorder","displacement","disposal","disposal","disposition","disproportionate","disruption","dissolution","distinctive","distinguish","distortion","distribution","disturbance","diversity","documentation","dominant","dominate","dramatically","duration","dynamics","earnings","ecological","effectiveness","efficiency","elaborate","elevation","eligibility","elimination","eloquent","embedded","emergence","emerging","emission","empirical","employment","empowerment","enabler","encompass","encounter","encouragement","enforcement","engagement","enhancement","enlargement","enlighten","enrollment","enterprise","enthusiasm","entitlement","entrepreneur","environmental","equilibrium","equivalent","erosion","establishment","estimation","ethnic","evaluation","eventual","eventually","evolution","evolutionary","exaggerate","excellence","exceptional","excessive","exclusion","exclusive","execution","exemption","exertion","exhaustion","exhibition","existence","expansion","expectation","expedition","expenditure","experimental","expertise","explicit","explicitly","exploitation","exploration","explosive","exponential","exposition","expressive","extension","extensive","extraction","extraordinary","extrapolate","facilitate","faction","fantastic","fascinate","favorable","federation","feminist","fictional","filtration","finalization","fiscal","flexibility","flourish","fluctuation","formidable","formulate","formulation","forthcoming","fortnight","fortress","fortunate","foundation","fragile","fragment","framework","franchise","frankly","fraudulent","frequency","frustration","fulfillment","functional","functionality","fundamental","furthermore","geometric","governance","governmental","graduation","grandmother","grassroots","grateful","gratitude","gravitational","guardian","guideline","habitat","handful","harmonious","headquarters","healthcare","heighten","hemisphere","heritage","hesitate","hierarchy","highlight","historian","historically","humanitarian","humanity","hypothesis","hysterical","identical","identification","ideology","ignorance","illuminate","illustration","imagination","imaginative","imitation","immature","immense","immigrant","immigration","immortal","immunity","impact","impairment","impartial","imperial","implement","implementation","implication","implicit","implicit","imprisonment","inadequate","inadvertent","inappropriate","incidence","inclusion","inclusive","inconsistent","incorporation","incredible","increment","incursion","indefinite","indicator","indigenous","indirect","indispensable","individuality","induce","induction","industrial","industrialization","inequality","inevitable","inevitably","infamous","infancy","infection","infectious","inference","inferior","inflammation","inflation","influential","infrastructure","ingredient","inhabit","inhabitant","inherent","inheritance","inhibit","initiate","initiative","injection","injunction","injustice","inland","innovation","innovative","inspection","inspector","inspiration","installation","institutional","instrumental","insufficient","insulation","insurance","integral","integrate","integration","integrity","intellectual","intensity","intensive","intentional","interaction","interdisciplinary","interface","interference","intermediate","intermittent","interpretation","interval","intervene","intervention","intimate","intricate","intrigue","intrinsic","introduction","intrusion","intuition","invasion","invention","investigative","investment","invisible","involvement","isolation","itinerary","journalism","journalist","judgement","judicial","junction","jurisdiction","justification","justifiably","juvenile","kingdom","knowledgeable","laboratory","landlord","landmark","landscape","latitude","laughter","laureate","legislation","legislative","legislature","legitimacy","legitimate","lengthen","lesser","lethal","liability","liberation","likelihood","limitation","linguistic","literacy","literally","literary","literature","litigation","livelihood","livestock","locality","locomotive","longevity","longitude","machinery","magnificent","magnitude","mainland","mainstream","maintenance","managerial","mandatory","manifestation","manipulation","manufacturer","manuscript","marginal","marginalization","marketplace","masculine","mathematical","meaningful","meantime","measurable","measurement","mechanical","mechanism","medieval","meditation","membership","memorable","mentality","merchandise","merchant","merciless","metabolism","metaphor","methodology","metropolitan","microscope","migration","militant","militia","millennium","mineral","minimal","minimize","ministerial","misconception","misleading","missionary","modification","molecular","momentum","monarchy","monastery","monetary","monitoring","monopoly","monotonous","monument","mortality","motivation","motive","mountainous","movement","multimedia","multinational","multiple","multiplication","multitude","municipal","mutation","mysterious","narrative","nationwide","nationality","navigate","navigation","necessarily","necessity","negotiation","neighbouring","networking","neuroscience","neutral","neutrality","newcomer","newsletter","nineteenth","nominate","nomination","nonetheless","nonetheless","non-profit","nonprofit","norm","normalization","normative","notable","notification","notwithstanding","nowadays","nuclear","numerical","nursing","nurturance","nutrition","nutritious","objection","objective","obligation","oblivious","observation","observational","observer","obsession","obsessive","obstacle","obstruction","occupational","occurrence","offensive","omission","ongoing","operational","operational","operator","opponent","opposition","oppression","optimism","optimistic","optimization","optional","orchestra","orderly","ordinance","organic","organism","organizational","orientation","oriented","originate","orthodox","outbreak","outcome","outgoing","outing","outlet","outline","outlook","outrage","outright","outsider","outspoken","outstanding","outward","outweigh","overcome","overflow","overhead","overlook","overnight","overseas","oversee","oversight","overthrow","overview","overwhelming","ownership","ozone","packaging","pageant","paintwork","pamphlet","panel","paradigm","paradox","paragraph","paramount","parental","parliament","parliamentary","partial","participation","partisan","partnership","passionate","pastoral","pathway","patience","patriotic","patronage","payout","peaceful","peasant","peculiar","pediatric","penetrate","peninsula","pension","percentage","perception","perennial","perfection","periodical","peripheral","permanence","permanent","permeate","permission","permit","perpetual","persecution","persistence","persistent","personality","personnel","persuade","persuasion","persuasive","pertinent","pervasive","petition","petroleum","pharmaceutical","phenomenon","philosopher","philosophical","photography","physician","physiological","pilgrimage","pinnacle","pioneer","placement","planetary","plantation","platform","plausible","playwright","plea","pleasure","plurality","pneumonia","poetic","polarization","polarize","politically","politician","pollutant","portfolio","portrait","portrayal","positioning","positively","possession","postal","postgraduate","postpone","postwar","potassium","potential","pottery","practically","practise","practitioner","pragmatic","prairie","pray","preach","precarious","precedence","precedent","precious","precise","precisely","precision","predator","predatory","predecessor","predictable","prediction","predominant","predominantly","preface","preference","pregnancy","pregnant","prejudice","preliminary","premier","premise","premium","preoccupation","preparation","preparatory","prescribe","prescription","presently","preservation","preservation","presidency","presidential","presumably","presume","pretend","prevalence","prevention","preventive","preview","previous","primitive","principally","principled","privately","privilege","probability","problematic","procedure","procedural","proceed","proceedings","processor","productive","productivity","profess","profession","professional","profitable","profound","progression","progressive","prohibition","projection","proliferation","prolong","prominence","prominent","promising","promotional","pronounce","pronounced","pronunciation","propaganda","propensity","properly","prophecy","prophet","proponent","proportion","proportional","proposition","proprietary","proprietor","prosecution","prosecutor","prospect","prospective","prosperity","prosperous","prostitution","protagonist","protective","protein","protocol","prototype","proverbial","provincial","provision","provisional","provocation","proximity","psychiatric","psychological","publicly","publication","publicity","publisher","punishment","pupillage","purple","pursuit","qualification","qualitative","quarterly","questionnaire","radiation","radical","railroad","random","ranking","rapidity","ratification","rational","rationalization","readership","readily","realism","realistic","realization","realm","reassurance","rebellion","rebuild","receiver","reception","receptor","recession","recipient","reciprocal","recognition","recommendation","reconcile","reconstruction","recording","recruitment","rectangle","rectangular","recycling","redemption","reduction","refinement","reflection","reformation","refrigerator","refuge","refugee","refusal","regarding","regardless","regeneration","regime","regiment","regional","registration","regression","regulate","regulation","regulatory","rehabilitation","rehearsal","reinforcement","rejection","relational","relative","relatively","relaxation","relevance","reliability","reliable","reliance","relief","remarkable","remarkably","remedial","remedy","reminder","removal","renaissance","rendering","renewal","renowned","reorganization","repayment","repetition","replacement","reportedly","reporter","representation","representative","reproduction","reproductive","republic","reputable","reputation","requirement","requisite","researcher","resemble","reservation","reservoir","resettlement","residence","residential","residual","resignation","resistance","resistant","resolution","respectful","respectively","respondent","responsive","restoration","restrain","restraint","restriction","restructuring","resurrection","retailer","retention","retirement","retrieval","retrospective","revelation","revenge","reversal","revision","revival","revolutionary","rhetoric","ribbon","riddle","ridiculous","ritual","rivalry","robbery","romantic","rotation","roughly","roundabout","royalty","rubbing","rubbish","rumour","sacred","sacrifice","sadness","safeguard","salvation","sanction","sanctuary","satellite","satisfaction","satisfactory","sceptical","scepticism","scheduling","scholarly","scholarship","scientific","scientist","scope","scrutiny","sculpture","seasonal","seasoned","secrecy","secretariat","secretary","secretion","sect","sectarian","sector","secular","seemingly","segment","segregation","seizure","selection","selective","seller","semantic","semester","semiconductor","seminar","senator","sensation","sensible","sensitive","sensitivity","sensor","sentiment","sentimental","separation","sequence","sequential","sergeant","settler","settlement","seventh","severity","sexuality","shareholder","sheer","shipment","shipping","shortage","shortly","short-term","showcase","shower","shutter","sibling","sidewalk","signature","significance","simplicity","simplification","simplified","simplify","simultaneously","singular","sixth","sizable","skeleton","skeptical","slaughter","slavery","slot","smartphone","snapshot","socialism","socialist","societal","socioeconomic","solidarity","solitary","sometime","sophisticated","sovereignty","spacing","spatial","specialisation","specialize","species","specification","specimen","spectacle","spectacular","spectator","spectrum","speculation","speedy","spending","sphere","spiritual","spirituality","splendid","spokesperson","sponsorship","spontaneous","sporting","spotlight","spouse","stability","stabilization","stabilize","stadium","stakeholder","standpoint","startup","starvation","statesman","statistical","statistician","statue","stature","statutory","steadily","stereotype","stimulate","stimulation","stimulus","stirring","stockholder","storyteller","straightforward","strategic","strategist","stratum","strengthen","stressful","strictly","striking","structural","structured","stumble","stunning","stupidity","sub-committee","subdivision","subjective","submission","subscriber","subscription","subsequent","subsequently","subsidy","substantial","substantially","substantive","substitute","substitution","subtitle","subtle","suburban","succession","successive","successor","sufficiently","suggestion","suicidal","suicide","suitability","superbly","superiority","supernatural","superstition","supervisory","supplementary","supportive","supposedly","suppression","supremacy","supreme","surgical","surplus","surprisingly","surrounding","surveillance","survival","survivor","susceptible","suspicion","suspicious","sustainability","sustainable","sustenance","sweeping","sweetness","swift","swimming","symbolic","symbolize","symmetrical","symmetry","sympathetic","sympathize","sympathy","symptom","synthesis","systematic","tablespoon","tactical","talented","tangible","taxation","taxpayer","teammate","teamwork","technical","technician","technique","technological","technologically","tedious","teenage","teenager","telecommunication","telescope","temptation","tenant","tendency","tenderness","tension","tentative","tenure","terminology","terrain","terribly","terrific","territorial","territory","terrorist","testament","testify","testimonial","testimony","testing","textbook","textual","theatrical","theft","thematic","theological","theorem","theoretical","therapeutic","thereby","thermal","thermometer","thickness","thorough","thoroughly","thoughtful","thought-provoking","thousand","threaten","threatening","threshold","thrilled","throughout","thrust","thumb","thunderstorm","tightly","timber","timeless","timeline","tolerance","tolerate","tolerance","tomato","tolerate","touchdown","tournament","toxic","toxicity","tracing","trademark","trader","trading","tradition","traditional","traditionally","tragedy","tragic","trajectory","transaction","transcript","transcription","transformation","transformative","transit","transition","transitional","translate","translation","transmission","transmit","transparency","transparent","transplant","transportation","traveler","treasury","treaty","tremendous","tribunal","tributary","tribute","trilogy","triumph","triumphant","tropical","troubled","trustee","truthful","turnover","tutorial","twentieth","twofold","typical","typically","tyranny","ubiquitous","ugly","ultimate","ultimately","ultra","umbrella","unacceptable","unambiguous","unanimously","unavoidable","unaware","unbelievable","uncertain","uncertainty","unchanged","uncomfortable","uncommon","unconditional","unconscious","unconventional","undeniable","undergo","undergraduate","underlie","underlying","undermine","underneath","undertake","undertaking","underway","undesirable","undoubtedly","uneasy","unemployment","unexpected","unexpectedly","unfair","unfamiliar","unfortunate","unfortunately","unhappy","unified","uniform","uniformly","unify","unintended","unintentional","uniquely","unity","universal","universally","universe","university","unknown","unlawful","unlikely","unlimited","unlock","unprecedented","unpredictable","unrealistic","unreasonable","unrest","unsafe","unstable","unsuccessful","unsuitable","untold","unusual","unusually","unwilling","uphold","upcoming","update","upgrade","upheaval","uphold","upload","uprising","uproar","upscale","upstream","upward","urban","urbanization","urgency","urgent","urgently","usage","useless","usual","utility","utilization","utilize","utterly","vacancy","vacant","vacation","vaccination","vaccine","vacuum","vague","vaguely","validity","valley","valuable","valuation","variation","varied","vastly","vegetable","vegetation","vegetarian","velocity","vendor","venerable","venture","verbal","verbally","verification","verify","versatile","verse","versus","vertical","vessel","veteran","viable","vibrant","vibrancy","vice","vicious","victorious","viewer","vigorous","vigorously","villa","village","villager","violation","virgin","virtually","virtue","virtuous","virus","visibility","visible","visibly","visionary","visualization","visualize","vital","vitality","vivid","vividly","vocal","vocational","volatile","volatility","volcanic","voluntary","volunteer","voting","voucher","voyage","vulnerability","vulnerable","wage","wagon","waist","wallet","warehouse","warfare","warmly","warming","warrant","warranty","warrior","wasteful","watchdog","waterfall","waterfront","wavelength","weapon","weary","weave","webinar","website","wedding","weigh","weightlifting","welfare","westward","whatever","whatsoever","wheat","whereby","wherein","wherever","whilst","whichever","whisper","whistle","whoever","wholesale","wholesome","wholly","wicked","widespread","widow","wield","wilderness","wildlife","willingness","winding","windmill","wireless","wisdom","withdrawal","withhold","withstand","witness","workout","workshop","worldwide","worried","worthless","worthwhile","worthy","wrist","yachting","yawn","yearly","yearn","yell","youngster","youthful","zealous"]
         };
 
-        const levelConfig = {
-            novice: { maxTries: 8, pointsPerWin: 10, label: "Novice" },
-            seeker: { maxTries: 6, pointsPerWin: 15, label: "Seeker" },
-            master: { maxTries: 4, pointsPerWin: 20, label: "Master" }
+        const LEVEL_CONFIG = {
+            novice: { maxTries: 5, pointsPerWin: 10, label: "Novice" },
+            seeker: { maxTries: 5, pointsPerWin: 15, label: "Seeker" },
+            master: { maxTries: 5, pointsPerWin: 20, label: "Master" }
         };
 
-        // Auto-detect word categories for oracle system
-        function getWordCategories(word) {
-            const tags = {
-                cat:["animal","pet"],dog:["animal","pet"],bird:["animal","flying"],fish:["animal","water"],
-                bear:["animal","wild"],deer:["animal","wild"],duck:["animal","water"],frog:["animal","water"],
-                goat:["animal","farm"],hawk:["animal","flying"],lion:["animal","wild"],wolf:["animal","wild"],
-                owl:["animal","flying"],pig:["animal","farm"],fox:["animal","wild"],cow:["animal","farm"],
-                tiger:["animal","wild"],eagle:["animal","flying"],whale:["animal","water"],shark:["animal","water"],
-                horse:["animal","farm"],snake:["animal","wild"],mouse:["animal"],monkey:["animal","wild"],
-                rain:["nature","weather"],snow:["nature","weather"],wind:["nature","weather"],
-                sun:["nature","space"],moon:["nature","space"],star:["nature","space"],
-                tree:["nature","plant"],leaf:["nature","plant"],rose:["nature","flower"],
-                lake:["nature","water"],rock:["nature","earth"],fire:["nature","element"],
-                ocean:["nature","water"],river:["nature","water"],storm:["nature","weather"],
-                forest:["nature","plant"],island:["nature","water"],desert:["nature","earth"],
-                mountain:["nature","earth"],volcano:["nature","earth"],glacier:["nature","water"],
-                cake:["food"],milk:["food","drink"],rice:["food"],tea:["food","drink"],wine:["food","drink"],
-                book:["object","knowledge"],pen:["object","writing"],key:["object"],lamp:["object","light"],
-                sword:["object","weapon"],crown:["object","royalty"],chair:["object","furniture"],
-                piano:["object","music"],guitar:["object","music"],mirror:["object"],
-                city:["place"],home:["place"],road:["place"],castle:["place","building"],
-                garden:["place","nature"],school:["place","building"],temple:["place","building"],
-                run:["action","movement"],jump:["action","movement"],swim:["action","water"],
-                dance:["action","art"],sing:["action","sound"],write:["action","creation"],
-                hope:["abstract","emotion"],love:["abstract","emotion"],fear:["abstract","emotion"],
-                joy:["abstract","emotion"],peace:["abstract","emotion"],faith:["abstract","belief"],
-                truth:["abstract","knowledge"],courage:["abstract","virtue"],freedom:["abstract"],
-                harmony:["abstract","virtue"],justice:["abstract","virtue"],wisdom:["abstract","virtue"],
-                destiny:["abstract"],mystery:["abstract"],patience:["abstract","virtue"]
-            };
-            if (tags[word]) return tags[word];
-            const len = word.length;
-            if (len <= 4) return ["simple","mystery"];
-            if (len <= 7) return ["moderate","mystery"];
-            return ["complex","mystery"];
-        }
-
-        // ============================================================
-        // 🔮 SMART CONTEXTUAL ORACLE SYSTEM
-        // Generates meaningful hints for ANY word dynamically
-        // ============================================================
-
-        // Realm descriptions by category
-        const realmMap = {
-            animal: ["creatures that roam, swim, or soar", "the kingdom of living beings", "nature's wild children"],
-            pet: ["beloved companions in our homes", "domesticated friends of humanity"],
-            wild: ["untamed wilderness dwellers", "the savage kingdom beyond civilization"],
-            farm: ["barnyard dwellers and pastoral life", "creatures of the countryside"],
-            flying: ["those who own the sky and ride the winds", "winged beings above us"],
-            water: ["the deep blue realm beneath the waves", "those who dwell in rivers, lakes, and seas"],
-            insect: ["tiny beings with exoskeletons", "the miniature kingdom of six-legged creatures"],
-            nature: ["the natural world around us", "Earth's untouched beauty"],
-            weather: ["the sky's ever-changing moods", "atmospheric forces of nature"],
-            space: ["the celestial realm above", "heavenly bodies that light the darkness"],
-            plant: ["the green and growing world", "rooted life that breathes for us all"],
-            flower: ["nature's colorful jewels", "blooming beauty in the garden"],
-            earth: ["solid ground and towering stone", "the land beneath our feet"],
-            element: ["primal forces of the universe", "the building blocks of nature"],
-            food: ["nourishment and culinary delights", "what sustains and delights us"],
-            drink: ["liquids that quench and refresh", "beverages that warm or cool"],
-            body: ["the human form and its parts", "the vessel that carries the soul"],
-            object: ["crafted things of the physical world", "tools and treasures of daily life"],
-            knowledge: ["the pursuit of understanding", "wisdom etched in pages and minds"],
-            writing: ["instruments that capture thought on surfaces", "tools of the written word"],
-            light: ["things that banish darkness", "sources of illumination"],
-            sound: ["things that fill the air with vibration", "makers of melody and noise"],
-            music: ["instruments of melody and rhythm", "tools that create harmony"],
-            weapon: ["instruments forged for battle", "tools of conflict and defense"],
-            royalty: ["symbols of power and sovereignty", "regalia of kings and queens"],
-            furniture: ["things that fill our living spaces", "objects of comfort and utility"],
-            tool: ["implements that extend human ability", "instruments of craft and labor"],
-            place: ["locations in the world", "somewhere you can go or be"],
-            building: ["structures built by human hands", "shelters and monuments"],
-            structure: ["engineered creations that stand firm", "constructions of purpose"],
-            action: ["things you DO with body or mind", "verbs of motion and effort"],
-            movement: ["physical motion through space", "ways the body travels"],
-            art: ["creative expression of the soul", "beauty crafted by human hands"],
-            creation: ["acts of bringing something new into being", "the spark of making"],
-            mind: ["the inner world of thought", "processes of the thinking brain"],
-            abstract: ["intangible concepts beyond touch", "ideas that exist in mind, not matter"],
-            emotion: ["feelings that color our experience", "the heart's invisible language"],
-            virtue: ["noble qualities of character", "moral strengths that define great souls"],
-            belief: ["things held true by faith", "convictions of the spirit"],
-            time: ["the ever-flowing river of moments", "the dimension we cannot escape"],
-            mystery: ["the unknown and unexplored", "secrets waiting to be uncovered"],
-            simple: ["short, everyday words we use constantly", "the building blocks of language"],
-            moderate: ["words of medium depth and complexity", "language of the thoughtful mind"],
-            complex: ["rich, layered words with deep meaning", "the vocabulary of scholars and dreamers"]
-        };
-
-        // Generate a contextual oracle message based on guess vs target
-        function generateOracleWisdom(guess, target, similarity, triesLeft, maxTries) {
-            const guessLower = guess.toLowerCase();
-            const targetLower = target.toLowerCase();
-            const targetCats = getWordCategories(targetLower);
-            const guessCats = getWordCategories(guessLower);
-
-            // Find shared and different categories
-            const sharedCats = targetCats.filter(c => guessCats.includes(c));
-            const uniqueTargetCats = targetCats.filter(c => !guessCats.includes(c));
-
-            // Letter analysis
-            const sharedLetters = [...new Set(guessLower)].filter(l => targetLower.includes(l));
-            const targetLen = targetLower.length;
-
-            // Progressive hint intensity: more specific as tries decrease
-            const progress = 1 - (triesLeft / maxTries); // 0 = just started, 1 = almost out
-
-            // ---- HIGH SIMILARITY (>=0.7) ----
-            if (similarity >= 0.7) {
-                const hot = [
-                    "🔥 The Oracle's crystal burns bright — you are VERY close!",
-                    "🔥 The answer trembles on the tip of your tongue...",
-                    "🔥 Almost there! The word is practically whispering its name to you.",
-                    "🔥 The Oracle feels the heat of proximity — one more push!",
-                    "🔥 So close the Oracle can taste victory! Refine your thought..."
-                ];
-                return hot[Math.floor(Math.random() * hot.length)];
-            }
-
-            // ---- SHARED CATEGORIES: Meaningful connection ----
-            if (sharedCats.length > 0 && !sharedCats.every(c => c === 'mystery' || c === 'simple' || c === 'moderate' || c === 'complex')) {
-                const mainShared = sharedCats.find(c => !['mystery','simple','moderate','complex'].includes(c)) || sharedCats[0];
-                const realm = realmMap[mainShared] ? realmMap[mainShared][Math.floor(Math.random() * realmMap[mainShared].length)] : mainShared;
-
-                const connectionMsgs = [
-                    `✨ Interesting! "${guessLower}" and the answer share the realm of ${realm}. You're in the right domain!`,
-                    `✨ Your guess belongs to the same world as the answer — ${realm}. But it's a different resident...`,
-                    `✨ You sense the connection! Both dwell among ${realm}. Dig deeper within this realm.`,
-                    `✨ The threads align! "${guessLower}" walks the same path of ${realm} as your quarry.`,
-                    `✨ Yes, you're in the right territory — ${realm}. But the answer hides deeper within.`
-                ];
-                return connectionMsgs[Math.floor(Math.random() * connectionMsgs.length)];
-            }
-
-            // ---- NO CONNECTION: Redirect to target's realm ----
-            if (similarity < 0.3 && uniqueTargetCats.length > 0) {
-                const mainCat = uniqueTargetCats.find(c => !['mystery','simple','moderate','complex'].includes(c)) || uniqueTargetCats[0];
-                const realm = realmMap[mainCat] ? realmMap[mainCat][Math.floor(Math.random() * realmMap[mainCat].length)] : mainCat;
-
-                const redirectMsgs = [
-                    `🌀 The Oracle sees no bridge between "${guessLower}" and the answer. Perhaps think of ${realm}...`,
-                    `🌀 You wander far from the mark. The answer resides among ${realm}.`,
-                    `🌀 A bold guess, but the word you seek lives in a different world — consider ${realm}.`,
-                    `🌀 The cosmic winds blow you off course. Seek instead in the domain of ${realm}.`,
-                    `🌀 "${guessLower}" holds no kinship with the answer. Turn your mind toward ${realm}.`
-                ];
-                return redirectMsgs[Math.floor(Math.random() * redirectMsgs.length)];
-            }
-
-            // ---- MEDIUM SIMILARITY with letter hints ----
-            if (similarity >= 0.3 && similarity < 0.7) {
-                // Progressive: give more letter hints as tries decrease
-                if (progress > 0.6 && sharedLetters.length > 0) {
-                    const revealCount = Math.min(2, sharedLetters.length);
-                    const revealed = sharedLetters.slice(0, revealCount).join("', '").toUpperCase();
-                    return `🔮 The Oracle reveals: the letters '${revealed}' appear in the answer. The word has ${targetLen} letters. Focus your mind!`;
-                }
-
-                if (progress > 0.3) {
-                    return `🔮 The answer is a ${targetLen}-letter word. Your guess "${guessLower}" shares ${sharedLetters.length} letter${sharedLetters.length !== 1 ? 's' : ''} with it. The path narrows...`;
-                }
-
-                const mediumMsgs = [
-                    `💫 A decent guess! You're in the neighborhood but haven't found the house yet.`,
-                    `💫 "${guessLower}" has some resonance with the answer... keep that energy flowing.`,
-                    `💫 The Oracle senses a faint connection. You share ${sharedLetters.length} letter${sharedLetters.length !== 1 ? 's' : ''} with the answer.`,
-                    `💫 Not far, not close. The word you seek has ${targetLen} letters. Adjust your aim.`,
-                    `💫 The crystal flickers — your intuition isn't wrong, but it needs refinement.`
-                ];
-                return mediumMsgs[Math.floor(Math.random() * mediumMsgs.length)];
-            }
-
-            // ---- DESPERATE HINTS (very few tries left) ----
-            if (triesLeft <= 2) {
-                const firstLetter = targetLower[0].toUpperCase();
-                const lastLetter = targetLower[targetLen - 1].toUpperCase();
-                return `⚠️ URGENT! The Oracle breaks silence: The answer starts with '${firstLetter}', ends with '${lastLetter}', and has ${targetLen} letters. Choose wisely!`;
-            }
-
-            // ---- DEFAULT FALLBACK ----
-            const fallback = [
-                `🔮 The Oracle ponders your guess "${guessLower}"... The answer remains ${targetLen} letters away from clarity.`,
-                `🔮 "${guessLower}" drifts through the Oracle's mind like smoke. The truth has ${targetLen} letters.`,
-                `🔮 An interesting attempt. The word you seek is ${targetLen} letters long. Keep seeking, brave wizard.`,
-                `🔮 Your journey continues. Each guess illuminates the path. The answer: ${targetLen} letters.`,
-                `🔮 The Oracle watches patiently. ${targetLen} letters hold the answer to this quest.`
-            ];
-            return fallback[Math.floor(Math.random() * fallback.length)];
-        }
-
-        const oracleMessages = ["placeholder"];
-
-        let gameState = {
-            wizardName: '',
-            currentLevel: null,
-            targetWord: '',
-            targetCategories: [],
-            guesses: [],
-            triesLeft: 0,
-            bonusTries: { novice: 0, seeker: 0, master: 0 },
-            unlockedCategories: [],
-            playerStats: {},
-            todayString: getTodayString(),
-            dailyCompleted: {}
-        };
-
-        function init() {
-            loadPlayerData();
-            updateDailyIndicator();
-            
-            document.getElementById('guessInput').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') makeGuess();
-            });
-
-            document.getElementById('wizardNameInput').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') saveWizardName();
-            });
-        }
-
-        function updateDailyIndicator() {
-            const today = new Date();
-            const formatted = formatDate(getTodayString());
-            document.getElementById('dailyDate').textContent = `Today's Quest: ${formatted}`;
-        }
-
-        function loadPlayerData() {
-            const savedName = localStorage.getItem('wordQuestWizardName');
-            
-            if (savedName) {
-                gameState.wizardName = savedName;
-                document.getElementById('wizardNameDisplay').textContent = `🧙 ${savedName}`;
-                document.getElementById('wizardModal').classList.add('hidden');
-                
-                const savedStats = localStorage.getItem(`wordQuest_${savedName}`);
-                if (savedStats) {
-                    gameState.playerStats = JSON.parse(savedStats);
-                } else {
-                    initializePlayerStats();
-                }
-                
-                // Load daily completion status
-                const today = getTodayString();
-                if (!gameState.playerStats.dailyHistory) gameState.playerStats.dailyHistory = {};
-                gameState.dailyCompleted = gameState.playerStats.dailyHistory[today] || {};
-                
-                // Load bonus tries
-                gameState.bonusTries = gameState.playerStats.bonusTries || { novice: 0, seeker: 0, master: 0 };
-                
-                updateLevelCards();
-                updateStatsDisplay();
-            } else {
-                document.getElementById('wizardModal').classList.remove('hidden');
-            }
-        }
-
-        function initializePlayerStats() {
-            gameState.playerStats = {
-                totalScore: 0,
-                journeyDays: 0,
-                victories: { novice: 0, seeker: 0, master: 0 },
-                totalWins: 0,
-                gamesPlayed: 0,
-                dailyHistory: {},
-                scoreHistory: [],
-                bonusTries: { novice: 0, seeker: 0, master: 0 },
-                bestStreak: 0,
-                currentStreak: 0
-            };
-        }
-
-        function saveWizardName() {
-            const name = document.getElementById('wizardNameInput').value.trim();
-            
-            if (!name) {
-                showNotification('❌ Please enter a wizard name!');
-                return;
-            }
-            
-            gameState.wizardName = name;
-            localStorage.setItem('wordQuestWizardName', name);
-            document.getElementById('wizardNameDisplay').textContent = `🧙 ${name}`;
-            document.getElementById('wizardModal').classList.add('hidden');
-            
-            initializePlayerStats();
-            savePlayerData();
-            updateStatsDisplay();
-            
-            // Submit to global leaderboard
-            submitToLeaderboard(name, 0);
-            
-            showNotification(`✨ Welcome, ${name}! Your legend begins!`);
-        }
-
-        function savePlayerData() {
-            gameState.playerStats.bonusTries = gameState.bonusTries;
-            localStorage.setItem(`wordQuest_${gameState.wizardName}`, JSON.stringify(gameState.playerStats));
-            
-            // Submit to global leaderboard
-            submitToLeaderboard(gameState.wizardName, gameState.playerStats.totalScore);
-        }
-
-        function submitToLeaderboard(wizardName, score) {
-            // Save locally always
-            let leaderboard = JSON.parse(localStorage.getItem('wordQuest_GlobalLeaderboard') || '{}');
-            leaderboard[wizardName] = { score: score, lastPlayed: getTodayString() };
-            localStorage.setItem('wordQuest_GlobalLeaderboard', JSON.stringify(leaderboard));
-            // Submit to cloud
-            submitToCloud(wizardName, score);
-        }
-
-        // ====================================================
-        // 🌐 GLOBAL CLOUD LEADERBOARD (JSONBin.io - FREE)
-        // ====================================================
         const JSONBIN_CONFIG = {
             BIN_ID: '69ac1a3bae596e708f694c9e',
             API_KEY: '$2a$10$gcQCCyqzL8xU7Vum3uN84ebkMLYngo6KjM0j5gk8MVojAwvfPNsFe',
             BASE_URL: 'https://api.jsonbin.io/v3'
         };
 
-        function isCloudConfigured() {
-            return JSONBIN_CONFIG.BIN_ID !== 'YOUR_BIN_ID_HERE' &&
-                   JSONBIN_CONFIG.API_KEY !== 'YOUR_API_KEY_HERE';
-        }
+        let gameState = {
+            wizardName: '',
+            currentLevel: null,
+            targetWord: '',
+            guesses: [],
+            triesLeft: 0,
+            bonusTries: { novice: 0, seeker: 0, master: 0 },
+            playerStats: {},
+            todayString: getTodayString(),
+            dailyCompleted: {}
+        };
 
-        async function submitToCloud(wizardName, score) {
-            if (!isCloudConfigured()) return;
-            try {
-                const getRes = await fetch(
-                    JSONBIN_CONFIG.BASE_URL + '/b/' + JSONBIN_CONFIG.BIN_ID + '/latest',
-                    { headers: { 'X-Access-Key': JSONBIN_CONFIG.API_KEY } }
-                );
-                let cloudData = {};
-                if (getRes.ok) {
-                    const json = await getRes.json();
-                    cloudData = json.record || {};
-                    delete cloudData._init;
-                }
-                cloudData[wizardName] = { score: score, lastPlayed: getTodayString() };
-                await fetch(
-                    JSONBIN_CONFIG.BASE_URL + '/b/' + JSONBIN_CONFIG.BIN_ID,
-                    {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-Access-Key': JSONBIN_CONFIG.API_KEY
-                        },
-                        body: JSON.stringify(cloudData)
-                    }
-                );
-                localStorage.setItem('wordQuest_GlobalLeaderboard', JSON.stringify(cloudData));
-            } catch (err) {
-                console.warn('Cloud submit failed:', err);
-            }
-        }
-
-        async function fetchCloudLeaderboard() {
-            if (!isCloudConfigured()) return null;
-            try {
-                const res = await fetch(
-                    JSONBIN_CONFIG.BASE_URL + '/b/' + JSONBIN_CONFIG.BIN_ID + '/latest',
-                    { headers: { 'X-Access-Key': JSONBIN_CONFIG.API_KEY } }
-                );
-                if (res.ok) {
-                    const json = await res.json();
-                    const cloudData = json.record || {};
-                    delete cloudData._init;
-                    localStorage.setItem('wordQuest_GlobalLeaderboard', JSON.stringify(cloudData));
-                    return cloudData;
-                }
-            } catch (err) {
-                console.warn('Cloud fetch failed:', err);
-            }
-            return null;
-        }
-
-        function updateLevelCards() {
-            const levels = ['novice', 'seeker', 'master'];
-            levels.forEach(level => {
-                const card = document.getElementById(`${level}Card`);
-                const triesDisplay = document.getElementById(`${level}Tries`);
-                
-                if (gameState.dailyCompleted[level]) {
-                    card.classList.add('completed');
-                    card.onclick = null;
-                } else {
-                    card.classList.remove('completed');
-                    card.onclick = () => startLevel(level);
-                }
-                
-                // Update tries display with bonus
-                const bonusTries = gameState.bonusTries[level] || 0;
-                const totalTries = 5 + bonusTries;
-                triesDisplay.textContent = totalTries;
-            });
-        }
-
-        function startLevel(level) {
-            if (gameState.dailyCompleted[level]) {
-                showNotification('✅ You already completed this level today!');
-                return;
-            }
-            
-            gameState.currentLevel = level;
-            const levelData = levelConfig[level];
-            
-            // Get daily word
+        function getTodayString() {
             const today = new Date();
-            const wordObj = getDailyWord(level, today);
-            gameState.targetWord = wordObj.word;
-            gameState.targetCategories = wordObj.categories;
-            gameState.guesses = [];
-            
-            // Set tries with bonus
-            const bonusTries = gameState.bonusTries[level] || 0;
-            gameState.triesLeft = levelData.maxTries + bonusTries;
-            
-            gameState.unlockedCategories = [];
-            
-            document.getElementById('levelSelector').style.display = 'none';
-            document.getElementById('gameArea').classList.add('active');
-            document.getElementById('triesDisplay').textContent = gameState.triesLeft;
-            document.getElementById('scoreDisplay').textContent = gameState.playerStats.totalScore;
-            document.getElementById('guessInput').value = '';
-            
-            setupCategories(['animal', 'place', 'thing', 'action', 'concept', 'name']);
-            resetPanels();
-            
-            showNotification(`✨ ${level.charAt(0).toUpperCase() + level.slice(1)} Quest begins! ${bonusTries > 0 ? `+${bonusTries} bonus tries!` : ''}`);
+            return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
         }
 
-        function setupCategories(categories) {
-            const container = document.getElementById('categoriesList');
-            const categoryIcons = {
-                name: '👤', place: '🌍', animal: '🐾',
-                thing: '📦', action: '⚡', concept: '💭'
-            };
-            const categoryLabels = {
-                name: 'Name', place: 'Place', animal: 'Animal',
-                thing: 'Thing', action: 'Action', concept: 'Idea'
-            };
-            
-            container.innerHTML = categories.map(cat => 
-                `<div class="category-item" data-category="${cat}">${categoryIcons[cat]} ${categoryLabels[cat]}</div>`
-            ).join('');
+        function getDailyWord(level, date) {
+            const seed = date.getFullYear() * 10000 + (date.getMonth() + 1) * 100 + date.getDate();
+            const words = OXFORD_WORDS[level];
+            const levelSalt = level === 'novice' ? 7 : level === 'seeker' ? 13 : 23;
+            const hash = ((seed * 2654435761 + levelSalt * 48271) >>> 0) % words.length;
+            return words[hash];
         }
 
-        function resetPanels() {
-            document.getElementById('oracleContainer').innerHTML = '<div class="oracle-empty">The Oracle awaits your first venture into the unknown...</div>';
-            document.querySelectorAll('.category-item').forEach(item => item.classList.remove('unlocked'));
-            document.getElementById('hintsContainer').innerHTML = `
-                <div class="hint-mini-item hint-locked">🔒 ???</div>
-                <div class="hint-mini-item hint-locked">🔒 ?</div>
-                <div class="hint-mini-item hint-locked">🔒 ?</div>
-            `;
-            document.getElementById('guessesMap').innerHTML = '';
-            document.getElementById('connectionsSvg').innerHTML = '';
+        function calculateLetterSimilarity(word1, word2) {
+            const letters1 = word1.toLowerCase().split('');
+            const letters2 = word2.toLowerCase().split('');
+            const commonLetters = letters1.filter(l => letters2.includes(l)).length;
+            const maxLength = Math.max(letters1.length, letters2.length);
+            return commonLetters / maxLength;
+        }
+
+        function calculateMeaningSimilarity(word1, word2) {
+            // Simple semantic similarity based on word length and character overlap
+            const lengthSim = 1 - Math.abs(word1.length - word2.length) / Math.max(word1.length, word2.length);
+            const charSim = calculateLetterSimilarity(word1, word2);
+            return (lengthSim * 0.3 + charSim * 0.7);
+        }
+
+        function showOraclePopup(message) {
+            const popup = document.getElementById('oraclePopup');
+            const messageEl = document.getElementById('oraclePopupMessage');
+            messageEl.textContent = message;
+            popup.classList.add('show');
+            setTimeout(() => popup.classList.remove('show'), 3500);
+        }
+
+        function generateSmartHint(guess, target) {
+            const letterSim = calculateLetterSimilarity(guess, target);
+            
+            if (letterSim > 0.7) {
+                return `🔥 "${guess}" and "${target}" share many letters! You're incredibly close!`;
+            } else if (letterSim > 0.4) {
+                return `✨ "${guess}" has ${Math.floor(letterSim * target.length)} letters in common with the answer. Think carefully!`;
+            } else if (target.length === guess.length) {
+                return `🔮 Same length as "${guess}" (${target.length} letters), but different letters. Keep trying!`;
+            } else if (target.length < guess.length) {
+                return `📏 The answer is shorter than "${guess}". Think of a ${target.length}-letter word!`;
+            } else {
+                return `📏 The answer is longer than "${guess}". Think of a ${target.length}-letter word!`;
+            }
+        }
+
+        function resetWhispers() {
+            document.getElementById('whisperLetters').classList.remove('revealed');
+            document.getElementById('whisperStart').classList.remove('revealed');
+            document.getElementById('whisperEnd').classList.remove('revealed');
+            document.getElementById('whisperLettersValue').textContent = '?';
+            document.getElementById('whisperStartValue').textContent = '?';
+            document.getElementById('whisperEndValue').textContent = '?';
+        }
+
+        function revealWhispers() {
+            const target = gameState.targetWord;
+            
+            // Reveal at 3 tries left: letter count
+            if (gameState.triesLeft === 3) {
+                document.getElementById('whisperLetters').classList.add('revealed');
+                document.getElementById('whisperLettersValue').textContent = target.length;
+            }
+            
+            // Reveal at 2 tries left: start letter
+            if (gameState.triesLeft === 2) {
+                document.getElementById('whisperStart').classList.add('revealed');
+                document.getElementById('whisperStartValue').textContent = target[0].toUpperCase();
+            }
+            
+            // Reveal at 1 try left: end letter
+            if (gameState.triesLeft === 1) {
+                document.getElementById('whisperEnd').classList.add('revealed');
+                document.getElementById('whisperEndValue').textContent = target[target.length - 1].toUpperCase();
+            }
         }
 
         function makeGuess() {
@@ -2417,142 +937,50 @@
             const guess = input.value.toLowerCase().trim();
             
             if (!guess) {
-                showNotification('❌ The Oracle requires a word!');
+                showNotification('❌ Please enter a word!');
                 return;
             }
             
             if (gameState.guesses.some(g => g.word === guess)) {
-                showNotification('⚠️ This path has been walked before!');
+                showNotification('⚠️ Already tried!');
                 return;
             }
             
-            const similarity = calculateSimilarity(guess, gameState.targetWord);
-            gameState.guesses.push({ word: guess, similarity });
+            const letterSim = calculateLetterSimilarity(guess, gameState.targetWord);
+            const meaningSim = calculateMeaningSimilarity(guess, gameState.targetWord);
+            
+            gameState.guesses.push({ word: guess, letterSim, meaningSim });
             gameState.triesLeft--;
             
             input.value = '';
             updateSpatialMap();
-            updateOraclePanel(guess, similarity);
-            updateHintsPanel();
-            checkCategories(guess);
             document.getElementById('triesDisplay').textContent = gameState.triesLeft;
+            
+            // Reveal whispers based on tries left
+            revealWhispers();
             
             if (guess === gameState.targetWord) {
                 winGame();
             } else if (gameState.triesLeft === 0) {
                 loseGame();
             } else {
-                if (similarity > 0.7) showNotification('🔥 The Oracle trembles! Victory is near!');
-                else if (similarity > 0.4) showNotification('✨ The path becomes clearer...');
-                else showNotification('🌙 The journey continues...');
+                const hint = generateSmartHint(guess, gameState.targetWord);
+                showOraclePopup(hint);
             }
-        }
-
-        function calculateSimilarity(word1, word2) {
-            const longer = word1.length > word2.length ? word1 : word2;
-            const shorter = word1.length > word2.length ? word2 : word1;
-            if (longer.length === 0) return 1.0;
-            const editDistance = levenshteinDistance(longer, shorter);
-            return (longer.length - editDistance) / longer.length;
-        }
-
-        function levenshteinDistance(str1, str2) {
-            const matrix = [];
-            for (let i = 0; i <= str2.length; i++) matrix[i] = [i];
-            for (let j = 0; j <= str1.length; j++) matrix[0][j] = j;
-            
-            for (let i = 1; i <= str2.length; i++) {
-                for (let j = 1; j <= str1.length; j++) {
-                    if (str2.charAt(i - 1) === str1.charAt(j - 1)) {
-                        matrix[i][j] = matrix[i - 1][j - 1];
-                    } else {
-                        matrix[i][j] = Math.min(
-                            matrix[i - 1][j - 1] + 1,
-                            matrix[i][j - 1] + 1,
-                            matrix[i - 1][j] + 1
-                        );
-                    }
-                }
-            }
-            return matrix[str2.length][str1.length];
-        }
-
-        function checkCategories(guess) {
-            for (const category in categoryRules) {
-                if (categoryRules[category].includes(guess)) {
-                    if (gameState.targetCategories.includes(category) && !gameState.unlockedCategories.includes(category)) {
-                        gameState.unlockedCategories.push(category);
-                        const item = document.querySelector(`[data-category="${category}"]`);
-                        if (item) {
-                            item.classList.add('unlocked');
-                            showNotification(`🎯 Path Revealed: ${category.toUpperCase()}!`);
-                        }
-                    }
-                }
-            }
-        }
-
-        function updateOraclePanel(guess, similarity) {
-            const container = document.getElementById('oracleContainer');
-            const maxTries = levelConfig[gameState.currentLevel].maxTries + (gameState.bonusTries[gameState.currentLevel] || 0);
-            
-            const message = generateOracleWisdom(
-                guess,
-                gameState.targetWord,
-                similarity,
-                gameState.triesLeft,
-                maxTries
-            );
-            
-            const oracleItem = document.createElement('div');
-            oracleItem.className = 'oracle-message';
-            
-            const simClass = similarity > 0.7 ? 'hot' : similarity > 0.4 ? 'warm' : 'cold';
-            
-            oracleItem.innerHTML = `
-                <div class="oracle-guess">🔮 You cast: <strong>${guess}</strong> <span class="sim-badge ${simClass}">${Math.round(similarity * 100)}%</span></div>
-                <div class="oracle-text">${message}</div>
-            `;
-            
-            container.appendChild(oracleItem);
-            
-            const messages = container.querySelectorAll('.oracle-message');
-            if (messages.length > 4) messages[0].remove();
-            container.scrollTop = container.scrollHeight;
-        }
-
-        function updateHintsPanel() {
-            const wrong = gameState.guesses.length;
-            let html = '';
-            
-            if (wrong >= 2) html += `<div class="hint-mini-item hint-unlocked">${gameState.targetWord.length} letters</div>`;
-            else html += `<div class="hint-mini-item hint-locked">🔒 ???</div>`;
-            
-            if (wrong >= 3) html += `<div class="hint-mini-item hint-unlocked">First: ${gameState.targetWord[0].toUpperCase()}</div>`;
-            else html += `<div class="hint-mini-item hint-locked">🔒 ?</div>`;
-            
-            if (wrong >= 4) html += `<div class="hint-mini-item hint-unlocked">Last: ${gameState.targetWord[gameState.targetWord.length - 1].toUpperCase()}</div>`;
-            else html += `<div class="hint-mini-item hint-locked">🔒 ?</div>`;
-            
-            document.getElementById('hintsContainer').innerHTML = html;
         }
 
         function updateSpatialMap() {
             const mapContainer = document.getElementById('guessesMap');
             const svg = document.getElementById('connectionsSvg');
-            
             mapContainer.innerHTML = '';
             svg.innerHTML = '';
             
             const centerX = 50;
             const centerY = 50;
             
-            const sorted = [...gameState.guesses].sort((a, b) => b.similarity - a.similarity);
-            
-            sorted.forEach((guess, index) => {
+            gameState.guesses.forEach((guess, index) => {
                 const angle = (index / Math.max(gameState.guesses.length, 1)) * Math.PI * 2;
-                const maxDistance = 40;
-                const distance = (1 - guess.similarity) * maxDistance;
+                const distance = (1 - guess.letterSim) * 40;
                 
                 const x = centerX + Math.cos(angle) * distance;
                 const y = centerY + Math.sin(angle) * distance;
@@ -2563,140 +991,167 @@
                 bubble.style.left = x + '%';
                 bubble.style.top = y + '%';
                 
-                const hue = guess.similarity * 120;
+                // Fill color based on meaning similarity
+                const hue = guess.meaningSim * 120;
+                bubble.style.background = `hsla(${hue}, 80%, 50%, 0.8)`;
                 bubble.style.borderColor = `hsl(${hue}, 80%, 60%)`;
-                bubble.style.color = `hsl(${hue}, 80%, 70%)`;
-                bubble.style.boxShadow = `0 0 20px hsla(${hue}, 80%, 60%, 0.4)`;
-                bubble.title = `${(guess.similarity * 100).toFixed(0)}% match`;
+                bubble.style.color = 'white';
                 
                 mapContainer.appendChild(bubble);
-                
-                const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-                line.setAttribute('x1', '50%');
-                line.setAttribute('y1', '50%');
-                line.setAttribute('x2', x + '%');
-                line.setAttribute('y2', y + '%');
-                line.setAttribute('class', 'connection-line');
-                line.style.stroke = `hsl(${hue}, 70%, 50%)`;
-                line.style.opacity = 0.2 + (guess.similarity * 0.6);
-                svg.appendChild(line);
             });
         }
 
         function winGame() {
-            const levelData = levelConfig[gameState.currentLevel];
-            const points = gameState.triesLeft * levelData.pointsPerWin;
-            const level = gameState.currentLevel;
+            const points = gameState.triesLeft * LEVEL_CONFIG[gameState.currentLevel].pointsPerWin;
+            gameState.playerStats.totalScore = (gameState.playerStats.totalScore || 0) + points;
+            gameState.playerStats.victories = gameState.playerStats.victories || { novice: 0, seeker: 0, master: 0 };
+            gameState.playerStats.victories[gameState.currentLevel]++;
             
-            // Calculate bonus tries for next level
-            const levels = ['novice', 'seeker', 'master'];
-            const currentIndex = levels.indexOf(level);
-            if (currentIndex < levels.length - 1) {
-                const nextLevel = levels[currentIndex + 1];
-                gameState.bonusTries[nextLevel] = gameState.triesLeft;
+            // Store bonus tries for next level
+            if (gameState.currentLevel === 'novice') {
+                gameState.bonusTries.novice = gameState.triesLeft;
+            } else if (gameState.currentLevel === 'seeker') {
+                gameState.bonusTries.seeker = gameState.triesLeft;
             }
             
-            // Mark level as completed for today
             const today = getTodayString();
-            if (!gameState.playerStats.dailyHistory[today]) {
-                gameState.playerStats.dailyHistory[today] = {};
-            }
-            gameState.playerStats.dailyHistory[today][level] = { won: true, points, tries: gameState.triesLeft };
-            gameState.dailyCompleted[level] = true;
+            gameState.playerStats.dailyHistory = gameState.playerStats.dailyHistory || {};
+            gameState.playerStats.dailyHistory[today] = gameState.playerStats.dailyHistory[today] || {};
+            gameState.playerStats.dailyHistory[today][gameState.currentLevel] = { won: true, points };
+            gameState.dailyCompleted[gameState.currentLevel] = true;
             
-            // Update stats
-            gameState.playerStats.totalScore += points;
-            gameState.playerStats.victories[level]++;
-            gameState.playerStats.totalWins++;
-            gameState.playerStats.gamesPlayed++;
-            
-            // Track streaks
-            if (!gameState.playerStats.currentStreak) gameState.playerStats.currentStreak = 0;
-            if (!gameState.playerStats.bestStreak) gameState.playerStats.bestStreak = 0;
-            gameState.playerStats.currentStreak++;
-            if (gameState.playerStats.currentStreak > gameState.playerStats.bestStreak) {
-                gameState.playerStats.bestStreak = gameState.playerStats.currentStreak;
-            }
-            
-            // Check if this is a new day
-            const uniqueDays = Object.keys(gameState.playerStats.dailyHistory).length;
-            gameState.playerStats.journeyDays = uniqueDays;
-            
-            // Add to score history
-            if (!gameState.playerStats.scoreHistory) gameState.playerStats.scoreHistory = [];
-            gameState.playerStats.scoreHistory.push({
-                date: today,
-                level: level,
-                points: points,
-                totalScore: gameState.playerStats.totalScore
-            });
+            gameState.playerStats.journeyDays = Object.keys(gameState.playerStats.dailyHistory).length;
+            gameState.playerStats.totalWins = (gameState.playerStats.totalWins || 0) + 1;
+            gameState.playerStats.gamesPlayed = (gameState.playerStats.gamesPlayed || 0) + 1;
             
             savePlayerData();
-            updateLevelCards();
-            
-            showModal('🎉', 'Victory!', `You found "${gameState.targetWord}" with ${gameState.triesLeft} ${gameState.triesLeft === 1 ? 'try' : 'tries'} remaining!${currentIndex < levels.length - 1 ? ` +${gameState.triesLeft} bonus tries for next level!` : ''}`, `+${points}`, true);
+            showNotification(`🎉 Victory! +${points} points! The word was "${gameState.targetWord}"`);
+            setTimeout(() => backToMenu(), 2000);
         }
 
         function loseGame() {
-            const level = gameState.currentLevel;
-            
-            // Mark level as completed (failed) for today
-            const today = getTodayString();
-            if (!gameState.playerStats.dailyHistory[today]) {
-                gameState.playerStats.dailyHistory[today] = {};
+            // Reset bonus tries on loss
+            if (gameState.currentLevel === 'novice') {
+                gameState.bonusTries.novice = 0;
+            } else if (gameState.currentLevel === 'seeker') {
+                gameState.bonusTries.seeker = 0;
             }
-            gameState.playerStats.dailyHistory[today][level] = { won: false, points: 0 };
-            gameState.dailyCompleted[level] = true;
             
-            gameState.playerStats.gamesPlayed++;
-            
-            // Reset win streak
-            gameState.playerStats.currentStreak = 0;
-            
-            // Add to score history (0 points for loss - still tracks the day)
-            if (!gameState.playerStats.scoreHistory) gameState.playerStats.scoreHistory = [];
-            gameState.playerStats.scoreHistory.push({
-                date: today,
-                level: level,
-                points: 0,
-                totalScore: gameState.playerStats.totalScore
-            });
-            
-            // Reset bonus tries for this level
-            gameState.bonusTries[level] = 0;
+            gameState.playerStats.gamesPlayed = (gameState.playerStats.gamesPlayed || 0) + 1;
+            const today = getTodayString();
+            gameState.playerStats.dailyHistory = gameState.playerStats.dailyHistory || {};
+            gameState.playerStats.dailyHistory[today] = gameState.playerStats.dailyHistory[today] || {};
+            gameState.playerStats.dailyHistory[today][gameState.currentLevel] = { won: false, points: 0 };
+            gameState.dailyCompleted[gameState.currentLevel] = true;
             
             savePlayerData();
-            updateLevelCards();
-            
-            showModal('😢', 'Quest Failed', `The word was "${gameState.targetWord}". Return stronger tomorrow, ${gameState.wizardName}!`, '+0', false);
+            showNotification(`😢 The word was "${gameState.targetWord}". Try again tomorrow!`);
+            setTimeout(() => backToMenu(), 2000);
         }
 
-        function showModal(icon, title, message, score, won) {
-            document.getElementById('modalIcon').textContent = icon;
-            document.getElementById('modalTitle').textContent = title;
-            document.getElementById('modalMessage').textContent = message;
-            document.getElementById('modalScore').textContent = score;
-            document.getElementById('scoreDisplay').textContent = gameState.playerStats.totalScore;
-            
-            document.getElementById('nextBtn').style.display = won ? 'block' : 'none';
-            document.getElementById('resultModal').classList.add('active');
+        function savePlayerData() {
+            localStorage.setItem(`wordQuest_${gameState.wizardName}`, JSON.stringify(gameState.playerStats));
+            submitToCloud(gameState.wizardName, gameState.playerStats.totalScore || 0);
         }
 
-        function handleNext() {
-            document.getElementById('resultModal').classList.remove('active');
-            const levels = ['novice', 'seeker', 'master'];
-            const currentIndex = levels.indexOf(gameState.currentLevel);
-            
-            if (currentIndex < levels.length - 1 && !gameState.dailyCompleted[levels[currentIndex + 1]]) {
-                startLevel(levels[currentIndex + 1]);
-            } else {
-                backToMenu();
-                showNotification('🏆 All available quests completed!');
+        async function submitToCloud(wizardName, score) {
+            try {
+                const res = await fetch(`${JSONBIN_CONFIG.BASE_URL}/b/${JSONBIN_CONFIG.BIN_ID}/latest`, {
+                    headers: { 'X-Access-Key': JSONBIN_CONFIG.API_KEY }
+                });
+                let cloudData = {};
+                if (res.ok) {
+                    const json = await res.json();
+                    cloudData = json.record || {};
+                }
+                cloudData[wizardName] = { score, lastPlayed: getTodayString() };
+                await fetch(`${JSONBIN_CONFIG.BASE_URL}/b/${JSONBIN_CONFIG.BIN_ID}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json', 'X-Access-Key': JSONBIN_CONFIG.API_KEY },
+                    body: JSON.stringify(cloudData)
+                });
+            } catch (err) {
+                console.warn('Cloud sync failed:', err);
             }
+        }
+
+        function saveWizardName() {
+            const name = document.getElementById('wizardNameInput').value.trim();
+            if (!name) {
+                showNotification('Please enter a wizard name!');
+                return;
+            }
+            gameState.wizardName = name;
+            localStorage.setItem('wordQuestWizardName', name);
+            document.getElementById('wizardNameDisplay').textContent = `🧙 ${name}`;
+            document.getElementById('wizardModal').classList.add('hidden');
+            
+            const savedStats = localStorage.getItem(`wordQuest_${name}`);
+            gameState.playerStats = savedStats ? JSON.parse(savedStats) : { totalScore: 0, victories: { novice: 0, seeker: 0, master: 0 }, journeyDays: 0, totalWins: 0, gamesPlayed: 0, dailyHistory: {} };
+            
+            updateLevelCards();
+            showNotification(`✨ Welcome, ${name}!`);
+        }
+
+        function updateLevelCards() {
+            const today = getTodayString();
+            gameState.dailyCompleted = (gameState.playerStats.dailyHistory && gameState.playerStats.dailyHistory[today]) || {};
+            
+            ['novice', 'seeker', 'master'].forEach(level => {
+                const card = document.getElementById(`${level}Card`);
+                const triesEl = document.getElementById(`${level}Tries`);
+                
+                if (gameState.dailyCompleted[level]) {
+                    card.classList.add('completed');
+                    card.onclick = null;
+                } else {
+                    card.classList.remove('completed');
+                    
+                    // Update tries display with bonus
+                    let totalTries = LEVEL_CONFIG[level].maxTries;
+                    if (level === 'seeker' && gameState.bonusTries.novice > 0) {
+                        totalTries += gameState.bonusTries.novice;
+                    } else if (level === 'master' && gameState.bonusTries.seeker > 0) {
+                        totalTries += gameState.bonusTries.seeker;
+                    }
+                    triesEl.textContent = totalTries;
+                }
+            });
+        }
+
+        function startLevel(level) {
+            if (gameState.dailyCompleted[level]) {
+                showNotification('Already completed today!');
+                return;
+            }
+            
+            gameState.currentLevel = level;
+            gameState.targetWord = getDailyWord(level, new Date());
+            gameState.guesses = [];
+            
+            // Calculate total tries with bonus from previous level
+            let bonusTries = 0;
+            if (level === 'seeker' && gameState.bonusTries.novice > 0) {
+                bonusTries = gameState.bonusTries.novice;
+            } else if (level === 'master' && gameState.bonusTries.seeker > 0) {
+                bonusTries = gameState.bonusTries.seeker;
+            }
+            
+            gameState.triesLeft = LEVEL_CONFIG[level].maxTries + bonusTries;
+            gameState.currentScore = 0;
+            
+            document.getElementById('levelSelector').style.display = 'none';
+            document.getElementById('gameArea').classList.add('active');
+            document.getElementById('triesDisplay').textContent = gameState.triesLeft;
+            document.getElementById('currentScore').textContent = gameState.currentScore;
+            
+            // Reset whispers
+            resetWhispers();
+            
+            showNotification(`${level.charAt(0).toUpperCase() + level.slice(1)} Quest begins!${bonusTries > 0 ? ` (+${bonusTries} bonus tries)` : ''}`);
         }
 
         function backToMenu() {
-            document.getElementById('resultModal').classList.remove('active');
             document.getElementById('gameArea').classList.remove('active');
             document.getElementById('levelSelector').style.display = 'block';
             updateLevelCards();
@@ -2704,10 +1159,18 @@
 
         function showStats() {
             document.getElementById('mainContent').style.display = 'none';
-            document.getElementById('leaderboardPage').classList.remove('active');
             document.getElementById('statsPage').classList.add('active');
-            updateStatsDisplay();
-            drawProgressChart();
+            
+            const stats = gameState.playerStats;
+            document.getElementById('statTotalScore').textContent = stats.totalScore || 0;
+            document.getElementById('statJourneyDays').textContent = stats.journeyDays || 0;
+            document.getElementById('statTotalWins').textContent = stats.totalWins || 0;
+            document.getElementById('statNoviceWins').textContent = (stats.victories && stats.victories.novice) || 0;
+            document.getElementById('statSeekerWins').textContent = (stats.victories && stats.victories.seeker) || 0;
+            document.getElementById('statMasterWins').textContent = (stats.victories && stats.victories.master) || 0;
+            
+            const winRate = stats.gamesPlayed > 0 ? Math.round((stats.totalWins / stats.gamesPlayed) * 100) : 0;
+            document.getElementById('statWinRate').textContent = winRate + '%';
         }
 
         function hideStats() {
@@ -2715,235 +1178,10 @@
             document.getElementById('mainContent').style.display = 'block';
         }
 
-        function updateStatsDisplay() {
-            const stats = gameState.playerStats;
-            if (!stats) return;
-
-            // Hero cards: Total Score + Journey Days
-            document.getElementById('statTotalScore').textContent = stats.totalScore || 0;
-            document.getElementById('statJourneyDays').textContent = stats.journeyDays || Object.keys(stats.dailyHistory || {}).length || 0;
-
-            // Level wins
-            const v = stats.victories || { novice: 0, seeker: 0, master: 0 };
-            document.getElementById('statNoviceWins').textContent = v.novice || 0;
-            document.getElementById('statSeekerWins').textContent = v.seeker || 0;
-            document.getElementById('statMasterWins').textContent = v.master || 0;
-
-            // Total victories
-            const totalWins = stats.totalWins || 0;
-            document.getElementById('statTotalWins').textContent = totalWins;
-
-            // Games played & win rate
-            const gamesPlayed = stats.gamesPlayed || 0;
-            const winRate = gamesPlayed > 0 ? Math.round((totalWins / gamesPlayed) * 100) : 0;
-            document.getElementById('statGamesPlayed').textContent = gamesPlayed;
-            document.getElementById('statWinRate').textContent = winRate + '%';
-
-            // Best streak
-            document.getElementById('statBestStreak').textContent = stats.bestStreak || 0;
-
-            // Avg score per win
-            const avgScore = totalWins > 0 ? Math.round((stats.totalScore || 0) / totalWins) : 0;
-            document.getElementById('statAvgScore').textContent = avgScore;
-
-            // Draw the quest journey chart
-            drawProgressChart(stats.scoreHistory || []);
-        }
-
-        function drawProgressChart(history) {
-            const canvas = document.getElementById('progressChart');
-            if (!canvas) return;
-            const ctx = canvas.getContext('2d');
-
-            // High-DPI canvas
-            const rect = canvas.parentElement.getBoundingClientRect();
-            const dpr = window.devicePixelRatio || 1;
-            canvas.width = rect.width * dpr;
-            canvas.height = 220 * dpr;
-            canvas.style.width = rect.width + 'px';
-            canvas.style.height = '220px';
-            ctx.scale(dpr, dpr);
-            const W = rect.width;
-            const H = 220;
-
-            // Clear
-            ctx.clearRect(0, 0, W, H);
-
-            if (!history || history.length === 0) {
-                ctx.fillStyle = 'rgba(255,255,255,0.3)';
-                ctx.font = '14px sans-serif';
-                ctx.textAlign = 'center';
-                ctx.fillText('Play some quests to see your journey!', W / 2, H / 2);
-                return;
-            }
-
-            // Group history by date, accumulate scores
-            const dayMap = {};
-            history.forEach(h => {
-                if (!dayMap[h.date]) dayMap[h.date] = { total: 0, novice: 0, seeker: 0, master: 0 };
-                const pts = h.points || h.score || 0;
-                dayMap[h.date].total += pts;
-                if (h.level) dayMap[h.date][h.level] += pts;
-            });
-
-            const sortedDays = Object.keys(dayMap).sort();
-            if (sortedDays.length === 0) return;
-
-            // Build cumulative data per line
-            const lines = {
-                total:  { color: '#00ffc2', data: [] },
-                novice: { color: '#7af5d4', data: [] },
-                seeker: { color: '#ffb800', data: [] },
-                master: { color: '#ff2e97', data: [] }
-            };
-
-            let cumTotal = 0, cumNovice = 0, cumSeeker = 0, cumMaster = 0;
-            sortedDays.forEach(day => {
-                cumTotal += dayMap[day].total;
-                cumNovice += dayMap[day].novice;
-                cumSeeker += dayMap[day].seeker;
-                cumMaster += dayMap[day].master;
-                lines.total.data.push(cumTotal);
-                lines.novice.data.push(cumNovice);
-                lines.seeker.data.push(cumSeeker);
-                lines.master.data.push(cumMaster);
-            });
-
-            // Chart dimensions
-            const padL = 42, padR = 14, padT = 12, padB = 36;
-            const chartW = W - padL - padR;
-            const chartH = H - padT - padB;
-
-            // Find max value for y-axis
-            const maxVal = Math.max(cumTotal, 10);
-            const niceMax = Math.ceil(maxVal / 10) * 10;
-
-            // Draw grid lines and y-axis labels
-            ctx.textAlign = 'right';
-            ctx.textBaseline = 'middle';
-            ctx.font = '9px sans-serif';
-            const gridCount = 5;
-            for (let i = 0; i <= gridCount; i++) {
-                const y = padT + chartH - (i / gridCount) * chartH;
-                const val = Math.round((i / gridCount) * niceMax);
-                // Grid line
-                ctx.strokeStyle = 'rgba(255,255,255,0.06)';
-                ctx.lineWidth = 1;
-                ctx.beginPath();
-                ctx.moveTo(padL, y);
-                ctx.lineTo(W - padR, y);
-                ctx.stroke();
-                // Label
-                ctx.fillStyle = 'rgba(255,255,255,0.35)';
-                ctx.fillText(val, padL - 6, y);
-            }
-
-            // X-axis day labels
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'top';
-            const maxLabels = Math.min(sortedDays.length, 8);
-            const labelStep = Math.max(1, Math.floor(sortedDays.length / maxLabels));
-            for (let i = 0; i < sortedDays.length; i += labelStep) {
-                const x = padL + (i / (sortedDays.length - 1 || 1)) * chartW;
-                const dayStr = sortedDays[i];
-                // Show as "Mar 5" format
-                const parts = dayStr.split('-');
-                const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-                const label = months[parseInt(parts[1]) - 1] + ' ' + parseInt(parts[2]);
-                ctx.fillStyle = 'rgba(255,255,255,0.35)';
-                ctx.font = '9px sans-serif';
-                ctx.fillText(label, x, padT + chartH + 8);
-            }
-
-            // Y-axis title
-            ctx.save();
-            ctx.translate(10, padT + chartH / 2);
-            ctx.rotate(-Math.PI / 2);
-            ctx.textAlign = 'center';
-            ctx.fillStyle = 'rgba(255,255,255,0.25)';
-            ctx.font = '9px sans-serif';
-            ctx.fillText('Points', 0, 0);
-            ctx.restore();
-
-            // X-axis title
-            ctx.textAlign = 'center';
-            ctx.fillStyle = 'rgba(255,255,255,0.25)';
-            ctx.font = '9px sans-serif';
-            ctx.fillText('Days', padL + chartW / 2, H - 4);
-
-            // Draw lines (level lines first, total on top)
-            const drawOrder = ['novice', 'seeker', 'master', 'total'];
-            drawOrder.forEach(key => {
-                const line = lines[key];
-                const data = line.data;
-                if (data.length === 0 || data.every(v => v === 0)) return;
-
-                const n = data.length;
-                ctx.strokeStyle = line.color;
-                ctx.lineWidth = key === 'total' ? 2.5 : 1.5;
-                ctx.lineJoin = 'round';
-                ctx.lineCap = 'round';
-
-                if (key !== 'total') {
-                    ctx.setLineDash([4, 3]);
-                } else {
-                    ctx.setLineDash([]);
-                }
-
-                ctx.beginPath();
-                for (let i = 0; i < n; i++) {
-                    const x = padL + (i / (n - 1 || 1)) * chartW;
-                    const y = padT + chartH - (data[i] / niceMax) * chartH;
-                    if (i === 0) ctx.moveTo(x, y);
-                    else ctx.lineTo(x, y);
-                }
-                ctx.stroke();
-                ctx.setLineDash([]);
-
-                // Draw dots
-                for (let i = 0; i < n; i++) {
-                    const x = padL + (i / (n - 1 || 1)) * chartW;
-                    const y = padT + chartH - (data[i] / niceMax) * chartH;
-                    ctx.fillStyle = line.color;
-                    ctx.beginPath();
-                    ctx.arc(x, y, key === 'total' ? 3 : 2, 0, Math.PI * 2);
-                    ctx.fill();
-                }
-            });
-
-            // Glow effect for total line
-            if (lines.total.data.length > 0) {
-                const data = lines.total.data;
-                const n = data.length;
-                ctx.strokeStyle = 'rgba(0, 255, 194, 0.15)';
-                ctx.lineWidth = 8;
-                ctx.lineJoin = 'round';
-                ctx.beginPath();
-                for (let i = 0; i < n; i++) {
-                    const x = padL + (i / (n - 1 || 1)) * chartW;
-                    const y = padT + chartH - (data[i] / niceMax) * chartH;
-                    if (i === 0) ctx.moveTo(x, y);
-                    else ctx.lineTo(x, y);
-                }
-                ctx.stroke();
-            }
-        }
-
-        function showNotification(message) {
-            const notification = document.getElementById('notification');
-            notification.textContent = message;
-            notification.classList.add('show');
-            setTimeout(() => notification.classList.remove('show'), 3500);
-        }
-
-        init();
-    
-        // ============ LEADERBOARD PAGE ============
         function showLeaderboard() {
             document.getElementById('mainContent').style.display = 'none';
-            document.getElementById('statsPage').classList.remove('active');
             document.getElementById('leaderboardPage').classList.add('active');
-            loadLeaderboardPage();
+            loadLeaderboard();
         }
 
         function hideLeaderboard() {
@@ -2951,111 +1189,74 @@
             document.getElementById('mainContent').style.display = 'block';
         }
 
-        function formatLeaderboardDate(dateStr) {
-            if (!dateStr) return '';
-            const [year, month, day] = dateStr.split('-');
-            const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-            return `${months[parseInt(month)-1]} ${parseInt(day)}, ${year}`;
-        }
-
-        async function loadLeaderboardPage() {
+        async function loadLeaderboard() {
             const listEl = document.getElementById('lbPlayerList');
-            if (isCloudConfigured()) {
-                listEl.innerHTML = '<div class="lb-empty"><div class="lb-empty-icon">⏳</div><div class="lb-empty-text">Fetching global rankings...</div></div>';
-            }
-            let leaderboard = await fetchCloudLeaderboard();
-            if (!leaderboard) {
-                leaderboard = JSON.parse(localStorage.getItem('wordQuest_GlobalLeaderboard') || '{}');
-            }
-
-            // Convert to sorted array
-            const players = Object.keys(leaderboard).map(name => ({
-                name: name,
-                score: leaderboard[name].score || 0,
-                lastPlayed: leaderboard[name].lastPlayed || ''
-            })).sort((a, b) => b.score - a.score);
-
-            const podiumEl = document.getElementById('lbPodium');
-            const listEl = document.getElementById('lbPlayerList');
-            const yourRankEl = document.getElementById('lbYourRank');
-            const listTitle = document.getElementById('lbListTitle');
-
-            // Current player
-            const myName = gameState.wizardName || '';
-
-            if (players.length === 0) {
-                podiumEl.style.display = 'none';
-                yourRankEl.style.display = 'none';
-                listTitle.style.display = 'none';
-                listEl.innerHTML = `
-                    <div class="lb-empty">
-                        <div class="lb-empty-icon">🏜️</div>
-                        <div class="lb-empty-text">No wizards on the board yet!</div>
-                        <div class="lb-empty-sub">Play a quest to claim the #1 spot</div>
-                    </div>`;
-                return;
-            }
-
-            listTitle.style.display = 'block';
-
-            // ---- YOUR RANK CARD ----
-            if (myName) {
-                const myIndex = players.findIndex(p => p.name === myName);
-                if (myIndex >= 0) {
-                    yourRankEl.style.display = 'flex';
-                    document.getElementById('lbYourRankValue').textContent = '#' + (myIndex + 1);
-                    document.getElementById('lbYourScoreValue').textContent = players[myIndex].score + ' pts';
-                    document.getElementById('lbYourNameTag').textContent = '🧙 ' + myName;
-                } else {
-                    yourRankEl.style.display = 'none';
+            listEl.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-secondary);">Loading...</div>';
+            
+            try {
+                const res = await fetch(`${JSONBIN_CONFIG.BASE_URL}/b/${JSONBIN_CONFIG.BIN_ID}/latest`, {
+                    headers: { 'X-Access-Key': JSONBIN_CONFIG.API_KEY }
+                });
+                const json = await res.json();
+                const cloudData = json.record || {};
+                
+                const players = Object.keys(cloudData).map(name => ({
+                    name, score: cloudData[name].score || 0
+                })).sort((a, b) => b.score - a.score);
+                
+                if (players.length === 0) {
+                    listEl.innerHTML = '<div style="text-align: center; padding: 60px; color: var(--text-dim);">No players yet!</div>';
+                    return;
                 }
-            } else {
-                yourRankEl.style.display = 'none';
-            }
-
-            // ---- PODIUM (Top 3) ----
-            if (players.length >= 2) {
-                podiumEl.style.display = 'flex';
-                const medals = ['🥇', '🥈', '🥉'];
-                const classes = ['gold', 'silver', 'bronze'];
-                const top3 = players.slice(0, Math.min(3, players.length));
-
-                podiumEl.innerHTML = top3.map((p, i) => `
-                    <div class="podium-card ${classes[i]}">
-                        <div class="podium-medal">${medals[i]}</div>
-                        <div class="podium-name">${p.name}</div>
-                        <div class="podium-score">${p.score} pts</div>
-                        <div class="podium-label">${formatLeaderboardDate(p.lastPlayed)}</div>
-                    </div>
-                `).join('');
-            } else {
-                podiumEl.style.display = 'none';
-            }
-
-            // ---- FULL LIST ----
-            listTitle.textContent = players.length > 3 ? 'All Wizards' : 'Wizards';
-
-            listEl.innerHTML = players.map((p, i) => {
-                const rank = i + 1;
-                let rankDisplay = rank;
-                if (rank === 1) rankDisplay = '🥇';
-                else if (rank === 2) rankDisplay = '🥈';
-                else if (rank === 3) rankDisplay = '🥉';
-
-                const isYou = myName && p.name === myName;
-
-                return `
-                    <div class="lb-player-row ${isYou ? 'is-you' : ''}">
-                        <div class="lb-rank">${rankDisplay}</div>
-                        <div class="lb-player-info">
-                            <div class="lb-player-name">🧙 ${p.name}${isYou ? ' (You)' : ''}</div>
-                            <div class="lb-player-date">${formatLeaderboardDate(p.lastPlayed)}</div>
+                
+                listEl.innerHTML = players.map((p, i) => {
+                    const rank = i + 1;
+                    const medal = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : `#${rank}`;
+                    return `<div style="display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: linear-gradient(135deg, var(--bg-card), var(--bg-light)); border-radius: 14px; margin-bottom: 10px; border: 1px solid rgba(255, 255, 255, 0.06);">
+                        <div style="display: flex; align-items: center; gap: 15px;">
+                            <div style="font-size: 20px; font-weight: 700; color: var(--accent-gold);">${medal}</div>
+                            <div style="font-size: 14px; font-weight: 700;">🧙 ${p.name}</div>
                         </div>
-                        <div class="lb-player-score">${p.score} pts</div>
+                        <div style="font-size: 18px; font-weight: 700; color: var(--accent-neon);">${p.score} pts</div>
                     </div>`;
-            }).join('');
+                }).join('');
+            } catch (err) {
+                listEl.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-secondary);">Failed to load leaderboard</div>';
+            }
         }
 
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.classList.add('show');
+            setTimeout(() => notification.classList.remove('show'), 3000);
+        }
+
+        function init() {
+            const savedName = localStorage.getItem('wordQuestWizardName');
+            if (savedName) {
+                gameState.wizardName = savedName;
+                document.getElementById('wizardNameDisplay').textContent = `🧙 ${savedName}`;
+                document.getElementById('wizardModal').classList.add('hidden');
+                
+                const savedStats = localStorage.getItem(`wordQuest_${savedName}`);
+                gameState.playerStats = savedStats ? JSON.parse(savedStats) : { totalScore: 0, victories: { novice: 0, seeker: 0, master: 0 }, journeyDays: 0, totalWins: 0, gamesPlayed: 0, dailyHistory: {} };
+                updateLevelCards();
+            }
+            
+            document.getElementById('guessInput').addEventListener('keypress', e => {
+                if (e.key === 'Enter') makeGuess();
+            });
+            
+            document.getElementById('wizardNameInput').addEventListener('keypress', e => {
+                if (e.key === 'Enter') saveWizardName();
+            });
+            
+            const today = new Date();
+            document.getElementById('dailyDate').textContent = `Today's Quest: ${today.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`;
+        }
+
+        init();
     </script>
 </body>
 </html>
