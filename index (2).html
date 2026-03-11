@@ -629,7 +629,7 @@
             <div class="logo">WordQuest</div>
             <div style="font-size: 11px; color: var(--text-secondary); letter-spacing: 3px; text-transform: uppercase;">Daily Word Challenge</div>
             <div class="header-buttons">
-                <button class="leaderboard-btn" onclick="showLeaderboard()">🏆 Leaders</button>
+                <button class="leaderboard-btn" onclick="window.open('leaderboard.html', '_blank')">🏆 Leaders</button>
                 <button class="stats-btn" onclick="showStats()">📊 Stats</button>
             </div>
         </div>
@@ -808,12 +808,6 @@
         </div>
 
         <!-- Leaderboard Page -->
-        <div id="leaderboardPage" class="leaderboard-page">
-            <button class="back-btn" onclick="hideLeaderboard()">← Back</button>
-            <h2 style="font-family: 'Playfair Display'; font-size: 32px; text-align: center; margin-bottom: 20px; background: linear-gradient(135deg, var(--accent-gold), var(--accent-pink)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">🏆 Leaderboard</h2>
-            <div id="lbPlayerList" style="max-width: 600px; margin: 0 auto;"></div>
-        </div>
-
         <div id="notification" class="notification"></div>
     </div>
 
@@ -1176,53 +1170,6 @@
         function hideStats() {
             document.getElementById('statsPage').classList.remove('active');
             document.getElementById('mainContent').style.display = 'block';
-        }
-
-        function showLeaderboard() {
-            document.getElementById('mainContent').style.display = 'none';
-            document.getElementById('leaderboardPage').classList.add('active');
-            loadLeaderboard();
-        }
-
-        function hideLeaderboard() {
-            document.getElementById('leaderboardPage').classList.remove('active');
-            document.getElementById('mainContent').style.display = 'block';
-        }
-
-        async function loadLeaderboard() {
-            const listEl = document.getElementById('lbPlayerList');
-            listEl.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-secondary);">Loading...</div>';
-            
-            try {
-                const res = await fetch(`${JSONBIN_CONFIG.BASE_URL}/b/${JSONBIN_CONFIG.BIN_ID}/latest`, {
-                    headers: { 'X-Access-Key': JSONBIN_CONFIG.API_KEY }
-                });
-                const json = await res.json();
-                const cloudData = json.record || {};
-                
-                const players = Object.keys(cloudData).map(name => ({
-                    name, score: cloudData[name].score || 0
-                })).sort((a, b) => b.score - a.score);
-                
-                if (players.length === 0) {
-                    listEl.innerHTML = '<div style="text-align: center; padding: 60px; color: var(--text-dim);">No players yet!</div>';
-                    return;
-                }
-                
-                listEl.innerHTML = players.map((p, i) => {
-                    const rank = i + 1;
-                    const medal = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : `#${rank}`;
-                    return `<div style="display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: linear-gradient(135deg, var(--bg-card), var(--bg-light)); border-radius: 14px; margin-bottom: 10px; border: 1px solid rgba(255, 255, 255, 0.06);">
-                        <div style="display: flex; align-items: center; gap: 15px;">
-                            <div style="font-size: 20px; font-weight: 700; color: var(--accent-gold);">${medal}</div>
-                            <div style="font-size: 14px; font-weight: 700;">🧙 ${p.name}</div>
-                        </div>
-                        <div style="font-size: 18px; font-weight: 700; color: var(--accent-neon);">${p.score} pts</div>
-                    </div>`;
-                }).join('');
-            } catch (err) {
-                listEl.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-secondary);">Failed to load leaderboard</div>';
-            }
         }
 
         function showNotification(message) {
