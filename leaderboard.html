@@ -33,17 +33,13 @@
             background: var(--bg-deep);
             color: var(--text-primary);
             min-height: 100vh;
-            overflow-x: hidden;
-            position: relative;
+            padding: 20px;
         }
 
         body::before {
             content: '';
             position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
+            top: 0; left: 0; right: 0; bottom: 0;
             background: 
                 radial-gradient(ellipse at 20% 30%, rgba(0, 255, 194, 0.08) 0%, transparent 50%),
                 radial-gradient(ellipse at 80% 70%, rgba(255, 46, 151, 0.08) 0%, transparent 50%);
@@ -58,75 +54,53 @@
         }
 
         .container {
-            max-width: 600px;
+            max-width: 800px;
             margin: 0 auto;
-            padding: 20px;
             position: relative;
             z-index: 1;
         }
 
         .header {
             text-align: center;
-            padding: 30px 20px;
-            margin-bottom: 30px;
-            background: linear-gradient(180deg, var(--bg-dark) 0%, transparent 100%);
-            border-radius: 20px;
+            margin-bottom: 40px;
         }
 
         .logo {
             font-family: 'Playfair Display', serif;
             font-size: 48px;
             font-weight: 900;
-            background: linear-gradient(135deg, var(--accent-neon) 0%, var(--accent-pink) 50%, var(--accent-purple) 100%);
+            background: linear-gradient(135deg, var(--accent-gold), var(--accent-pink));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 10px;
-            animation: titleGlow 3s ease-in-out infinite;
-        }
-
-        @keyframes titleGlow {
-            0%, 100% { filter: brightness(1); }
-            50% { filter: brightness(1.3); }
         }
 
         .subtitle {
             font-size: 14px;
             color: var(--text-secondary);
-            text-transform: uppercase;
             letter-spacing: 3px;
-            margin-bottom: 20px;
-        }
-
-        .cloud-status {
-            display: inline-block;
-            background: rgba(0, 255, 194, 0.1);
-            color: var(--accent-neon);
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 700;
-            border: 1px solid rgba(0, 255, 194, 0.3);
-            letter-spacing: 1px;
+            text-transform: uppercase;
         }
 
         .stats-bar {
-            display: flex;
-            justify-content: space-around;
-            background: linear-gradient(135deg, var(--bg-card), var(--bg-light));
-            border-radius: 18px;
-            padding: 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
             margin-bottom: 30px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        .stat-item {
+        .stat-card {
+            background: linear-gradient(135deg, var(--bg-card), var(--bg-light));
+            border: 2px solid rgba(255, 184, 0, 0.2);
+            border-radius: 18px;
+            padding: 20px;
             text-align: center;
         }
 
         .stat-value {
             font-size: 32px;
             font-weight: 900;
-            background: linear-gradient(135deg, var(--accent-neon), var(--accent-gold));
+            background: linear-gradient(135deg, var(--accent-neon), var(--accent-purple));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 5px;
@@ -136,73 +110,56 @@
             font-size: 10px;
             color: var(--text-dim);
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 1.5px;
         }
 
         .podium {
-            display: flex;
-            justify-content: center;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 30px;
             align-items: flex-end;
-            gap: 12px;
-            margin-bottom: 40px;
-            padding: 0 10px;
         }
 
-        .podium-card {
-            flex: 1;
-            max-width: 180px;
-            text-align: center;
+        .podium-place {
+            background: linear-gradient(135deg, var(--bg-card), var(--bg-light));
             border-radius: 20px;
-            padding: 25px 15px 20px;
+            padding: 25px 15px;
+            text-align: center;
             position: relative;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: transform 0.3s;
+            border: 2px solid;
+            animation: podiumSlide 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         }
 
-        .podium-card:hover {
-            transform: translateY(-5px);
+        @keyframes podiumSlide {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        .podium-card.gold {
-            background: linear-gradient(135deg, rgba(255, 184, 0, 0.25), rgba(255, 184, 0, 0.05));
-            border-color: rgba(255, 184, 0, 0.5);
-            order: 2;
-            min-height: 200px;
-            box-shadow: 0 10px 40px rgba(255, 184, 0, 0.2);
+        .podium-place.first {
+            border-color: #FFD700;
+            box-shadow: 0 0 40px rgba(255, 215, 0, 0.3);
+            grid-column: 2;
+            animation-delay: 0.2s;
         }
 
-        .podium-card.silver {
-            background: linear-gradient(135deg, rgba(192, 192, 192, 0.2), rgba(192, 192, 192, 0.05));
-            border-color: rgba(192, 192, 192, 0.4);
-            order: 1;
-            min-height: 170px;
+        .podium-place.second {
+            border-color: #C0C0C0;
+            box-shadow: 0 0 30px rgba(192, 192, 192, 0.2);
+            grid-column: 1;
+            animation-delay: 0.3s;
         }
 
-        .podium-card.bronze {
-            background: linear-gradient(135deg, rgba(205, 127, 50, 0.2), rgba(205, 127, 50, 0.05));
-            border-color: rgba(205, 127, 50, 0.4);
-            order: 3;
-            min-height: 150px;
+        .podium-place.third {
+            border-color: #CD7F32;
+            box-shadow: 0 0 30px rgba(205, 127, 50, 0.2);
+            grid-column: 3;
+            animation-delay: 0.4s;
         }
 
         .podium-medal {
-            font-size: 48px;
-            margin-bottom: 12px;
-            animation: bounce 2s ease-in-out infinite;
-        }
-
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-8px); }
-        }
-
-        .podium-card.gold .podium-medal {
-            animation: spin 4s linear infinite;
-        }
-
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+            font-size: 56px;
+            margin-bottom: 10px;
         }
 
         .podium-name {
@@ -210,212 +167,132 @@
             font-weight: 700;
             color: var(--text-primary);
             margin-bottom: 8px;
-            word-break: break-word;
         }
 
         .podium-score {
-            font-size: 24px;
+            font-size: 28px;
             font-weight: 900;
-            margin-bottom: 6px;
+            background: linear-gradient(135deg, var(--accent-neon), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
-        .podium-card.gold .podium-score {
-            color: var(--accent-gold);
-            text-shadow: 0 0 20px rgba(255, 184, 0, 0.5);
+        .rank-list {
+            background: linear-gradient(135deg, var(--bg-card), var(--bg-light));
+            border: 2px solid rgba(168, 85, 247, 0.2);
+            border-radius: 20px;
+            padding: 25px;
         }
 
-        .podium-card.silver .podium-score {
-            color: #C0C0C0;
-        }
-
-        .podium-card.bronze .podium-score {
-            color: #CD7F32;
-        }
-
-        .podium-label {
-            font-size: 9px;
-            color: var(--text-dim);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .section-title {
-            font-size: 14px;
-            color: var(--text-secondary);
+        .rank-list-title {
+            text-align: center;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--accent-purple);
+            margin-bottom: 20px;
             text-transform: uppercase;
             letter-spacing: 2px;
-            margin-bottom: 20px;
-            padding-bottom: 12px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
         }
 
-        .player-row {
-            display: grid;
-            grid-template-columns: 50px 1fr auto;
-            gap: 15px;
+        .rank-item {
+            display: flex;
+            justify-content: space-between;
             align-items: center;
-            padding: 16px 20px;
-            background: linear-gradient(135deg, var(--bg-card), var(--bg-light));
-            border-radius: 16px;
+            padding: 15px 20px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 14px;
             margin-bottom: 10px;
             border: 1px solid rgba(255, 255, 255, 0.06);
             transition: all 0.3s;
         }
 
-        .player-row:hover {
-            border-color: rgba(0, 255, 194, 0.3);
+        .rank-item:hover {
+            background: rgba(0, 255, 194, 0.05);
+            border-color: rgba(0, 255, 194, 0.2);
             transform: translateX(5px);
-            box-shadow: 0 5px 20px rgba(0, 255, 194, 0.1);
         }
 
-        .rank {
+        .rank-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .rank-number {
             font-size: 20px;
             font-weight: 700;
-            color: var(--text-dim);
-            text-align: center;
+            color: var(--accent-gold);
+            min-width: 40px;
         }
 
-        .player-info {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .player-name {
-            font-size: 16px;
+        .rank-name {
+            font-size: 14px;
             font-weight: 700;
-            color: var(--text-primary);
         }
 
-        .player-date {
-            font-size: 10px;
-            color: var(--text-dim);
-        }
-
-        .player-score {
-            font-size: 22px;
+        .rank-score {
+            font-size: 18px;
             font-weight: 700;
             color: var(--accent-neon);
-            text-shadow: 0 0 10px rgba(0, 255, 194, 0.3);
         }
 
-        .empty-state {
-            text-align: center;
-            padding: 60px 20px;
-            color: var(--text-dim);
-        }
-
-        .empty-icon {
-            font-size: 64px;
-            margin-bottom: 20px;
-            opacity: 0.5;
-        }
-
-        .empty-text {
-            font-size: 16px;
-            margin-bottom: 8px;
-            color: var(--text-secondary);
-        }
-
-        .empty-sub {
-            font-size: 12px;
-        }
-
-        .refresh-btn {
+        .play-btn {
+            display: block;
             width: 100%;
-            margin-top: 30px;
-            padding: 16px;
-            background: linear-gradient(135deg, rgba(255, 184, 0, 0.2), rgba(255, 46, 151, 0.2));
-            color: var(--accent-gold);
-            border: 1px solid rgba(255, 184, 0, 0.3);
-            border-radius: 16px;
-            font-family: 'Space Mono', monospace;
-            font-size: 14px;
-            font-weight: 700;
-            cursor: pointer;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            transition: all 0.3s;
-        }
-
-        .refresh-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(255, 184, 0, 0.3);
-        }
-
-        .refresh-btn:active {
-            transform: scale(0.98);
-        }
-
-        .game-link {
-            display: inline-block;
-            margin-top: 20px;
-            padding: 14px 28px;
+            max-width: 300px;
+            margin: 30px auto 0;
             background: linear-gradient(135deg, var(--accent-neon), var(--accent-purple));
             color: var(--bg-deep);
+            border: none;
+            padding: 16px 32px;
             border-radius: 14px;
-            text-decoration: none;
+            font-size: 16px;
             font-weight: 700;
-            font-size: 14px;
+            cursor: pointer;
+            text-decoration: none;
+            text-align: center;
             text-transform: uppercase;
             letter-spacing: 1px;
             transition: all 0.3s;
-            box-shadow: 0 5px 20px rgba(0, 255, 194, 0.3);
         }
 
-        .game-link:hover {
-            transform: translateY(-3px);
+        .play-btn:hover {
+            transform: translateY(-2px);
             box-shadow: 0 8px 30px rgba(0, 255, 194, 0.4);
-        }
-
-        .game-link:active {
-            transform: scale(0.95);
         }
 
         .loading {
             text-align: center;
-            padding: 40px;
+            padding: 60px 20px;
             color: var(--text-secondary);
+            font-size: 16px;
         }
 
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid rgba(255, 255, 255, 0.1);
-            border-top: 4px solid var(--accent-neon);
-            border-radius: 50%;
-            animation: spin-loader 1s linear infinite;
-            margin: 0 auto 20px;
-        }
-
-        @keyframes spin-loader {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .last-updated {
+        .error {
             text-align: center;
-            font-size: 10px;
-            color: var(--text-dim);
-            margin-top: 20px;
-            font-style: italic;
+            padding: 60px 20px;
+            color: var(--accent-pink);
+            font-size: 14px;
         }
 
-        @media (max-width: 500px) {
+        .refresh-note {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 11px;
+            color: var(--text-dim);
+        }
+
+        @media (max-width: 768px) {
+            .stats-bar {
+                grid-template-columns: 1fr;
+            }
             .podium {
-                gap: 8px;
+                grid-template-columns: 1fr;
             }
-            .podium-card {
-                padding: 20px 10px 15px;
-            }
-            .podium-medal {
-                font-size: 36px;
-            }
-            .podium-name {
-                font-size: 13px;
-            }
-            .podium-score {
-                font-size: 20px;
+            .podium-place.first,
+            .podium-place.second,
+            .podium-place.third {
+                grid-column: 1;
             }
         }
     </style>
@@ -423,205 +300,125 @@
 <body>
     <div class="container">
         <div class="header">
-            <div class="logo">🏆 Leaderboard</div>
+            <div class="logo">🏆 Global Leaderboard</div>
             <div class="subtitle">WordQuest Champions</div>
-            <div class="cloud-status" id="cloudStatus">🌐 LIVE — Global Rankings</div>
         </div>
 
-        <div class="stats-bar" id="statsBar">
-            <div class="stat-item">
-                <div class="stat-value" id="totalPlayers">0</div>
+        <div class="stats-bar">
+            <div class="stat-card">
+                <div class="stat-value" id="totalWizards">0</div>
                 <div class="stat-label">Total Wizards</div>
             </div>
-            <div class="stat-item">
+            <div class="stat-card">
                 <div class="stat-value" id="topScore">0</div>
                 <div class="stat-label">Top Score</div>
             </div>
-            <div class="stat-item">
+            <div class="stat-card">
                 <div class="stat-value" id="avgScore">0</div>
                 <div class="stat-label">Avg Score</div>
             </div>
         </div>
 
-        <div id="loadingState" class="loading">
-            <div class="spinner"></div>
-            <div>Loading global rankings...</div>
+        <div id="podiumContainer" class="podium" style="display: none;">
+            <!-- Podium will be populated by JS -->
         </div>
 
-        <div id="podiumContainer" style="display: none;">
-            <div class="podium" id="podium"></div>
+        <div class="rank-list">
+            <div class="rank-list-title">🌟 All Champions</div>
+            <div id="rankList">
+                <div class="loading">Loading global leaderboard...</div>
+            </div>
         </div>
 
-        <div id="listContainer" style="display: none;">
-            <div class="section-title" id="listTitle">All Wizards</div>
-            <div id="playerList"></div>
-        </div>
+        <a href="index.html" class="play-btn">🎮 Play WordQuest</a>
 
-        <div id="emptyState" class="empty-state" style="display: none;">
-            <div class="empty-icon">🏜️</div>
-            <div class="empty-text">No wizards on the board yet!</div>
-            <div class="empty-sub">Be the first to play and claim the throne</div>
-            <a href="index.html" class="game-link">🎮 Play WordQuest</a>
-        </div>
-
-        <button class="refresh-btn" onclick="loadLeaderboard()">🔄 Refresh Leaderboard</button>
-        
-        <div class="last-updated" id="lastUpdated"></div>
-
-        <div style="text-align: center; margin-top: 30px;">
-            <a href="index.html" class="game-link">🎮 Play WordQuest</a>
-        </div>
+        <div class="refresh-note">Auto-refreshes every 30 seconds</div>
     </div>
 
     <script>
-        // JSONBin.io Configuration
         const JSONBIN_CONFIG = {
             BIN_ID: '69ac1a3bae596e708f694c9e',
             API_KEY: '$2a$10$gcQCCyqzL8xU7Vum3uN84ebkMLYngo6KjM0j5gk8MVojAwvfPNsFe',
             BASE_URL: 'https://api.jsonbin.io/v3'
         };
 
-        function isCloudConfigured() {
-            return JSONBIN_CONFIG.BIN_ID !== 'YOUR_BIN_ID_HERE';
-        }
-
-        async function fetchCloudLeaderboard() {
-            if (!isCloudConfigured()) return null;
-            try {
-                const res = await fetch(
-                    `${JSONBIN_CONFIG.BASE_URL}/b/${JSONBIN_CONFIG.BIN_ID}/latest`,
-                    { headers: { 'X-Access-Key': JSONBIN_CONFIG.API_KEY } }
-                );
-                if (res.ok) {
-                    const json = await res.json();
-                    const cloudData = json.record || {};
-                    delete cloudData._init;
-                    localStorage.setItem('wordQuest_GlobalLeaderboard', JSON.stringify(cloudData));
-                    return cloudData;
-                }
-            } catch (err) {
-                console.warn('Cloud fetch failed, using local data:', err);
-            }
-            return null;
-        }
-
-        function formatDate(dateStr) {
-            if (!dateStr) return 'Unknown';
-            const [year, month, day] = dateStr.split('-');
-            const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-            return `${months[parseInt(month)-1]} ${parseInt(day)}, ${year}`;
-        }
-
         async function loadLeaderboard() {
-            const loadingEl = document.getElementById('loadingState');
+            const rankListEl = document.getElementById('rankList');
             const podiumEl = document.getElementById('podiumContainer');
-            const listEl = document.getElementById('listContainer');
-            const emptyEl = document.getElementById('emptyState');
-
-            // Show loading
-            loadingEl.style.display = 'block';
-            podiumEl.style.display = 'none';
-            listEl.style.display = 'none';
-            emptyEl.style.display = 'none';
-
-            // Try cloud first
-            let leaderboard = await fetchCloudLeaderboard();
             
-            // Fallback to local
-            if (!leaderboard) {
-                leaderboard = JSON.parse(localStorage.getItem('wordQuest_GlobalLeaderboard') || '{}');
-                document.getElementById('cloudStatus').textContent = '💾 LOCAL — Offline Rankings';
-                document.getElementById('cloudStatus').style.background = 'rgba(255, 184, 0, 0.1)';
-                document.getElementById('cloudStatus').style.color = 'var(--accent-gold)';
-                document.getElementById('cloudStatus').style.borderColor = 'rgba(255, 184, 0, 0.3)';
-            }
-
-            // Convert to sorted array
-            const players = Object.keys(leaderboard).map(name => ({
-                name: name,
-                score: leaderboard[name].score || 0,
-                lastPlayed: leaderboard[name].lastPlayed || ''
-            })).sort((a, b) => b.score - a.score);
-
-            // Hide loading
-            loadingEl.style.display = 'none';
-
-            // Empty state
-            if (players.length === 0) {
-                emptyEl.style.display = 'block';
-                updateStats(0, 0, 0);
-                return;
-            }
-
-            // Update stats
-            const topScore = players[0].score;
-            const avgScore = Math.round(players.reduce((sum, p) => sum + p.score, 0) / players.length);
-            updateStats(players.length, topScore, avgScore);
-
-            // Show podium for top 3
-            if (players.length >= 2) {
-                podiumEl.style.display = 'block';
-                renderPodium(players.slice(0, Math.min(3, players.length)));
-            }
-
-            // Show full list
-            listEl.style.display = 'block';
-            renderList(players);
-
-            // Update timestamp
-            const now = new Date();
-            document.getElementById('lastUpdated').textContent = 
-                `Last updated: ${now.toLocaleTimeString()}`;
-        }
-
-        function updateStats(total, top, avg) {
-            document.getElementById('totalPlayers').textContent = total;
-            document.getElementById('topScore').textContent = top;
-            document.getElementById('avgScore').textContent = avg;
-        }
-
-        function renderPodium(topPlayers) {
-            const medals = ['🥇', '🥈', '🥉'];
-            const classes = ['gold', 'silver', 'bronze'];
-            
-            const podiumHTML = topPlayers.map((player, i) => `
-                <div class="podium-card ${classes[i]}">
-                    <div class="podium-medal">${medals[i]}</div>
-                    <div class="podium-name">🧙 ${player.name}</div>
-                    <div class="podium-score">${player.score} pts</div>
-                    <div class="podium-label">${formatDate(player.lastPlayed)}</div>
-                </div>
-            `).join('');
-
-            document.getElementById('podium').innerHTML = podiumHTML;
-        }
-
-        function renderList(players) {
-            const listHTML = players.map((player, i) => {
-                const rank = i + 1;
-                let rankDisplay = rank;
-                if (rank === 1) rankDisplay = '🥇';
-                else if (rank === 2) rankDisplay = '🥈';
-                else if (rank === 3) rankDisplay = '🥉';
-
-                return `
-                    <div class="player-row">
-                        <div class="rank">${rankDisplay}</div>
-                        <div class="player-info">
-                            <div class="player-name">🧙 ${player.name}</div>
-                            <div class="player-date">${formatDate(player.lastPlayed)}</div>
+            try {
+                const res = await fetch(`${JSONBIN_CONFIG.BASE_URL}/b/${JSONBIN_CONFIG.BIN_ID}/latest`, {
+                    headers: { 'X-Access-Key': JSONBIN_CONFIG.API_KEY }
+                });
+                
+                if (!res.ok) {
+                    throw new Error('Failed to fetch leaderboard');
+                }
+                
+                const json = await res.json();
+                const cloudData = json.record || {};
+                
+                const players = Object.keys(cloudData).map(name => ({
+                    name,
+                    score: cloudData[name].score || 0,
+                    lastPlayed: cloudData[name].lastPlayed || ''
+                })).sort((a, b) => b.score - a.score);
+                
+                if (players.length === 0) {
+                    rankListEl.innerHTML = '<div class="loading">No players yet! Be the first to play!</div>';
+                    return;
+                }
+                
+                // Update stats bar
+                document.getElementById('totalWizards').textContent = players.length;
+                document.getElementById('topScore').textContent = players[0].score;
+                const avgScore = Math.round(players.reduce((sum, p) => sum + p.score, 0) / players.length);
+                document.getElementById('avgScore').textContent = avgScore;
+                
+                // Create podium for top 3
+                if (players.length >= 3) {
+                    podiumEl.style.display = 'grid';
+                    podiumEl.innerHTML = `
+                        <div class="podium-place second">
+                            <div class="podium-medal">🥈</div>
+                            <div class="podium-name">🧙 ${players[1].name}</div>
+                            <div class="podium-score">${players[1].score}</div>
                         </div>
-                        <div class="player-score">${player.score} pts</div>
-                    </div>
-                `;
-            }).join('');
-
-            document.getElementById('playerList').innerHTML = listHTML;
-            document.getElementById('listTitle').textContent = 
-                players.length > 3 ? 'All Wizards' : 'Wizards';
+                        <div class="podium-place first">
+                            <div class="podium-medal">🥇</div>
+                            <div class="podium-name">🧙 ${players[0].name}</div>
+                            <div class="podium-score">${players[0].score}</div>
+                        </div>
+                        <div class="podium-place third">
+                            <div class="podium-medal">🥉</div>
+                            <div class="podium-name">🧙 ${players[2].name}</div>
+                            <div class="podium-score">${players[2].score}</div>
+                        </div>
+                    `;
+                }
+                
+                // Create full rank list
+                rankListEl.innerHTML = players.map((player, index) => {
+                    const rank = index + 1;
+                    const medal = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : `#${rank}`;
+                    return `
+                        <div class="rank-item">
+                            <div class="rank-left">
+                                <div class="rank-number">${medal}</div>
+                                <div class="rank-name">🧙 ${player.name}</div>
+                            </div>
+                            <div class="rank-score">${player.score} pts</div>
+                        </div>
+                    `;
+                }).join('');
+                
+            } catch (err) {
+                console.error('Leaderboard error:', err);
+                rankListEl.innerHTML = '<div class="error">Failed to load leaderboard. Please try again later.</div>';
+            }
         }
 
-        // Auto-load on page load
+        // Load on page load
         loadLeaderboard();
 
         // Auto-refresh every 30 seconds
