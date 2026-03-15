@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#0D0221">
+    <title>WordQuest - Global Leaderboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        :root {
+            --bg-deep: #0D0221;
+            --bg-dark: #160A3A;
+            --bg-card: #1E1243;
+            --bg-light: #2D1B69;
+            --accent-neon: #00FFC2;
+            --accent-pink: #FF2E97;
+            --accent-gold: #FFB800;
+            --accent-purple: #A855F7;
+            --text-primary: #FFFFFF;
+            --text-secondary: #B4A5D8;
+            --text-dim: #7C6BA3;
+        }
+
+        body {
+            font-family: 'Space Mono', monospace;
+            background: var(--bg-deep);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: 
+                radial-gradient(ellipse at 20% 30%, rgba(0, 255, 194, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 70%, rgba(255, 46, 151, 0.08) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+            animation: bgPulse 8s ease-in-out infinite;
+        }
+
+        @keyframes bgPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 48px;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--accent-gold), var(--accent-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: var(--text-secondary);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+
+        .stats-bar {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, var(--bg-card), var(--bg-light));
+            border: 2px solid rgba(255, 184, 0, 0.2);
+            border-radius: 18px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--accent-neon), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 10px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+
+        .podium {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 30px;
+            align-items: flex-end;
+        }
+
+        .podium-place {
+            background: linear-gradient(135deg, var(--bg-card), var(--bg-light));
+            border-radius: 20px;
+            padding: 25px 15px;
+            text-align: center;
+            position: relative;
+            border: 2px solid;
+            animation: podiumSlide 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        @keyframes podiumSlide {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .podium-place.first {
+            border-color: #FFD700;
+            box-shadow: 0 0 40px rgba(255, 215, 0, 0.3);
+            grid-column: 2;
+            animation-delay: 0.2s;
+        }
+
+        .podium-place.second {
+            border-color: #C0C0C0;
+            box-shadow: 0 0 30px rgba(192, 192, 192, 0.2);
+            grid-column: 1;
+            animation-delay: 0.3s;
+        }
+
+        .podium-place.third {
+            border-color: #CD7F32;
+            box-shadow: 0 0 30px rgba(205, 127, 50, 0.2);
+            grid-column: 3;
+            animation-delay: 0.4s;
+        }
+
+        .podium-medal {
+            font-size: 56px;
+            margin-bottom: 10px;
+        }
+
+        .podium-name {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .podium-score {
+            font-size: 28px;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--accent-neon), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .rank-list {
+            background: linear-gradient(135deg, var(--bg-card), var(--bg-light));
+            border: 2px solid rgba(168, 85, 247, 0.2);
+            border-radius: 20px;
+            padding: 25px;
+        }
+
+        .rank-list-title {
+            text-align: center;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--accent-purple);
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .rank-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 14px;
+            margin-bottom: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            transition: all 0.3s;
+        }
+
+        .rank-item:hover {
+            background: rgba(0, 255, 194, 0.05);
+            border-color: rgba(0, 255, 194, 0.2);
+            transform: translateX(5px);
+        }
+
+        .rank-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .rank-number {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--accent-gold);
+            min-width: 40px;
+        }
+
+        .rank-name {
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .rank-score {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--accent-neon);
+        }
+
+        .play-btn {
+            display: block;
+            width: 100%;
+            max-width: 300px;
+            margin: 30px auto 0;
+            background: linear-gradient(135deg, var(--accent-neon), var(--accent-purple));
+            color: var(--bg-deep);
+            border: none;
+            padding: 16px 32px;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s;
+        }
+
+        .play-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0, 255, 194, 0.4);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-secondary);
+            font-size: 16px;
+        }
+
+        .error {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--accent-pink);
+            font-size: 14px;
+        }
+
+        .refresh-note {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 11px;
+            color: var(--text-dim);
+        }
+
+        @media (max-width: 768px) {
+            .stats-bar {
+                grid-template-columns: 1fr;
+            }
+            .podium {
+                grid-template-columns: 1fr;
+            }
+            .podium-place.first,
+            .podium-place.second,
+            .podium-place.third {
+                grid-column: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">🏆 Global Leaderboard</div>
+            <div class="subtitle">WordQuest Champions</div>
+        </div>
+
+        <div class="stats-bar">
+            <div class="stat-card">
+                <div class="stat-value" id="totalWizards">0</div>
+                <div class="stat-label">Total Wizards</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="topScore">0</div>
+                <div class="stat-label">Top Score</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="avgScore">0</div>
+                <div class="stat-label">Avg Score</div>
+            </div>
+        </div>
+
+        <div id="podiumContainer" class="podium" style="display: none;">
+            <!-- Podium will be populated by JS -->
+        </div>
+
+        <div class="rank-list">
+            <div class="rank-list-title">🌟 All Champions</div>
+            <div id="rankList">
+                <div class="loading">Loading global leaderboard...</div>
+            </div>
+        </div>
+
+        <a href="index.html" class="play-btn">🎮 Play WordQuest</a>
+
+        <div class="refresh-note">Auto-refreshes every 30 seconds</div>
+    </div>
+
+    <script>
+        const JSONBIN_CONFIG = {
+            BIN_ID: '69ac1a3bae596e708f694c9e',
+            API_KEY: '$2a$10$gcQCCyqzL8xU7Vum3uN84ebkMLYngo6KjM0j5gk8MVojAwvfPNsFe',
+            BASE_URL: 'https://api.jsonbin.io/v3'
+        };
+
+        async function loadLeaderboard() {
+            const rankListEl = document.getElementById('rankList');
+            const podiumEl = document.getElementById('podiumContainer');
+            
+            try {
+                const res = await fetch(`${JSONBIN_CONFIG.BASE_URL}/b/${JSONBIN_CONFIG.BIN_ID}/latest`, {
+                    headers: { 'X-Access-Key': JSONBIN_CONFIG.API_KEY }
+                });
+                
+                if (!res.ok) {
+                    throw new Error('Failed to fetch leaderboard');
+                }
+                
+                const json = await res.json();
+                const cloudData = json.record || {};
+                
+                const players = Object.keys(cloudData).map(name => ({
+                    name,
+                    score: cloudData[name].score || 0,
+                    lastPlayed: cloudData[name].lastPlayed || ''
+                })).sort((a, b) => b.score - a.score);
+                
+                if (players.length === 0) {
+                    rankListEl.innerHTML = '<div class="loading">No players yet! Be the first to play!</div>';
+                    return;
+                }
+                
+                // Update stats bar
+                document.getElementById('totalWizards').textContent = players.length;
+                document.getElementById('topScore').textContent = players[0].score;
+                const avgScore = Math.round(players.reduce((sum, p) => sum + p.score, 0) / players.length);
+                document.getElementById('avgScore').textContent = avgScore;
+                
+                // Create podium for top 3
+                if (players.length >= 3) {
+                    podiumEl.style.display = 'grid';
+                    podiumEl.innerHTML = `
+                        <div class="podium-place second">
+                            <div class="podium-medal">🥈</div>
+                            <div class="podium-name">🧙 ${players[1].name}</div>
+                            <div class="podium-score">${players[1].score}</div>
+                        </div>
+                        <div class="podium-place first">
+                            <div class="podium-medal">🥇</div>
+                            <div class="podium-name">🧙 ${players[0].name}</div>
+                            <div class="podium-score">${players[0].score}</div>
+                        </div>
+                        <div class="podium-place third">
+                            <div class="podium-medal">🥉</div>
+                            <div class="podium-name">🧙 ${players[2].name}</div>
+                            <div class="podium-score">${players[2].score}</div>
+                        </div>
+                    `;
+                }
+                
+                // Create full rank list
+                rankListEl.innerHTML = players.map((player, index) => {
+                    const rank = index + 1;
+                    const medal = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : `#${rank}`;
+                    return `
+                        <div class="rank-item">
+                            <div class="rank-left">
+                                <div class="rank-number">${medal}</div>
+                                <div class="rank-name">🧙 ${player.name}</div>
+                            </div>
+                            <div class="rank-score">${player.score} pts</div>
+                        </div>
+                    `;
+                }).join('');
+                
+            } catch (err) {
+                console.error('Leaderboard error:', err);
+                rankListEl.innerHTML = '<div class="error">Failed to load leaderboard. Please try again later.</div>';
+            }
+        }
+
+        // Load on page load
+        loadLeaderboard();
+
+        // Auto-refresh every 30 seconds
+        setInterval(loadLeaderboard, 30000);
+    </script>
+</body>
+</html>
