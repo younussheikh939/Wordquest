@@ -1,0 +1,1794 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#0D0221">
+    <title>WordQuest - Daily Word Challenge</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+
+        :root {
+            --bg-deep: #0D0221;
+            --bg-dark: #160A3A;
+            --bg-card: #1E1243;
+            --bg-light: #2D1B69;
+            --accent-neon: #00FFC2;
+            --accent-pink: #FF2E97;
+            --accent-gold: #FFB800;
+            --accent-purple: #A855F7;
+            --text-primary: #FFFFFF;
+            --text-secondary: #B4A5D8;
+            --text-dim: #7C6BA3;
+        }
+
+        body {
+            font-family: Georgia, 'Times New Roman', serif;
+            background: var(--bg-deep);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: 
+                radial-gradient(ellipse at 20% 30%, rgba(0, 255, 194, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 70%, rgba(255, 46, 151, 0.08) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+            animation: bgPulse 8s ease-in-out infinite;
+        }
+
+        @keyframes bgPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+        }
+
+        .header {
+            text-align: center;
+            padding: 25px 20px 20px;
+            background: linear-gradient(180deg, var(--bg-dark) 0%, transparent 100%);
+            position: relative;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .logo {
+            font-family: Georgia, serif;
+            font-size: 38px;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--accent-neon) 0%, var(--accent-pink) 50%, var(--accent-purple) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 5px;
+            animation: titleGlow 3s ease-in-out infinite;
+        }
+
+        @keyframes titleGlow {
+            0%, 100% { filter: brightness(1); }
+            50% { filter: brightness(1.3); }
+        }
+
+        .wizard-name-display {
+            position: absolute;
+            top: 25px;
+            left: 20px;
+            font-size: 12px;
+            color: var(--accent-gold);
+            font-weight: 700;
+        }
+
+        .header-buttons {
+            position: absolute;
+            top: 25px;
+            right: 20px;
+            display: flex;
+            gap: 8px;
+        }
+
+        .stats-btn, .leaderboard-btn {
+            background: rgba(0, 255, 194, 0.1);
+            color: var(--accent-neon);
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            border: 1px solid rgba(0, 255, 194, 0.3);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .leaderboard-btn {
+            background: rgba(255, 184, 0, 0.1);
+            color: var(--accent-gold);
+            border-color: rgba(255, 184, 0, 0.3);
+        }
+
+        /* Oracle Popup */
+        .oracle-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: linear-gradient(135deg, rgba(255, 46, 151, 0.95), rgba(168, 85, 247, 0.95));
+            border: 2px solid var(--accent-pink);
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 90%;
+            width: 400px;
+            z-index: 3000;
+            box-shadow: 0 0 60px rgba(255, 46, 151, 0.6);
+            backdrop-filter: blur(10px);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .oracle-popup.show {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+        }
+
+        .oracle-popup-icon {
+            font-size: 48px;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .oracle-popup-message {
+            font-size: 16px;
+            line-height: 1.6;
+            text-align: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        /* Category Boxes */
+        .categories-panel {
+            background: linear-gradient(135deg, var(--bg-card), var(--bg-light));
+            border: 2px solid rgba(168, 85, 247, 0.2);
+            border-radius: 18px;
+            padding: 15px;
+        }
+
+        .category-title {
+            text-align: center;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--accent-purple);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+
+        .category-box {
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(168, 85, 247, 0.2);
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 8px;
+            text-align: center;
+            transition: all 0.3s;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .category-box.highlighted {
+            background: linear-gradient(135deg, rgba(0, 255, 194, 0.3), rgba(168, 85, 247, 0.3));
+            border-color: var(--accent-neon);
+            box-shadow: 0 0 20px rgba(0, 255, 194, 0.4);
+            animation: categoryPulse 0.5s;
+        }
+
+        @keyframes categoryPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        /* Enhanced Stats Hero Cards */
+        .stats-hero {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .hero-card {
+            position: relative;
+            padding: 30px 20px;
+            border-radius: 22px;
+            text-align: center;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .hero-card.score-card {
+            background: linear-gradient(135deg, rgba(0, 255, 194, 0.25), rgba(168, 85, 247, 0.25));
+            border: 3px solid var(--accent-neon);
+            box-shadow: 0 0 40px rgba(0, 255, 194, 0.3);
+        }
+
+        .hero-card.days-card {
+            background: linear-gradient(135deg, rgba(255, 184, 0, 0.25), rgba(255, 46, 151, 0.25));
+            border: 3px solid var(--accent-gold);
+            box-shadow: 0 0 40px rgba(255, 184, 0, 0.3);
+        }
+
+        .hero-icon {
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+
+        .hero-value {
+            font-size: 56px;
+            font-weight: 900;
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+
+        .hero-card.score-card .hero-value {
+            background: linear-gradient(135deg, var(--accent-neon), #7af5d4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-card.days-card .hero-value {
+            background: linear-gradient(135deg, var(--accent-gold), var(--accent-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-label {
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        /* Victories Section */
+        .victories-section {
+            background: linear-gradient(135deg, var(--bg-card), var(--bg-light));
+            border: 2px solid rgba(168, 85, 247, 0.3);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .victories-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .victories-total {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .victories-trophy {
+            font-size: 36px;
+        }
+
+        .victories-total-value {
+            font-size: 36px;
+            font-weight: 900;
+            color: var(--accent-purple);
+        }
+
+        .victories-total-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-secondary);
+        }
+
+        .winrate-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--accent-neon);
+        }
+
+        .winrate-label {
+            font-size: 10px;
+            text-transform: uppercase;
+            color: var(--text-dim);
+        }
+
+        .levels-trio {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 12px;
+        }
+
+        .level-win-card {
+            text-align: center;
+            padding: 18px 10px;
+            border-radius: 16px;
+        }
+
+        .level-win-card.novice-card {
+            background: linear-gradient(135deg, rgba(0, 255, 194, 0.15), rgba(0, 255, 194, 0.05));
+            border: 2px solid rgba(0, 255, 194, 0.3);
+        }
+
+        .level-win-card.seeker-card {
+            background: linear-gradient(135deg, rgba(255, 184, 0, 0.15), rgba(255, 184, 0, 0.05));
+            border: 2px solid rgba(255, 184, 0, 0.3);
+        }
+
+        .level-win-card.master-card {
+            background: linear-gradient(135deg, rgba(255, 46, 151, 0.15), rgba(255, 46, 151, 0.05));
+            border: 2px solid rgba(255, 46, 151, 0.3);
+        }
+
+        .level-win-icon {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .level-win-value {
+            font-size: 32px;
+            font-weight: 900;
+            line-height: 1;
+            margin-bottom: 5px;
+        }
+
+        .novice-card .level-win-value { color: var(--accent-neon); }
+        .seeker-card .level-win-value { color: var(--accent-gold); }
+        .master-card .level-win-value { color: var(--accent-pink); }
+
+        .level-win-label {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-dim);
+        }
+
+        /* Chart with toggle */
+        .chart-container {
+            background: linear-gradient(135deg, var(--bg-card), var(--bg-light));
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 20px 16px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .chart-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .chart-toggle {
+            background: rgba(0, 255, 194, 0.1);
+            border: 1px solid rgba(0, 255, 194, 0.3);
+            border-radius: 8px;
+            padding: 6px 12px;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--accent-neon);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .chart-toggle:hover {
+            background: rgba(0, 255, 194, 0.2);
+        }
+
+        /* Game grid layout - DESKTOP */
+        .game-grid {
+            display: grid;
+            grid-template-columns: 1fr 3fr 1fr 1fr;
+            gap: 12px;
+            padding: 12px;
+            height: calc(100vh - 180px);
+            grid-template-areas:
+                "categories questpath tries score"
+                "categories questpath whispers whispers";
+        }
+
+        .categories-panel {
+            grid-area: categories;
+        }
+
+        .quest-path-section {
+            grid-area: questpath;
+        }
+
+        .stat-box:nth-child(1) {
+            grid-area: tries;
+        }
+
+        .stat-box:nth-child(2) {
+            grid-area: score;
+        }
+
+        .whispers-container {
+            grid-area: whispers;
+        }
+
+        .stat-box {
+            background: linear-gradient(135deg, var(--bg-card), var(--bg-light));
+            border-radius: 14px;
+            padding: 18px 12px;
+            text-align: center;
+            border: 2px solid rgba(0, 255, 194, 0.2);
+        }
+
+        .stat-box-label {
+            font-size: 10px;
+            color: var(--text-dim);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-family: Georgia, serif;
+        }
+
+        .stat-box-value {
+            font-size: 42px;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--accent-neon), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1;
+            font-family: Georgia, serif;
+        }
+
+        /* Quest Path */
+        .quest-path-container {
+            background: linear-gradient(135deg, var(--bg-card), var(--bg-light));
+            border-radius: 18px;
+            padding: 15px;
+            height: 100%;
+            border: 2px solid rgba(0, 255, 194, 0.2);
+        }
+
+        .quest-path-title {
+            text-align: center;
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--accent-neon);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+
+        .quest-path-map {
+            position: relative;
+            width: 100%;
+            height: 340px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            border: 1px solid rgba(0, 255, 194, 0.2);
+            overflow: hidden;
+        }
+
+        .quest-target {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--accent-neon), var(--accent-purple));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            z-index: 1;
+            animation: targetPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes targetPulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.1); }
+        }
+
+        .guess-bubble {
+            position: absolute;
+            padding: 6px 12px;
+            background: rgba(13, 2, 33, 0.9);
+            border-radius: 16px;
+            font-size: 10px;
+            font-weight: 600;
+            border: 2px solid;
+            transform: translate(-50%, -50%);
+            animation: bubbleIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            white-space: nowrap;
+            backdrop-filter: blur(10px);
+            z-index: 10;
+        }
+
+        @keyframes bubbleIn {
+            from { opacity: 0; transform: translate(-50%, -50%) scale(0.3); }
+            to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+        }
+
+        .whisper-revealed {
+            opacity: 1 !important;
+            border-color: var(--accent-pink) !important;
+            background: linear-gradient(135deg, rgba(255, 46, 151, 0.15), rgba(168, 85, 247, 0.15)) !important;
+            animation: whisperReveal 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        @keyframes whisperReveal {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .level-selector { padding: 20px; }
+        .daily-indicator {
+            background: linear-gradient(135deg, var(--accent-gold), var(--accent-pink));
+            color: var(--bg-deep);
+            padding: 8px 16px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+
+        .level-card {
+            background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-light) 100%);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .level-card.completed::after {
+            content: '✓ Completed Today';
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 255, 194, 0.9);
+            color: var(--bg-deep);
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .game-area { display: none; }
+        .game-area.active { display: block; }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-120px);
+            background: linear-gradient(135deg, var(--bg-card), var(--bg-light));
+            color: var(--text-primary);
+            padding: 14px 24px;
+            border-radius: 12px;
+            border: 1px solid var(--accent-neon);
+            box-shadow: 0 0 40px rgba(0, 255, 194, 0.3);
+            z-index: 2000;
+            transition: transform 0.4s;
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .notification.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .wizard-modal {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.95);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            padding: 20px;
+        }
+
+        .wizard-modal.hidden { display: none; }
+
+        .wizard-content {
+            background: linear-gradient(135deg, var(--bg-card), var(--bg-light));
+            border-radius: 25px;
+            padding: 40px 30px;
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+            border: 2px solid rgba(255, 184, 0, 0.3);
+            box-shadow: 0 0 60px rgba(255, 46, 151, 0.4);
+        }
+
+        .wizard-input {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(255, 184, 0, 0.3);
+            color: var(--text-primary);
+            padding: 14px 18px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-family: Georgia, 'Times New Roman', serif;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .wizard-btn {
+            width: 100%;
+            background: linear-gradient(135deg, var(--accent-gold), var(--accent-pink));
+            color: var(--bg-deep);
+            border: none;
+            padding: 14px 30px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+
+        .stats-page { display: none; padding: 20px; }
+        .stats-page.active { display: block; }
+        
+        .back-btn {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 10px 18px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .game-grid {
+                grid-template-columns: 1fr 2fr;
+                grid-template-rows: auto auto auto;
+                grid-template-areas:
+                    "questpath questpath"
+                    "categories tries"
+                    "categories score"
+                    "whispers whispers";
+                gap: 10px;
+                height: auto;
+            }
+            
+            .quest-path-section {
+                grid-area: questpath;
+            }
+            
+            .quest-path-map {
+                height: 280px !important;
+            }
+            
+            .categories-panel {
+                grid-area: categories;
+            }
+            
+            .category-box {
+                padding: 8px;
+                margin-bottom: 6px;
+                font-size: 11px;
+            }
+            
+            .stat-box {
+                padding: 12px 8px;
+            }
+            
+            .stat-box-value {
+                font-size: 32px;
+            }
+            
+            .whispers-container {
+                grid-area: whispers;
+            }
+        }
+        .post-game-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        
+        .post-game-btn {
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: Georgia, serif;
+            border: 2px solid;
+        }
+        
+        .retreat-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+        
+        .retreat-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .next-btn {
+            background: linear-gradient(135deg, var(--accent-neon), var(--accent-purple));
+            color: var(--bg-deep);
+            border-color: var(--accent-neon);
+        }
+        
+        .next-btn:hover {
+            filter: brightness(1.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Oracle Popup -->
+        <div id="oraclePopup" class="oracle-popup">
+            <div class="oracle-popup-icon">🔮</div>
+            <div class="oracle-popup-message" id="oraclePopupMessage"></div>
+        </div>
+
+        <!-- Wizard Modal -->
+        <div id="wizardModal" class="wizard-modal">
+            <div class="wizard-content">
+                <div style="font-size: 72px; margin-bottom: 20px;">🧙‍♂️</div>
+                <h2 style="font-family: Georgia; font-size: 28px; margin-bottom: 10px; background: linear-gradient(135deg, var(--accent-gold), var(--accent-pink)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Choose Your Wizard Name</h2>
+                <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 20px;">Join the daily quest and track your progress!</p>
+                <input type="text" id="wizardNameInput" class="wizard-input" placeholder="Enter your wizard name..." maxlength="20">
+                <button class="wizard-btn" onclick="saveWizardName()">Begin Quest</button>
+            </div>
+        </div>
+
+        <!-- Header -->
+        <div class="header">
+            <div id="wizardNameDisplay" class="wizard-name-display"></div>
+            <div class="logo">WordQuest</div>
+            <div style="font-size: 11px; color: var(--text-secondary); letter-spacing: 3px; text-transform: uppercase;">Daily Word Challenge</div>
+            <div class="header-buttons">
+                <button class="leaderboard-btn" onclick="window.open('leaderboard.html', '_blank')">🏆 Leaders</button>
+                <button class="stats-btn" onclick="showStats()">📊 Stats</button>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div id="mainContent">
+            <div id="levelSelector" class="level-selector">
+                <div class="daily-indicator" id="dailyDate">Today's Quest</div>
+                
+                <div class="level-card novice" id="noviceCard" onclick="startLevel('novice')" style="--accent: var(--accent-neon);">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+                        <div style="font-family: Georgia; font-size: 26px; font-weight: 900; color: var(--accent); text-shadow: 0 0 20px var(--accent);">Novice Quest</div>
+                        <div style="font-size: 36px;">🌟</div>
+                    </div>
+                    <div style="display: flex; gap: 20px; font-size: 12px;">
+                        <div style="background: rgba(255, 255, 255, 0.05); padding: 6px 12px; border-radius: 20px;">
+                            <span>⚡</span> <span style="color: var(--accent); font-weight: 700;" id="noviceTries">5</span> <span>tries</span>
+                        </div>
+                        <div style="background: rgba(255, 255, 255, 0.05); padding: 6px 12px; border-radius: 20px;">
+                            <span>💎</span> <span style="color: var(--accent); font-weight: 700;">10</span> <span>pts</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="level-card seeker" id="seekerCard" onclick="startLevel('seeker')" style="--accent: var(--accent-gold);">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+                        <div style="font-family: Georgia; font-size: 26px; font-weight: 900; color: var(--accent); text-shadow: 0 0 20px var(--accent);">Seeker's Path</div>
+                        <div style="font-size: 36px;">🔮</div>
+                    </div>
+                    <div style="display: flex; gap: 20px; font-size: 12px;">
+                        <div style="background: rgba(255, 255, 255, 0.05); padding: 6px 12px; border-radius: 20px;">
+                            <span>⚡</span> <span style="color: var(--accent); font-weight: 700;" id="seekerTries">5</span> <span>tries</span>
+                        </div>
+                        <div style="background: rgba(255, 255, 255, 0.05); padding: 6px 12px; border-radius: 20px;">
+                            <span>💎</span> <span style="color: var(--accent); font-weight: 700;">15</span> <span>pts</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="level-card master" id="masterCard" onclick="startLevel('master')" style="--accent: var(--accent-pink);">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+                        <div style="font-family: Georgia; font-size: 26px; font-weight: 900; color: var(--accent); text-shadow: 0 0 20px var(--accent);">Master's Trial</div>
+                        <div style="font-size: 36px;">👑</div>
+                    </div>
+                    <div style="display: flex; gap: 20px; font-size: 12px;">
+                        <div style="background: rgba(255, 255, 255, 0.05); padding: 6px 12px; border-radius: 20px;">
+                            <span>⚡</span> <span style="color: var(--accent); font-weight: 700;" id="masterTries">5</span> <span>tries</span>
+                        </div>
+                        <div style="background: rgba(255, 255, 255, 0.05); padding: 6px 12px; border-radius: 20px;">
+                            <span>💎</span> <span style="color: var(--accent); font-weight: 700;">20</span> <span>pts</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Game Area -->
+            <div id="gameArea" class="game-area">
+                <button class="back-btn" onclick="backToMenu()" style="margin: 15px 20px;">← Retreat</button>
+                
+                <!-- Input Section -->
+                <div style="padding: 0 15px 15px;">
+                    <div style="background: linear-gradient(135deg, var(--bg-card), var(--bg-light)); border-radius: 18px; padding: 20px; border: 1px solid rgba(0, 255, 194, 0.2);">
+                        <div style="display: flex; gap: 10px;">
+                            <input type="text" id="guessInput" placeholder="Enter your word..." style="flex: 1; background: rgba(0, 0, 0, 0.3); border: 2px solid rgba(0, 255, 194, 0.3); color: white; padding: 14px 18px; border-radius: 12px; font-size: 15px; font-family: Georgia, 'Times New Roman', serif;">
+                            <button onclick="makeGuess()" style="background: linear-gradient(135deg, var(--accent-neon), var(--accent-purple)); color: var(--bg-deep); border: none; padding: 14px 24px; border-radius: 12px; font-size: 14px; font-weight: 700; cursor: pointer;">Cast</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Game Grid -->
+                <div class="game-grid">
+                    <!-- Categories (Left) -->
+                    <div class="categories-panel">
+                        <div class="category-title">🏷️ Categories</div>
+                        <div class="category-box" id="catName">📛 Name</div>
+                        <div class="category-box" id="catPlace">🗺️ Place</div>
+                        <div class="category-box" id="catAnimal">🐾 Animal</div>
+                        <div class="category-box" id="catThing">📦 Thing</div>
+                        <div class="category-box" id="catVerb" style="display: none;">🔄 Verb</div>
+                        <div class="category-box" id="catOther" style="display: none;">✨ Other</div>
+                    </div>
+
+                    <!-- Quest Path (Middle) -->
+                    <div class="quest-path-section">
+                        <div class="quest-path-container">
+                            <div class="quest-path-title">⚔️ Quest Path<br>(similarity score)</div>
+                            <div class="quest-path-map">
+                                <div class="quest-target">🎯</div>
+                                <div id="guessesMap"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tries Left (Right Top Left) -->
+                    <div class="stat-box">
+                        <div class="stat-box-label">Tries Left</div>
+                        <div class="stat-box-value" id="triesDisplay">5</div>
+                    </div>
+
+                    <!-- Score (Right Top Right) -->
+                    <div class="stat-box" style="border-color: rgba(255, 184, 0, 0.2);">
+                        <div class="stat-box-label">Score</div>
+                        <div class="stat-box-value" id="currentScore" style="background: linear-gradient(135deg, var(--accent-gold), var(--accent-pink)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">0</div>
+                    </div>
+
+                    <!-- Whispers (Right Bottom) -->
+                    <div class="whispers-container" style="background: linear-gradient(135deg, var(--bg-card), var(--bg-light)); border-radius: 14px; padding: 12px; border: 2px solid rgba(168, 85, 247, 0.2);">
+                        <div style="text-align: center; font-size: 10px; font-weight: 700; color: var(--accent-purple); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1.5px; font-family: Georgia, serif;">🔮 Whispers</div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px;">
+                            <div style="background: rgba(0, 0, 0, 0.3); border: 2px solid rgba(168, 85, 247, 0.3); border-radius: 10px; padding: 10px 6px; text-align: center; opacity: 0.3; transition: all 0.4s;" id="whisperLetters">
+                                <div style="font-size: 16px; margin-bottom: 4px;">📏</div>
+                                <div style="font-size: 20px; font-weight: 900; color: var(--accent-pink); margin-bottom: 2px; font-family: Georgia, serif;" id="whisperLettersValue">?</div>
+                                <div style="font-size: 7px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px; font-family: Georgia, serif;">Letters</div>
+                            </div>
+                            <div style="background: rgba(0, 0, 0, 0.3); border: 2px solid rgba(168, 85, 247, 0.3); border-radius: 10px; padding: 10px 6px; text-align: center; opacity: 0.3; transition: all 0.4s;" id="whisperStart">
+                                <div style="font-size: 16px; margin-bottom: 4px;">🔤</div>
+                                <div style="font-size: 20px; font-weight: 900; color: var(--accent-pink); margin-bottom: 2px; font-family: Georgia, serif;" id="whisperStartValue">?</div>
+                                <div style="font-size: 7px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px; font-family: Georgia, serif;">Starts</div>
+                            </div>
+                            <div style="background: rgba(0, 0, 0, 0.3); border: 2px solid rgba(168, 85, 247, 0.3); border-radius: 10px; padding: 10px 6px; text-align: center; opacity: 0.3; transition: all 0.4s;" id="whisperEnd">
+                                <div style="font-size: 16px; margin-bottom: 4px;">🔡</div>
+                                <div style="font-size: 20px; font-weight: 900; color: var(--accent-pink); margin-bottom: 2px; font-family: Georgia, serif;" id="whisperEndValue">?</div>
+                                <div style="font-size: 7px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px; font-family: Georgia, serif;">Ends</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Page -->
+        <div id="statsPage" class="stats-page">
+            <button class="back-btn" onclick="hideStats()">← Back</button>
+            
+            <div class="stats-hero">
+                <div class="hero-card score-card">
+                    <div class="hero-icon">⚡</div>
+                    <div class="hero-value" id="statTotalScore">0</div>
+                    <div class="hero-label">Total Score</div>
+                </div>
+                <div class="hero-card days-card">
+                    <div class="hero-icon">🗓️</div>
+                    <div class="hero-value" id="statJourneyDays">0</div>
+                    <div class="hero-label">Journey Days</div>
+                </div>
+            </div>
+
+            <div class="victories-section">
+                <div class="victories-header">
+                    <div class="victories-total">
+                        <div class="victories-trophy">🏆</div>
+                        <div>
+                            <div class="victories-total-value" id="statTotalWins">0</div>
+                            <div class="victories-total-label">Total Victories</div>
+                        </div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div class="winrate-value" id="statWinRate">0%</div>
+                        <div class="winrate-label">Win Rate</div>
+                    </div>
+                </div>
+
+                <div class="levels-trio">
+                    <div class="level-win-card novice-card">
+                        <div class="level-win-icon">🌱</div>
+                        <div class="level-win-value" id="statNoviceWins">0</div>
+                        <div class="level-win-label">Novice</div>
+                    </div>
+                    <div class="level-win-card seeker-card">
+                        <div class="level-win-icon">🔍</div>
+                        <div class="level-win-value" id="statSeekerWins">0</div>
+                        <div class="level-win-label">Seeker</div>
+                    </div>
+                    <div class="level-win-card master-card">
+                        <div class="level-win-icon">👑</div>
+                        <div class="level-win-value" id="statMasterWins">0</div>
+                        <div class="level-win-label">Master</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <div class="chart-header">
+                    <div class="chart-title">🗺️ Quest Journey</div>
+                    <button class="chart-toggle" id="chartToggle" onclick="toggleGraph()">📊 Toggle</button>
+                </div>
+                <canvas id="progressChart" style="width: 100%; height: 220px;"></canvas>
+            </div>
+        </div>
+
+        <div id="notification" class="notification"></div>
+    </div>
+
+    <script>
+        // PROPERLY CATEGORIZED OXFORD 5000 WORDS
+        const OXFORD_WORDS = {"novice": ["aim", "ask", "bag", "bar", "bat", "bay", "bed", "bet", "bid", "bit", "bow", "box", "boy", "bug", "bus", "buy", "car", "cat", "cup", "cut", "dam", "day", "den", "dig", "dot", "due", "ear", "eat", "egg", "end", "eye", "fan", "far", "fat", "fee", "fig", "fin", "fit", "fix", "fly", "fog", "fox", "fun", "fur", "gap", "gas", "gay", "gem", "god", "gun", "gut", "guy", "ham", "hat", "hen", "hip", "hit", "hot", "ice", "ill", "ink", "inn", "its", "ivy", "jam", "jar", "jaw", "jet", "job", "joy", "key", "kid", "kit", "lab", "lad", "lap", "law", "lay", "leg", "let", "lid", "lie", "lip", "lot", "low", "mad", "map", "mat", "may", "mix", "mob", "mud", "net", "new", "nod", "nor", "not", "now", "nut", "oak", "oat", "odd", "off", "oil", "old", "one", "opt", "our", "out", "owe", "own", "pad", "pan", "pat", "pea", "pen", "per", "pet", "pie", "pig", "pin", "pit", "pop", "pot", "pub", "put", "quo", "rag", "ran", "rat", "raw", "ray", "red", "ref", "rid", "rig", "rim", "row", "rub", "rug", "run", "sad", "saw", "say", "sea", "see", "set", "sex", "she", "shy", "sin", "sir", "sit", "six", "ski", "sky", "son", "sow", "spy", "sum", "sun", "tab", "tag", "tap", "tar", "tax", "tea", "ten", "the", "tie", "tin", "tip", "toe", "ton", "too", "top", "toy", "try", "tub", "two", "van", "vet", "via", "war", "was", "way", "web", "wed", "wet", "who", "why", "wig", "win", "wit", "won", "yes", "yet", "you", "zip", "zoo", "wave", "norm", "plea", "pray", "sect", "slot"], "seeker": ["abuse", "acute", "adapt", "admit", "adopt", "adult", "agent", "agree", "alarm", "alert", "alien", "align", "alike", "allow", "alter", "angel", "anger", "angle", "ankle", "apart", "apple", "apply", "arena", "argue", "arise", "array", "arrow", "aside", "asset", "award", "aware", "awful", "badly", "basis", "beach", "beard", "beast", "being", "below", "bench", "black", "blade", "blame", "blank", "blast", "bleed", "blend", "bless", "blind", "block", "blood", "bloom", "board", "boost", "booth", "bound", "brain", "brake", "brand", "brave", "bread", "break", "breed", "brick", "bride", "brief", "bring", "broad", "brown", "brush", "build", "built", "bunch", "cable", "canal", "carry", "carve", "catch", "cause", "cease", "chain", "chair", "chaos", "charm", "chart", "chase", "cheap", "cheat", "check", "cheek", "cheer", "chess", "chest", "chief", "child", "china", "chord", "civil", "claim", "class", "clean", "clear", "clerk", "click", "cliff", "climb", "cling", "clock", "close", "cloth", "cloud", "coach", "coast", "count", "county", "court", "cover", "crack", "craft", "crash", "crazy", "cream", "creep", "crime", "crisp", "cross", "crowd", "crown", "crude", "crush", "curve", "cycle", "daily", "dance", "death", "debut", "decay", "depth", "devil", "diary", "dirty", "doing", "doubt", "dozen", "draft", "drain", "drama", "drank", "drawn", "dream", "dress", "dried", "drill", "drink", "drive", "drown", "drunk", "eager", "early", "earth", "eight", "elder", "elect", "elite", "empty", "enemy", "enjoy", "enter", "entry", "equal", "equip", "error", "essay", "ethic", "event", "every", "exact", "exist", "extra", "faith", "false", "fancy", "fatal", "fault", "feast", "fence", "fever", "fewer", "field", "fifth", "fifty", "fight", "final", "first", "fixed", "flash", "fleet", "flesh", "float", "flood", "floor", "flour", "fluid", "focus", "force", "forth", "forty", "forum", "found", "frame", "frank", "fraud", "fresh", "front", "fruit", "fully", "funny", "ghost", "giant", "given", "glass", "globe", "glory", "grace", "grade", "grain", "grand", "grant", "graph", "grasp", "grass", "grave", "great", "greed", "green", "greet", "grief", "gross", "group", "grown", "guard", "guess", "guest", "guide", "guilt", "happy", "harsh", "heart", "heavy", "hello", "hence", "horse", "hotel", "house", "human", "ideal", "image", "imply", "index", "inner", "input", "intro", "irony", "issue", "joint", "judge", "knife", "label", "labor", "large", "laser", "later", "laugh", "layer", "learn", "lease", "least", "leave", "legal", "lemon", "level", "light", "limit", "lobby", "local", "logic", "loose", "lower", "lucky", "lunar", "lunch", "lying", "magic", "major", "maker", "march", "marry", "match", "maybe", "mayor", "means", "media", "merit", "metal", "midst", "might", "minor", "mixed", "model", "money", "month", "moral", "motor", "mount", "mouse", "mouth", "music", "naked", "nerve", "never", "newly", "night", "ninth", "noble", "noise", "north", "novel", "nurse", "occur", "ocean", "offer", "often", "onion", "opera", "orbit", "order", "organ", "other", "ought", "outer", "owner", "paint", "panel", "panic", "paper", "party", "pasta", "patch", "pause", "peace", "penny", "phase", "phone", "photo", "piano", "piece", "pilot", "pitch", "place", "plain", "plane", "plant", "plate", "plaza", "plead", "point", "poker", "polar", "pound", "power", "press", "price", "pride", "prime", "print", "prior", "prize", "proof", "proud", "prove", "pupil", "purse", "queen", "quest", "quick", "quiet", "quite", "quote", "radio", "raise", "rally", "range", "rapid", "ratio", "reach", "react", "ready", "realm", "rebel", "refer", "relax", "relay", "reply", "rider", "ridge", "rifle", "right", "rigid", "rival", "river", "robin", "robot", "rocky", "roman", "rough", "round", "route", "royal", "rugby", "ruler", "rural", "scale", "scare", "scene", "scope", "score", "scout", "screw", "sense", "serve", "seven", "shall", "shape", "share", "sharp", "sheep", "sheer", "sheet", "shelf", "shell", "shift", "shine", "shirt", "shock", "shoot", "shore", "short", "shout", "shown", "sight", "silly", "since", "sixth", "sixty", "skill", "slice", "slide", "slope", "small", "smart", "smell", "smile", "smoke", "snake", "solar", "solid", "solve", "sorry", "sound", "south", "space", "spare", "speak", "speed", "spell", "spend", "spill", "split", "spoke", "sport", "squad", "staff", "stage", "stake", "stall", "stamp", "stand", "stark", "start", "state", "steak", "steal", "steam", "steel", "steep", "steer", "stick", "still", "stock", "stone", "stood", "store", "storm", "story", "strip", "stuck", "study", "stuff", "style", "sugar", "super", "surge", "sweet", "swept", "swift", "swing", "sword", "table", "taste", "teach", "tears", "tenth", "terms", "thank", "theft", "their", "theme", "there", "these", "thick", "thing", "think", "third", "thirty", "those", "three", "threw", "throw", "thumb", "tiger", "tight", "title", "total", "touch", "tough", "tower", "track", "trade", "trail", "train", "trait", "trash", "treat", "trend", "trial", "tribe", "trick", "troop", "truck", "truly", "trunk", "trust", "truth", "tumor", "twice", "twist", "under", "union", "unity", "until", "upper", "upset", "urban", "usage", "usual", "valid", "value", "venue", "video", "virus", "visit", "vital", "vocal", "voice", "voter", "wages", "waste", "watch", "water", "weave", "weird", "where", "which", "while", "white", "whole", "whose", "woman", "world", "worry", "worse", "worst", "worth", "would", "wound", "write", "wrong", "wrote", "yield", "young", "yours", "youth", "humour", "confer", "depict", "ethnic", "fiscal", "impact", "induce", "inland", "lesser", "lethal", "motive", "outing", "outlet", "ozone", "payout", "permit", "poetic", "postal", "preach", "purple", "random", "refuge", "regime", "relief", "remedy", "ribbon", "riddle", "ritual", "rumour", "sacred", "sector", "seller", "sensor", "shower", "speedy", "sphere", "spouse", "statue", "subtle", "tenant", "tenure", "thrust", "timber", "tomato", "toxic", "trader", "tragic", "treaty", "uneasy", "unfair", "unify", "unlock", "unrest", "unsafe", "untold", "uphold", "update", "upload", "uproar", "upward", "urgent", "vacant", "vacuum", "vague", "valley", "varied", "vastly", "vendor", "verbal", "verify", "verse", "versus", "vessel", "viable", "viewer", "villa", "virgin", "virtue", "vivid", "voting", "voyage", "wagon", "waist", "wallet", "warmly", "weapon", "weary", "weigh", "wheat", "whilst", "wholly", "wicked", "widow", "wield", "wisdom", "worthy", "wrist", "yearly", "yearn"], "master": ["abandon", "abstract", "academic", "accuracy", "accurate", "accusation", "addiction", "adequate", "advanced", "advocate", "aesthetic", "affection", "aftermath", "aggregate", "aggressive", "allocation", "alongside", "ambiguous", "ambitious", "analogous", "analytical", "anonymous", "apparatus", "appealing", "applicable", "arbitrary", "architect", "articulate", "aspiration", "assemble", "assertion", "assessment", "assignment", "assumption", "astonishing", "asymmetric", "attachment", "attainment", "attribute", "authentic", "authorise", "automate", "automation", "autonomous", "awareness", "awkwardly", "bacteria", "balanced", "battlefield", "behavioral", "benchmark", "beneficial", "biography", "biological", "blessing", "boundary", "breakdown", "broadcast", "bureaucracy", "capability", "cathedral", "cautious", "celebrate", "certainty", "challenge", "champion", "channel", "chaotic", "characterize", "cholesterol", "chronicle", "circulation", "circumstance", "citizenship", "clarify", "classification", "coalition", "cognitive", "coherent", "coincide", "collaboration", "collapse", "colleague", "collective", "colonial", "columnist", "combination", "commence", "commentary", "commission", "commitment", "commodity", "compelling", "compensate", "competence", "compilation", "complement", "complexity", "compliance", "complicate", "component", "comprehend", "comprehensive", "compromise", "compulsory", "conceal", "conceive", "concentrate", "conception", "conceptual", "conclusion", "concurrent", "condemn", "confess", "configuration", "confirmation", "conform", "confrontation", "confusion", "congregate", "congressional", "conjunction", "conscience", "conscious", "consecutive", "consensus", "consent", "consequence", "consequent", "consequential", "conservation", "consistency", "consistent", "consolidate", "conspiracy", "constitute", "constitution", "constitutional", "constraint", "construct", "construction", "consult", "consumption", "contemplate", "contemporary", "contend", "continuation", "contractor", "contradiction", "contrary", "contrast", "contribute", "contribution", "controversial", "convention", "conventional", "convergence", "conversely", "conversion", "cooperate", "coordinate", "corporation", "correction", "correlate", "correlation", "correspond", "correspondence", "corresponding", "corruption", "councillor", "countless", "coverage", "creativity", "credibility", "credible", "criterion", "critical", "criticism", "cultivation", "curiosity", "curriculum", "cylindrical", "darkness", "deadline", "decisive", "declaration", "dedication", "defensive", "deficiency", "deficit", "defining", "definite", "definition", "delegate", "delegation", "deliberate", "delicate", "democratic", "demographic", "demonstration", "departure", "dependence", "dependent", "deployment", "depression", "derivation", "descriptive", "designation", "desperately", "destruction", "destructive", "detachment", "detection", "deteriorate", "determination", "devastating", "deviation", "diagnosis", "differentiate", "diffusion", "dilemma", "dimension", "diminish", "diplomatic", "disability", "disagreement", "disappoint", "disastrous", "disclosure", "discourse", "discretion", "discrimination", "disorder", "displacement", "disposal", "disposition", "disproportionate", "disruption", "dissolution", "distinctive", "distinguish", "distortion", "distribution", "disturbance", "diversity", "documentation", "dominant", "dominate", "dramatically", "duration", "dynamics", "earnings", "ecological", "effectiveness", "efficiency", "elaborate", "elevation", "eligibility", "elimination", "eloquent", "embedded", "emergence", "emerging", "emission", "empirical", "employment", "empowerment", "enabler", "encompass", "encounter", "encouragement", "enforcement", "engagement", "enhancement", "enlargement", "enlighten", "enrollment", "enterprise", "enthusiasm", "entitlement", "entrepreneur", "environmental", "equilibrium", "equivalent", "erosion", "establishment", "estimation", "evaluation", "eventual", "eventually", "evolution", "evolutionary", "exaggerate", "excellence", "exceptional", "excessive", "exclusion", "exclusive", "execution", "exemption", "exertion", "exhaustion", "exhibition", "existence", "expansion", "expectation", "expedition", "expenditure", "experimental", "expertise", "explicit", "explicitly", "exploitation", "exploration", "explosive", "exponential", "exposition", "expressive", "extension", "extensive", "extraction", "extraordinary", "extrapolate", "facilitate", "faction", "fantastic", "fascinate", "favorable", "federation", "feminist", "fictional", "filtration", "finalization", "flexibility", "flourish", "fluctuation", "formidable", "formulate", "formulation", "forthcoming", "fortnight", "fortress", "fortunate", "foundation", "fragile", "fragment", "framework", "franchise", "frankly", "fraudulent", "frequency", "frustration", "fulfillment", "functional", "functionality", "fundamental", "furthermore", "geometric", "governance", "governmental", "graduation", "grandmother", "grassroots", "grateful", "gratitude", "gravitational", "guardian", "guideline", "habitat", "handful", "harmonious", "headquarters", "healthcare", "heighten", "hemisphere", "heritage", "hesitate", "hierarchy", "highlight", "historian", "historically", "humanitarian", "humanity", "hypothesis", "hysterical", "identical", "identification", "ideology", "ignorance", "illuminate", "illustration", "imagination", "imaginative", "imitation", "immature", "immense", "immigrant", "immigration", "immortal", "immunity", "impairment", "impartial", "imperial", "implement", "implementation", "implication", "implicit", "imprisonment", "inadequate", "inadvertent", "inappropriate", "incidence", "inclusion", "inclusive", "inconsistent", "incorporation", "incredible", "increment", "incursion", "indefinite", "indicator", "indigenous", "indirect", "indispensable", "individuality", "induction", "industrial", "industrialization", "inequality", "inevitable", "inevitably", "infamous", "infancy", "infection", "infectious", "inference", "inferior", "inflammation", "inflation", "influential", "infrastructure", "ingredient", "inhabit", "inhabitant", "inherent", "inheritance", "inhibit", "initiate", "initiative", "injection", "injunction", "injustice", "innovation", "innovative", "inspection", "inspector", "inspiration", "installation", "institutional", "instrumental", "insufficient", "insulation", "insurance", "integral", "integrate", "integration", "integrity", "intellectual", "intensity", "intensive", "intentional", "interaction", "interdisciplinary", "interface", "interference", "intermediate", "intermittent", "interpretation", "interval", "intervene", "intervention", "intimate", "intricate", "intrigue", "intrinsic", "introduction", "intrusion", "intuition", "invasion", "invention", "investigative", "investment", "invisible", "involvement", "isolation", "itinerary", "journalism", "journalist", "judgement", "judicial", "junction", "jurisdiction", "justification", "justifiably", "juvenile", "kingdom", "knowledgeable", "laboratory", "landlord", "landmark", "landscape", "latitude", "laughter", "laureate", "legislation", "legislative", "legislature", "legitimacy", "legitimate", "lengthen", "liability", "liberation", "likelihood", "limitation", "linguistic", "literacy", "literally", "literary", "literature", "litigation", "livelihood", "livestock", "locality", "locomotive", "longevity", "longitude", "machinery", "magnificent", "magnitude", "mainland", "mainstream", "maintenance", "managerial", "mandatory", "manifestation", "manipulation", "manufacturer", "manuscript", "marginal", "marginalization", "marketplace", "masculine", "mathematical", "meaningful", "meantime", "measurable", "measurement", "mechanical", "mechanism", "medieval", "meditation", "membership", "memorable", "mentality", "merchandise", "merchant", "merciless", "metabolism", "metaphor", "methodology", "metropolitan", "microscope", "migration", "militant", "militia", "millennium", "mineral", "minimal", "minimize", "ministerial", "misconception", "misleading", "missionary", "modification", "molecular", "momentum", "monarchy", "monastery", "monetary", "monitoring", "monopoly", "monotonous", "monument", "mortality", "motivation", "mountainous", "movement", "multimedia", "multinational", "multiple", "multiplication", "multitude", "municipal", "mutation", "mysterious", "narrative", "nationwide", "nationality", "navigate", "navigation", "necessarily", "necessity", "negotiation", "neighbouring", "networking", "neuroscience", "neutral", "neutrality", "newcomer", "newsletter", "nineteenth", "nominate", "nomination", "nonetheless", "nonprofit", "normalization", "normative", "notable", "notification", "notwithstanding", "nowadays", "nuclear", "numerical", "nursing", "nurturance", "nutrition", "nutritious", "objection", "objective", "obligation", "oblivious", "observation", "observational", "observer", "obsession", "obsessive", "obstacle", "obstruction", "occupational", "occurrence", "offensive", "omission", "ongoing", "operational", "operator", "opponent", "opposition", "oppression", "optimism", "optimistic", "optimization", "optional", "orchestra", "orderly", "ordinance", "organic", "organism", "organizational", "orientation", "oriented", "originate", "orthodox", "outbreak", "outcome", "outgoing", "outline", "outlook", "outrage", "outright", "outsider", "outspoken", "outstanding", "outward", "outweigh", "overcome", "overflow", "overhead", "overlook", "overnight", "overseas", "oversee", "oversight", "overthrow", "overview", "overwhelming", "ownership", "packaging", "pageant", "paintwork", "pamphlet", "paradigm", "paradox", "paragraph", "paramount", "parental", "parliament", "parliamentary", "partial", "participation", "partisan", "partnership", "passionate", "pastoral", "pathway", "patience", "patriotic", "patronage", "peaceful", "peasant", "peculiar", "pediatric", "penetrate", "peninsula", "pension", "percentage", "perception", "perennial", "perfection", "periodical", "peripheral", "permanence", "permanent", "permeate", "permission", "perpetual", "persecution", "persistence", "persistent", "personality", "personnel", "persuade", "persuasion", "persuasive", "pertinent", "pervasive", "petition", "petroleum", "pharmaceutical", "phenomenon", "philosopher", "philosophical", "photography", "physician", "physiological", "pilgrimage", "pinnacle", "pioneer", "placement", "planetary", "plantation", "platform", "plausible", "playwright", "pleasure", "plurality", "pneumonia", "polarization", "polarize", "politically", "politician", "pollutant", "portfolio", "portrait", "portrayal", "positioning", "positively", "possession", "postgraduate", "postpone", "postwar", "potassium", "potential", "pottery", "practically", "practise", "practitioner", "pragmatic", "prairie", "precarious", "precedence", "precedent", "precious", "precise", "precisely", "precision", "predator", "predatory", "predecessor", "predictable", "prediction", "predominant", "predominantly", "preface", "preference", "pregnancy", "pregnant", "prejudice", "preliminary", "premier", "premise", "premium", "preoccupation", "preparation", "preparatory", "prescribe", "prescription", "presently", "preservation", "presidency", "presidential", "presumably", "presume", "pretend", "prevalence", "prevention", "preventive", "preview", "previous", "primitive", "principally", "principled", "privately", "privilege", "probability", "problematic", "procedure", "procedural", "proceed", "proceedings", "processor", "productive", "productivity", "profess", "profession", "professional", "profitable", "profound", "progression", "progressive", "prohibition", "projection", "proliferation", "prolong", "prominence", "prominent", "promising", "promotional", "pronounce", "pronounced", "pronunciation", "propaganda", "propensity", "properly", "prophecy", "prophet", "proponent", "proportion", "proportional", "proposition", "proprietary", "proprietor", "prosecution", "prosecutor", "prospect", "prospective", "prosperity", "prosperous", "prostitution", "protagonist", "protective", "protein", "protocol", "prototype", "proverbial", "provincial", "provision", "provisional", "provocation", "proximity", "psychiatric", "psychological", "publicly", "publication", "publicity", "publisher", "punishment", "pupillage", "pursuit", "qualification", "qualitative", "quarterly", "questionnaire", "radiation", "radical", "railroad", "ranking", "rapidity", "ratification", "rational", "rationalization", "readership", "readily", "realism", "realistic", "realization", "reassurance", "rebellion", "rebuild", "receiver", "reception", "receptor", "recession", "recipient", "reciprocal", "recognition", "recommendation", "reconcile", "reconstruction", "recording", "recruitment", "rectangle", "rectangular", "recycling", "redemption", "reduction", "refinement", "reflection", "reformation", "refrigerator", "refugee", "refusal", "regarding", "regardless", "regeneration", "regiment", "regional", "registration", "regression", "regulate", "regulation", "regulatory", "rehabilitation", "rehearsal", "reinforcement", "rejection", "relational", "relative", "relatively", "relaxation", "relevance", "reliability", "reliable", "reliance", "remarkable", "remarkably", "remedial", "reminder", "removal", "renaissance", "rendering", "renewal", "renowned", "reorganization", "repayment", "repetition", "replacement", "reportedly", "reporter", "representation", "representative", "reproduction", "reproductive", "republic", "reputable", "reputation", "requirement", "requisite", "researcher", "resemble", "reservation", "reservoir", "resettlement", "residence", "residential", "residual", "resignation", "resistance", "resistant", "resolution", "respectful", "respectively", "respondent", "responsive", "restoration", "restrain", "restraint", "restriction", "restructuring", "resurrection", "retailer", "retention", "retirement", "retrieval", "retrospective", "revelation", "revenge", "reversal", "revision", "revival", "revolutionary", "rhetoric", "ridiculous", "rivalry", "robbery", "romantic", "rotation", "roughly", "roundabout", "royalty", "rubbing", "rubbish", "sacrifice", "sadness", "safeguard", "salvation", "sanction", "sanctuary", "satellite", "satisfaction", "satisfactory", "sceptical", "scepticism", "scheduling", "scholarly", "scholarship", "scientific", "scientist", "scrutiny", "sculpture", "seasonal", "seasoned", "secrecy", "secretariat", "secretary", "secretion", "sectarian", "secular", "seemingly", "segment", "segregation", "seizure", "selection", "selective", "semantic", "semester", "semiconductor", "seminar", "senator", "sensation", "sensible", "sensitive", "sensitivity", "sentiment", "sentimental", "separation", "sequence", "sequential", "sergeant", "settler", "settlement", "seventh", "severity", "sexuality", "shareholder", "shipment", "shipping", "shortage", "shortly", "short-term", "showcase", "shutter", "sibling", "sidewalk", "signature", "significance", "simplicity", "simplification", "simplified", "simplify", "simultaneously", "singular", "sizable", "skeleton", "skeptical", "slaughter", "slavery", "smartphone", "snapshot", "socialism", "socialist", "societal", "socioeconomic", "solidarity", "solitary", "sometime", "sophisticated", "sovereignty", "spacing", "spatial", "specialisation", "specialize", "species", "specification", "specimen", "spectacle", "spectacular", "spectator", "spectrum", "speculation", "spending", "spiritual", "spirituality", "splendid", "spokesperson", "sponsorship", "spontaneous", "sporting", "spotlight", "stability", "stabilization", "stabilize", "stadium", "stakeholder", "standpoint", "startup", "starvation", "statesman", "statistical", "statistician", "stature", "statutory", "steadily", "stereotype", "stimulate", "stimulation", "stimulus", "stirring", "stockholder", "storyteller", "straightforward", "strategic", "strategist", "stratum", "strengthen", "stressful", "strictly", "striking", "structural", "structured", "stumble", "stunning", "stupidity", "subdivision", "subjective", "submission", "subscriber", "subscription", "subsequent", "subsequently", "subsidy", "substantial", "substantially", "substantive", "substitute", "substitution", "subtitle", "suburban", "succession", "successive", "successor", "sufficiently", "suggestion", "suicidal", "suicide", "suitability", "superbly", "superiority", "supernatural", "superstition", "supervisory", "supplementary", "supportive", "supposedly", "suppression", "supremacy", "supreme", "surgical", "surplus", "surprisingly", "surrounding", "surveillance", "survival", "survivor", "susceptible", "suspicion", "suspicious", "sustainability", "sustainable", "sustenance", "sweeping", "sweetness", "swimming", "symbolic", "symbolize", "symmetrical", "symmetry", "sympathetic", "sympathize", "sympathy", "symptom", "synthesis", "systematic", "tablespoon", "tactical", "talented", "tangible", "taxation", "taxpayer", "teammate", "teamwork", "technical", "technician", "technique", "technological", "technologically", "tedious", "teenage", "teenager", "telecommunication", "telescope", "temptation", "tendency", "tenderness", "tension", "tentative", "terminology", "terrain", "terribly", "terrific", "territorial", "territory", "terrorist", "testament", "testify", "testimonial", "testimony", "testing", "textbook", "textual", "theatrical", "thematic", "theological", "theorem", "theoretical", "therapeutic", "thereby", "thermal", "thermometer", "thickness", "thorough", "thoroughly", "thoughtful", "thought-provoking", "thousand", "threaten", "threatening", "threshold", "thrilled", "throughout", "thunderstorm", "tightly", "timeless", "timeline", "tolerance", "tolerate", "touchdown", "tournament", "toxicity", "tracing", "trademark", "trading", "tradition", "traditional", "traditionally", "tragedy", "trajectory", "transaction", "transcript", "transcription", "transformation", "transformative", "transit", "transition", "transitional", "translate", "translation", "transmission", "transmit", "transparency", "transparent", "transplant", "transportation", "traveler", "treasury", "tremendous", "tribunal", "tributary", "tribute", "trilogy", "triumph", "triumphant", "tropical", "troubled", "trustee", "truthful", "turnover", "tutorial", "twentieth", "twofold", "typical", "typically", "tyranny", "ubiquitous", "umbrella", "unacceptable", "unambiguous", "unanimously", "unavoidable", "unaware", "unbelievable", "uncertain", "uncertainty", "unchanged", "uncomfortable", "uncommon", "unconditional", "unconscious", "unconventional", "undeniable", "undergo", "undergraduate", "underlie", "underlying", "undermine", "underneath", "undertake", "undertaking", "underway", "undesirable", "undoubtedly", "unemployment", "unexpected", "unexpectedly", "unfamiliar", "unfortunate", "unfortunately", "unhappy", "unified", "uniform", "uniformly", "unintended", "unintentional", "uniquely", "universal", "universally", "universe", "university", "unknown", "unlawful", "unlikely", "unlimited", "unprecedented", "unpredictable", "unrealistic", "unreasonable", "unstable", "unsuccessful", "unsuitable", "unusual", "unusually", "unwilling", "upcoming", "upgrade", "upheaval", "uprising", "upscale", "upstream", "urbanization", "urgency", "urgently", "useless", "utility", "utilization", "utilize", "utterly", "vacancy", "vacation", "vaccination", "vaccine", "vaguely", "validity", "valuable", "valuation", "variation", "vegetable", "vegetation", "vegetarian", "velocity", "venerable", "venture", "verbally", "verification", "versatile", "vertical", "veteran", "vibrant", "vibrancy", "vicious", "victorious", "vigorous", "vigorously", "village", "villager", "violation", "virtually", "virtuous", "visibility", "visible", "visibly", "visionary", "visualization", "visualize", "vitality", "vividly", "vocational", "volatile", "volatility", "volcanic", "voluntary", "volunteer", "voucher", "vulnerability", "vulnerable", "warehouse", "warfare", "warming", "warrant", "warranty", "warrior", "wasteful", "watchdog", "waterfall", "waterfront", "wavelength", "webinar", "website", "wedding", "weightlifting", "welfare", "westward", "whatever", "whatsoever", "whereby", "wherein", "wherever", "whichever", "whisper", "whistle", "whoever", "wholesale", "wholesome", "widespread", "wilderness", "wildlife", "willingness", "winding", "windmill", "wireless", "withdrawal", "withhold", "withstand", "witness", "workout", "workshop", "worldwide", "worried", "worthless", "worthwhile", "yachting", "youngster", "youthful", "zealous"]};
+
+        const LEVEL_CONFIG = {
+            novice: { maxTries: 5, pointsPerWin: 10, label: "Novice" },
+            seeker: { maxTries: 5, pointsPerWin: 15, label: "Seeker" },
+            master: { maxTries: 5, pointsPerWin: 20, label: "Master" }
+        };
+
+        const JSONBIN_CONFIG = {
+            BIN_ID: '69ac1a3bae596e708f694c9e',
+            API_KEY: '$2a$10$gcQCCyqzL8xU7Vum3uN84ebkMLYngo6KjM0j5gk8MVojAwvfPNsFe',
+            BASE_URL: 'https://api.jsonbin.io/v3'
+        };
+
+        let gameState = {
+            wizardName: '',
+            currentLevel: null,
+            targetWord: '',
+            guesses: [],
+            triesLeft: 0,
+            bonusTries: { novice: 0, seeker: 0, master: 0 },
+            playerStats: {},
+            todayString: getTodayString(),
+            dailyCompleted: {},
+            graphMode: 'cumulative'
+        };
+
+        function getTodayString() {
+            const today = new Date();
+            return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+        }
+
+        function getDailyWord(level, date) {
+            const seed = date.getFullYear() * 10000 + (date.getMonth() + 1) * 100 + date.getDate();
+            const words = OXFORD_WORDS[level];
+            const levelSalt = level === 'novice' ? 7 : level === 'seeker' ? 13 : 23;
+            const hash = ((seed * 2654435761 + levelSalt * 48271) >>> 0) % words.length;
+            return words[hash];
+        }
+
+        // SIMILARITY SCORING (Letter-based as requested)
+        function calculateSimilarity(guess, target) {
+            const guessLetters = guess.toLowerCase().split('');
+            const targetLetters = target.toLowerCase().split('');
+            let matchCount = 0;
+            
+            const targetCopy = [...targetLetters];
+            for (let letter of guessLetters) {
+                const idx = targetCopy.indexOf(letter);
+                if (idx !== -1) {
+                    matchCount++;
+                    targetCopy.splice(idx, 1);
+                }
+            }
+            
+            const nonMatching = guessLetters.length - matchCount;
+            const similarity = 1 - (nonMatching / guessLetters.length);
+            return Math.max(0, similarity);
+        }
+
+        // CATEGORY DETECTION
+        function getWordCategory(word) {
+            word = word.toLowerCase();
+            
+            // Names (proper nouns - capitalized common names)
+            const names = ['john', 'mary', 'peter', 'sarah', 'david', 'emma', 'james', 'anna', 'michael', 'lisa',
+                          'god', 'sir', 'guy', 'lad'];
+            
+            // Places
+            const places = ['paris', 'london', 'tokyo', 'rome', 'berlin', 'moscow', 'madrid', 'athens', 'cairo', 'delhi',
+                          'city', 'town', 'village', 'country', 'island', 'mountain', 'river', 'ocean', 'lake', 'forest',
+                          'bay', 'den', 'gym', 'inn', 'lab', 'pub', 'sea', 'sky', 'spa', 'zoo', 'dam',
+                          'arena', 'beach', 'china', 'coast', 'earth', 'field', 'hotel', 'house', 'mount', 'north',
+                          'plain', 'plaza', 'realm', 'south', 'space', 'tower', 'urban', 'venue', 'world',
+                          'cathedral', 'habitat', 'hemisphere', 'kingdom', 'laboratory', 'landmark', 'landscape',
+                          'mainland', 'marketplace', 'monastery', 'parliament', 'pathway', 'peninsula', 'plantation',
+                          'sanctuary', 'territory', 'universe', 'warehouse'];
+            
+            // Animals
+            const animals = ['dog', 'cat', 'bird', 'fish', 'lion', 'tiger', 'elephant', 'mouse', 'horse', 'cow',
+                           'sheep', 'goat', 'pig', 'chicken', 'duck', 'rabbit', 'snake', 'frog', 'spider', 'ant',
+                           'bee', 'butterfly', 'eagle', 'whale', 'shark', 'dolphin', 'bear', 'wolf', 'fox', 'deer',
+                           'monkey', 'zebra', 'giraffe', 'penguin', 'owl', 'bat', 'rat', 'squirrel', 'beast', 'animal',
+                           'bug', 'hen', 'beast'];
+            
+            // Things (objects)
+            const things = ['book', 'pen', 'pencil', 'paper', 'table', 'chair', 'cup', 'plate', 'phone', 'computer',
+                          'car', 'bike', 'bus', 'train', 'plane', 'boat', 'house', 'door', 'window', 'clock',
+                          'lamp', 'knife', 'fork', 'spoon', 'bottle', 'glass', 'key', 'bag', 'box', 'hat',
+                          'shoe', 'shirt', 'pants', 'dress', 'coat', 'ball', 'toy', 'tool', 'weapon', 'thing',
+                          'bed', 'pot', 'pan', 'jar', 'map', 'net', 'nut', 'oak', 'oat', 'pad', 'pea', 'pie',
+                          'pin', 'rag', 'rug', 'saw', 'tab', 'tag', 'tap', 'tar', 'tea', 'tie', 'tin', 'tip',
+                          'toe', 'ton', 'top', 'tub', 'van', 'wig', 'egg', 'fan', 'jet', 'lid', 'web'];
+            
+            // Verbs (action words)
+            const verbs = ['run', 'walk', 'jump', 'fly', 'swim', 'eat', 'drink', 'sleep', 'talk', 'read',
+                         'write', 'sing', 'dance', 'play', 'work', 'study', 'teach', 'learn', 'think', 'feel',
+                         'ask', 'dig', 'win', 'sit', 'lay', 'cut', 'hit', 'run', 'try', 'buy', 'say', 'see',
+                         'mix', 'own', 'pay', 'put', 'ran', 'raw', 'rid', 'row', 'rub', 'set', 'sow', 'wed',
+                         'abuse', 'adapt', 'admit', 'adopt', 'agree', 'align', 'allow', 'alter', 'apply', 'argue',
+                         'arise', 'bless', 'bleed', 'wave', 'carry', 'catch', 'cease', 'chase', 'cheat', 'check',
+                         'climb', 'cling', 'drive', 'drown', 'fight', 'float', 'grant', 'grasp', 'greet', 'guard',
+                         'guess', 'guide', 'judge', 'laugh', 'learn', 'match', 'occur', 'offer', 'paint', 'plant',
+                         'plead', 'point', 'prove', 'raise', 'rally', 'reach', 'react', 'refer', 'relax', 'reply',
+                         'serve', 'shape', 'share', 'shift', 'shine', 'shoot', 'shout', 'smile', 'solve', 'speak',
+                         'spell', 'spend', 'split', 'stand', 'start', 'steal', 'stick', 'study', 'swing', 'taste',
+                         'teach', 'thank', 'think', 'throw', 'touch', 'track', 'trade', 'train', 'treat', 'trust',
+                         'twist', 'visit', 'watch', 'weave', 'write', 'yield'];
+            
+            if (names.includes(word)) return 'name';
+            if (places.includes(word)) return 'place';
+            if (animals.includes(word)) return 'animal';
+            if (things.includes(word)) return 'thing';
+            if (verbs.includes(word)) return 'verb';
+            return 'other';  // Abstract concepts, adjectives, etc.
+        }
+
+        // MEANING-BASED ORACLE HINTS
+        function getMeaningHint(target, guess) {
+            const hints = {
+                // Animals
+                'dog': '🐾 This loyal creature is known as man\'s best friend',
+                'cat': '🐱 A graceful feline that loves to purr and hunt mice',
+                'bird': '🦅 A creature with wings that flies high in the sky',
+                'fish': '🐟 A water-dwelling creature with fins and scales',
+                'lion': '🦁 The king of the jungle with a mighty roar',
+                'tiger': '🐯 A striped big cat that prowls the jungle',
+                'elephant': '🐘 The largest land animal with a long trunk',
+                'horse': '🐴 A majestic animal people ride across fields',
+                'cow': '🐄 A farm animal that gives us milk',
+                'sheep': '🐑 A woolly farm animal that goes "baa"',
+                'rabbit': '🐰 A hopping creature with long ears',
+        // ULTRA-VAGUE PROGRESSIVE HINT SYSTEM (98%, 95%, 90%, 85%, 80%)
+        function generateUltraVagueHints(word) {
+            const wordLen = word.length;
+            const first = word[0].toUpperCase();
+            const last = word[word.length - 1].toUpperCase();
+            const hash = word.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0);
+            const pick = (arr) => arr[hash % arr.length];
+            
+            return [
+                pick(["Something that exists in this world", "A part of human experience", "Known to those who observe", "Present in daily life", "A concept or thing that matters", "Something recognized by many", "Part of the natural or human world", "Has meaning to people"]),
+                pick(["Related to a common domain", "Found in certain contexts", "Associated with everyday experience", "Plays a role in life", "Connects to basic needs or wants", "Part of what surrounds us", "Something people encounter", "Has a purpose or function"]),
+                pick([`Something with ${wordLen} parts`, "Has specific characteristics", "Recognizable to most people", "Serves a particular role", "Found in specific places", "Used or seen regularly", "Has distinct qualities", "Known for certain traits"]),
+                pick([`Starts with the sound of ${first}`, "Related to a specific category", "Has defining features", "Something concrete or abstract", "Distinct from similar things", "Can be described in words", "Known by a specific name", "Has clear boundaries or form"]),
+                pick([`A ${wordLen}-letter word beginning with ${first}`, `Something that ends with ${last}`, "Has specific purpose or meaning", "Identifiable by key traits", "Distinguished by characteristics", "Can be found or understood", "Has a clear identity", "Known for particular features"])
+            ];
+        }
+        
+        function getProgressiveHint(word, triesLeft) {
+            const hints = generateUltraVagueHints(word);
+            const hintIndex = 5 - triesLeft;
+            return "💭 " + (hints[hintIndex] || hints[4]);
+        }
+                'snake': '🐍 A legless reptile that slithers on the ground',
+                'bear': '🐻 A large furry animal that loves honey',
+                'wolf': '🐺 A wild canine that howls at the moon',
+                'fox': '🦊 A cunning red creature with a bushy tail',
+                
+                // Places
+                'paris': '🗼 The romantic capital of France, city of lights',
+                'london': '🏰 The foggy capital of England with Big Ben',
+                'city': '🏙️ A large urban area where many people live',
+                'town': '🏘️ A smaller settlement with shops and homes',
+                'ocean': '🌊 A vast body of salt water covering Earth',
+                'river': '🌊 A flowing waterway that runs to the sea',
+                'mountain': '⛰️ A tall natural elevation of land',
+                'forest': '🌲 A large area dense with trees and wildlife',
+                'island': '🏝️ Land completely surrounded by water',
+                'beach': '🏖️ Sandy shore where waves meet the land',
+                
+                // Things
+                'book': '📚 Pages bound together full of stories and knowledge',
+                'pen': '✒️ A writing instrument filled with ink',
+                'paper': '📄 Thin material we write and draw on',
+                'table': '🪑 Furniture with a flat surface for eating or working',
+                'chair': '🪑 Furniture you sit on with a back and legs',
+                'phone': '📱 A device for calling and messaging people',
+                'computer': '💻 An electronic device for work and games',
+                'car': '🚗 A motor vehicle that drives on roads',
+                'house': '🏠 A building where people live',
+                'clock': '🕐 A device that tells you the time',
+                'lamp': '💡 A device that gives light in darkness',
+                'knife': '🔪 A sharp tool for cutting things',
+                'cup': '☕ A container for drinking beverages',
+                'bottle': '🍾 A container for holding liquids',
+                'key': '🔑 A metal tool that opens locks',
+                'bag': '👜 A container for carrying things',
+                'hat': '🎩 Worn on your head for warmth or style',
+                'shoe': '👞 Footwear that protects your feet',
+                'ball': '⚽ A round object used in many sports',
+                'box': '📦 A container for storing or moving things'
+            };
+            
+            if (hints[target]) {
+                return hints[target];
+            }
+            
+            // Generic category-based hints
+            const category = getWordCategory(target);
+            if (category === 'animal') return '🐾 Think of creatures that roam, swim, or fly';
+            if (category === 'place') return '🗺️ Think of locations or geographical features';
+            if (category === 'thing') return '📦 Think of objects and items you use';
+            
+            // Generic word-based hints
+            if (target.length <= 4) return '💭 A simple, common word you use often';
+            if (target.length <= 6) return '💭 A moderately sized word with everyday meaning';
+            return '💭 A sophisticated word with deeper meaning';
+        }
+
+        function showOraclePopup(message) {
+            const popup = document.getElementById('oraclePopup');
+            const messageEl = document.getElementById('oraclePopupMessage');
+            messageEl.textContent = message;
+            popup.classList.add('show');
+            setTimeout(() => popup.classList.remove('show'), 3500);
+        }
+
+        function updateCategoryHighlights(guess) {
+            // DON'T reset - keep existing highlights (they persist until word is guessed)
+            
+            // Highlight guess category if it matches
+            const category = getWordCategory(guess);
+            if (category === 'name' && document.getElementById('catName')) 
+                document.getElementById('catName').classList.add('highlighted');
+            if (category === 'place' && document.getElementById('catPlace')) 
+                document.getElementById('catPlace').classList.add('highlighted');
+            if (category === 'animal' && document.getElementById('catAnimal')) 
+                document.getElementById('catAnimal').classList.add('highlighted');
+            if (category === 'thing' && document.getElementById('catThing')) 
+                document.getElementById('catThing').classList.add('highlighted');
+            if (category === 'verb' && document.getElementById('catVerb')) 
+                document.getElementById('catVerb').classList.add('highlighted');
+            if (category === 'other' && document.getElementById('catOther')) 
+                document.getElementById('catOther').classList.add('highlighted');
+            
+            // ALWAYS highlight target category (persists throughout game)
+            const targetCategory = getWordCategory(gameState.targetWord);
+            if (targetCategory === 'name' && document.getElementById('catName')) 
+                document.getElementById('catName').classList.add('highlighted');
+            if (targetCategory === 'place' && document.getElementById('catPlace')) 
+                document.getElementById('catPlace').classList.add('highlighted');
+            if (targetCategory === 'animal' && document.getElementById('catAnimal')) 
+                document.getElementById('catAnimal').classList.add('highlighted');
+            if (targetCategory === 'thing' && document.getElementById('catThing')) 
+                document.getElementById('catThing').classList.add('highlighted');
+            if (targetCategory === 'verb' && document.getElementById('catVerb')) 
+                document.getElementById('catVerb').classList.add('highlighted');
+            if (targetCategory === 'other' && document.getElementById('catOther')) 
+                document.getElementById('catOther').classList.add('highlighted');
+        }
+
+        function resetWhispers() {
+            ['whisperLetters', 'whisperStart', 'whisperEnd'].forEach(id => {
+                const el = document.getElementById(id);
+                el.classList.remove('whisper-revealed');
+                el.style.opacity = '0.3';
+            });
+            document.getElementById('whisperLettersValue').textContent = '?';
+            document.getElementById('whisperStartValue').textContent = '?';
+            document.getElementById('whisperEndValue').textContent = '?';
+        }
+
+        function revealWhispers() {
+            const target = gameState.targetWord;
+            
+            // Reveal at 3 tries left: letter count
+            if (gameState.triesLeft === 3) {
+                const el = document.getElementById('whisperLetters');
+                el.classList.add('whisper-revealed');
+                el.style.opacity = '1';
+                document.getElementById('whisperLettersValue').textContent = target.length;
+            }
+            
+            // Reveal at 2 tries left: start letter
+            if (gameState.triesLeft === 2) {
+                const el = document.getElementById('whisperStart');
+                el.classList.add('whisper-revealed');
+                el.style.opacity = '1';
+                document.getElementById('whisperStartValue').textContent = target[0].toUpperCase();
+            }
+            
+            // Reveal at 1 try left: end letter
+            if (gameState.triesLeft === 1) {
+                const el = document.getElementById('whisperEnd');
+                el.classList.add('whisper-revealed');
+                el.style.opacity = '1';
+                document.getElementById('whisperEndValue').textContent = target[target.length - 1].toUpperCase();
+            }
+        }
+
+        function makeGuess() {
+            const input = document.getElementById('guessInput');
+            const guess = input.value.toLowerCase().trim();
+            
+            if (!guess) {
+                showNotification('❌ Please enter a word!');
+                return;
+            }
+            
+            if (gameState.guesses.some(g => g.word === guess)) {
+                showNotification('⚠️ Already tried!');
+                return;
+            }
+            
+            const similarity = calculateSimilarity(guess, gameState.targetWord);
+            
+            gameState.guesses.push({ word: guess, similarity });
+            gameState.triesLeft--;
+            
+            input.value = '';
+            updateSpatialMap();
+            updateCategoryHighlights(guess);
+            document.getElementById('triesDisplay').textContent = gameState.triesLeft;
+            
+            // Reveal whispers based on tries left
+            revealWhispers();
+            
+            if (guess === gameState.targetWord) {
+                winGame();
+            } else if (gameState.triesLeft === 0) {
+                loseGame();
+            } else {
+                const hint = getProgressiveHint(gameState.targetWord, gameState.triesLeft);
+                showOraclePopup(hint);
+            }
+        }
+
+        function updateSpatialMap() {
+            const mapContainer = document.getElementById('guessesMap');
+            mapContainer.innerHTML = '';
+            
+            // Sort by similarity (high to low)
+            const sortedGuesses = [...gameState.guesses].sort((a, b) => b.similarity - a.similarity);
+            
+            const centerX = 50;
+            const centerY = 50;
+            
+            sortedGuesses.forEach((guess, index) => {
+                const angle = (index / Math.max(sortedGuesses.length, 1)) * Math.PI * 2;
+                const distance = (1 - guess.similarity) * 40;
+                
+                const x = centerX + Math.cos(angle) * distance;
+                const y = centerY + Math.sin(angle) * distance;
+                
+                const bubble = document.createElement('div');
+                bubble.className = 'guess-bubble';
+                bubble.textContent = `${guess.word} (${Math.round(guess.similarity * 100)}%)`;
+                bubble.style.left = x + '%';
+                bubble.style.top = y + '%';
+                
+                const hue = guess.similarity * 120;
+                bubble.style.background = `hsla(${hue}, 80%, 50%, 0.8)`;
+                bubble.style.borderColor = `hsl(${hue}, 80%, 60%)`;
+                bubble.style.color = 'white';
+                
+                mapContainer.appendChild(bubble);
+            });
+        }
+
+        function winGame() {
+            const points = gameState.triesLeft * LEVEL_CONFIG[gameState.currentLevel].pointsPerWin;
+            gameState.playerStats.totalScore = (gameState.playerStats.totalScore || 0) + points;
+            gameState.playerStats.victories = gameState.playerStats.victories || { novice: 0, seeker: 0, master: 0 };
+            gameState.playerStats.victories[gameState.currentLevel]++;
+            
+            if (gameState.currentLevel === 'novice') {
+                gameState.bonusTries.novice = gameState.triesLeft;
+            } else if (gameState.currentLevel === 'seeker') {
+                gameState.bonusTries.seeker = gameState.triesLeft;
+            }
+            
+            const today = getTodayString();
+            gameState.playerStats.dailyHistory = gameState.playerStats.dailyHistory || {};
+            gameState.playerStats.dailyHistory[today] = gameState.playerStats.dailyHistory[today] || {};
+            gameState.playerStats.dailyHistory[today][gameState.currentLevel] = { won: true, points };
+            gameState.dailyCompleted[gameState.currentLevel] = true;
+            
+            gameState.playerStats.journeyDays = Object.keys(gameState.playerStats.dailyHistory).length;
+            gameState.playerStats.totalWins = (gameState.playerStats.totalWins || 0) + 1;
+            gameState.playerStats.gamesPlayed = (gameState.playerStats.gamesPlayed || 0) + 1;
+            
+            savePlayerData();
+            
+            // Determine next quest button based on current level and completion status
+            let nextButton;
+            if (gameState.currentLevel === 'novice' && !gameState.dailyCompleted.seeker) {
+                nextButton = { label: "Next Quest: Seeker →", class: "next-btn", action: "document.getElementById('notification').classList.remove('show'); startLevel('seeker');" };
+            } else if (gameState.currentLevel === 'seeker' && !gameState.dailyCompleted.master) {
+                nextButton = { label: "Next Quest: Master →", class: "next-btn", action: "document.getElementById('notification').classList.remove('show'); startLevel('master');" };
+            } else {
+                nextButton = { label: "Back to Menu ✓", class: "next-btn", action: "document.getElementById('notification').classList.remove('show'); backToMenu();" };
+            }
+            
+            showGameOverNotification(
+                `🎉 Victory! +${points} points! The word was "${gameState.targetWord}"`,
+                gameState.targetWord,
+                [
+                    { label: "⬅️ Retreat", class: "retreat-btn", action: "document.getElementById('notification').classList.remove('show'); backToMenu();" },
+                    nextButton
+                ]
+            );
+        }
+
+        function loseGame() {
+            if (gameState.currentLevel === 'novice') {
+                gameState.bonusTries.novice = 0;
+            } else if (gameState.currentLevel === 'seeker') {
+                gameState.bonusTries.seeker = 0;
+            }
+            
+            gameState.playerStats.gamesPlayed = (gameState.playerStats.gamesPlayed || 0) + 1;
+            const today = getTodayString();
+            gameState.playerStats.dailyHistory = gameState.playerStats.dailyHistory || {};
+            gameState.playerStats.dailyHistory[today] = gameState.playerStats.dailyHistory[today] || {};
+            gameState.playerStats.dailyHistory[today][gameState.currentLevel] = { won: false, points: 0 };
+            gameState.dailyCompleted[gameState.currentLevel] = true;
+            
+            savePlayerData();
+            
+            // Determine which other levels are available to try
+            let tryDifferentButton;
+            const availableLevels = [];
+            if (!gameState.dailyCompleted.novice && gameState.currentLevel !== 'novice') availableLevels.push('novice');
+            if (!gameState.dailyCompleted.seeker && gameState.currentLevel !== 'seeker') availableLevels.push('seeker');
+            if (!gameState.dailyCompleted.master && gameState.currentLevel !== 'master') availableLevels.push('master');
+            
+            if (availableLevels.length > 0) {
+                const nextLevel = availableLevels[0];
+                const levelName = nextLevel.charAt(0).toUpperCase() + nextLevel.slice(1);
+                tryDifferentButton = { label: `Try ${levelName} 🔄`, class: "next-btn", action: `document.getElementById('notification').classList.remove('show'); startLevel('${nextLevel}');` };
+            } else {
+                tryDifferentButton = { label: "Back to Menu ✓", class: "next-btn", action: "document.getElementById('notification').classList.remove('show'); backToMenu();" };
+            }
+            
+            showGameOverNotification(
+                `😢 The word was "${gameState.targetWord}". Try again tomorrow!`,
+                gameState.targetWord,
+                [
+                    { label: "⬅️ Retreat", class: "retreat-btn", action: "document.getElementById('notification').classList.remove('show'); backToMenu();" },
+                    tryDifferentButton
+                ]
+            );
+        }
+
+        function savePlayerData() {
+            localStorage.setItem(`wordQuest_${gameState.wizardName}`, JSON.stringify(gameState.playerStats));
+            submitToCloud(gameState.wizardName, gameState.playerStats.totalScore || 0);
+        }
+
+        async function submitToCloud(wizardName, score) {
+            try {
+                const res = await fetch(`${JSONBIN_CONFIG.BASE_URL}/b/${JSONBIN_CONFIG.BIN_ID}/latest`, {
+                    headers: { 'X-Access-Key': JSONBIN_CONFIG.API_KEY }
+                });
+                let cloudData = {};
+                if (res.ok) {
+                    const json = await res.json();
+                    cloudData = json.record || {};
+                }
+                cloudData[wizardName] = { score, lastPlayed: getTodayString() };
+                await fetch(`${JSONBIN_CONFIG.BASE_URL}/b/${JSONBIN_CONFIG.BIN_ID}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json', 'X-Access-Key': JSONBIN_CONFIG.API_KEY },
+                    body: JSON.stringify(cloudData)
+                });
+            } catch (err) {
+                console.warn('Cloud sync failed:', err);
+            }
+        }
+
+        function saveWizardName() {
+            const name = document.getElementById('wizardNameInput').value.trim();
+            if (!name) {
+                showNotification('Please enter a wizard name!');
+                return;
+            }
+            gameState.wizardName = name;
+            localStorage.setItem('wordQuestWizardName', name);
+            document.getElementById('wizardNameDisplay').textContent = `🧙 ${name}`;
+            document.getElementById('wizardModal').classList.add('hidden');
+            
+            const savedStats = localStorage.getItem(`wordQuest_${name}`);
+            gameState.playerStats = savedStats ? JSON.parse(savedStats) : { totalScore: 0, victories: { novice: 0, seeker: 0, master: 0 }, journeyDays: 0, totalWins: 0, gamesPlayed: 0, dailyHistory: {} };
+            
+            updateLevelCards();
+            showNotification(`✨ Welcome, ${name}!`);
+        }
+
+        function updateLevelCards() {
+            const today = getTodayString();
+            gameState.dailyCompleted = (gameState.playerStats.dailyHistory && gameState.playerStats.dailyHistory[today]) || {};
+            
+            ['novice', 'seeker', 'master'].forEach(level => {
+                const card = document.getElementById(`${level}Card`);
+                const triesEl = document.getElementById(`${level}Tries`);
+                
+                if (gameState.dailyCompleted[level]) {
+                    card.classList.add('completed');
+                    card.onclick = null;
+                } else {
+                    card.classList.remove('completed');
+                    
+                    let totalTries = LEVEL_CONFIG[level].maxTries;
+                    if (level === 'seeker' && gameState.bonusTries.novice > 0) {
+                        totalTries += gameState.bonusTries.novice;
+                    } else if (level === 'master' && gameState.bonusTries.seeker > 0) {
+                        totalTries += gameState.bonusTries.seeker;
+                    }
+                    triesEl.textContent = totalTries;
+                }
+            });
+        }
+
+        function startLevel(level) {
+            if (gameState.dailyCompleted[level]) {
+                showNotification('Already completed today!');
+                return;
+            }
+            
+            gameState.currentLevel = level;
+            gameState.targetWord = getDailyWord(level, new Date());
+            gameState.guesses = [];
+            
+            let bonusTries = 0;
+            if (level === 'seeker' && gameState.bonusTries.novice > 0) {
+                bonusTries = gameState.bonusTries.novice;
+            } else if (level === 'master' && gameState.bonusTries.seeker > 0) {
+                bonusTries = gameState.bonusTries.seeker;
+            }
+            
+            gameState.triesLeft = LEVEL_CONFIG[level].maxTries + bonusTries;
+            gameState.currentScore = 0;
+            
+            // Show/hide categories based on level
+            document.getElementById('catName').style.display = 'block';
+            document.getElementById('catPlace').style.display = 'block';
+            document.getElementById('catAnimal').style.display = 'block';
+            document.getElementById('catThing').style.display = 'block';
+            
+            if (level === 'novice') {
+                // Novice: Name, Place, Animal, Thing only
+                document.getElementById('catVerb').style.display = 'none';
+                document.getElementById('catOther').style.display = 'none';
+            } else if (level === 'seeker') {
+                // Seeker: Name, Place, Animal, Thing, Verb
+                document.getElementById('catVerb').style.display = 'block';
+                document.getElementById('catOther').style.display = 'none';
+            } else if (level === 'master') {
+                // Master: Name, Place, Animal, Thing, Verb, Other
+                document.getElementById('catVerb').style.display = 'block';
+                document.getElementById('catOther').style.display = 'block';
+            }
+            
+            document.getElementById('levelSelector').style.display = 'none';
+            document.getElementById('gameArea').classList.add('active');
+            document.getElementById('triesDisplay').textContent = gameState.triesLeft;
+            document.getElementById('currentScore').textContent = gameState.currentScore;
+            
+            // Clear quest path
+            document.getElementById('guessesMap').innerHTML = '';
+            
+            // Reset whispers
+            resetWhispers();
+            
+            // Reset category highlights
+            ['catName', 'catPlace', 'catAnimal', 'catThing', 'catVerb', 'catOther'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.classList.remove('highlighted');
+            });
+            
+            showNotification(`${level.charAt(0).toUpperCase() + level.slice(1)} Quest begins!${bonusTries > 0 ? ` (+${bonusTries} bonus tries)` : ''}`);
+        }
+
+        function backToMenu() {
+            document.getElementById('gameArea').classList.remove('active');
+            document.getElementById('levelSelector').style.display = 'block';
+            updateLevelCards();
+        }
+
+        function showStats() {
+            document.getElementById('mainContent').style.display = 'none';
+            document.getElementById('statsPage').classList.add('active');
+            
+            const stats = gameState.playerStats;
+            document.getElementById('statTotalScore').textContent = stats.totalScore || 0;
+            document.getElementById('statJourneyDays').textContent = stats.journeyDays || 0;
+            document.getElementById('statTotalWins').textContent = stats.totalWins || 0;
+            document.getElementById('statNoviceWins').textContent = (stats.victories && stats.victories.novice) || 0;
+            document.getElementById('statSeekerWins').textContent = (stats.victories && stats.victories.seeker) || 0;
+            document.getElementById('statMasterWins').textContent = (stats.victories && stats.victories.master) || 0;
+            
+            const winRate = stats.gamesPlayed > 0 ? Math.round((stats.totalWins / stats.gamesPlayed) * 100) : 0;
+            document.getElementById('statWinRate').textContent = winRate + '%';
+            
+            renderGraph();
+        }
+
+        function hideStats() {
+            document.getElementById('statsPage').classList.remove('active');
+            document.getElementById('mainContent').style.display = 'block';
+        }
+
+        function toggleGraph() {
+            gameState.graphMode = gameState.graphMode === 'cumulative' ? 'daily' : 'cumulative';
+            document.getElementById('chartToggle').textContent = gameState.graphMode === 'cumulative' ? '📊 Daily' : '📈 Total';
+            renderGraph();
+        }
+
+        function renderGraph() {
+            const canvas = document.getElementById('progressChart');
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width = canvas.offsetWidth;
+            const height = canvas.height = 220;
+            
+            ctx.clearRect(0, 0, width, height);
+            
+            const history = gameState.playerStats.dailyHistory || {};
+            const dates = Object.keys(history).sort();
+            
+            if (dates.length === 0) {
+                ctx.fillStyle = '#7C6BA3';
+                ctx.font = '14px Space Mono';
+                ctx.textAlign = 'center';
+                ctx.fillText('No data yet - play to see your progress!', width/2, height/2);
+                return;
+            }
+            
+            if (gameState.graphMode === 'daily') {
+                renderBarChart(ctx, width, height, dates, history);
+            } else {
+                renderLineChart(ctx, width, height, dates, history);
+            }
+        }
+
+        function renderBarChart(ctx, width, height, dates, history) {
+            const padding = 40;
+            const chartWidth = width - padding * 2;
+            const chartHeight = height - padding * 2;
+            
+            const dailyPoints = dates.map(date => {
+                const day = history[date];
+                return (day.novice?.points || 0) + (day.seeker?.points || 0) + (day.master?.points || 0);
+            });
+            
+            const maxPoints = Math.max(...dailyPoints, 1);
+            const barWidth = chartWidth / dates.length;
+            
+            // Draw bars
+            dailyPoints.forEach((points, i) => {
+                const x = padding + i * barWidth;
+                const barHeight = (points / maxPoints) * chartHeight;
+                const y = padding + chartHeight - barHeight;
+                
+                const gradient = ctx.createLinearGradient(0, y, 0, y + barHeight);
+                gradient.addColorStop(0, '#00FFC2');
+                gradient.addColorStop(1, '#A855F7');
+                
+                ctx.fillStyle = gradient;
+                ctx.fillRect(x + 2, y, barWidth - 4, barHeight);
+            });
+            
+            // Axes
+            ctx.strokeStyle = '#7C6BA3';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(padding, padding);
+            ctx.lineTo(padding, padding + chartHeight);
+            ctx.lineTo(padding + chartWidth, padding + chartHeight);
+            ctx.stroke();
+            
+            // Labels
+            ctx.fillStyle = '#B4A5D8';
+            ctx.font = '10px Space Mono';
+            ctx.textAlign = 'center';
+            ctx.fillText('Days', width/2, height - 5);
+            ctx.save();
+            ctx.translate(15, height/2);
+            ctx.rotate(-Math.PI/2);
+            ctx.fillText('Points', 0, 0);
+            ctx.restore();
+        }
+
+        function renderLineChart(ctx, width, height, dates, history) {
+            const padding = 40;
+            const chartWidth = width - padding * 2;
+            const chartHeight = height - padding * 2;
+            
+            let cumulativePoints = 0;
+            const cumulativeData = dates.map(date => {
+                const day = history[date];
+                cumulativePoints += (day.novice?.points || 0) + (day.seeker?.points || 0) + (day.master?.points || 0);
+                return cumulativePoints;
+            });
+            
+            const maxPoints = Math.max(...cumulativeData, 1);
+            
+            // Draw line
+            ctx.strokeStyle = '#00FFC2';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            
+            cumulativeData.forEach((points, i) => {
+                const x = padding + (i / (dates.length - 1 || 1)) * chartWidth;
+                const y = padding + chartHeight - (points / maxPoints) * chartHeight;
+                
+                if (i === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            });
+            
+            ctx.stroke();
+            
+            // Draw points
+            ctx.fillStyle = '#00FFC2';
+            cumulativeData.forEach((points, i) => {
+                const x = padding + (i / (dates.length - 1 || 1)) * chartWidth;
+                const y = padding + chartHeight - (points / maxPoints) * chartHeight;
+                
+                ctx.beginPath();
+                ctx.arc(x, y, 4, 0, Math.PI * 2);
+                ctx.fill();
+            });
+            
+            // Axes
+            ctx.strokeStyle = '#7C6BA3';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(padding, padding);
+            ctx.lineTo(padding, padding + chartHeight);
+            ctx.lineTo(padding + chartWidth, padding + chartHeight);
+            ctx.stroke();
+            
+            // Labels
+            ctx.fillStyle = '#B4A5D8';
+            ctx.font = '10px Space Mono';
+            ctx.textAlign = 'center';
+            ctx.fillText('Days', width/2, height - 5);
+            ctx.save();
+            ctx.translate(15, height/2);
+            ctx.rotate(-Math.PI/2);
+            ctx.fillText('Total Points', 0, 0);
+            ctx.restore();
+        }
+
+        function showGameOverNotification(message, targetWord, buttons) {
+            const notification = document.getElementById('notification');
+            
+            // Create message with bold word
+            let html = '';
+            if (targetWord) {
+                const parts = message.split(targetWord);
+                html = parts[0] + '<span style="font-size: 22px; font-weight: 900; color: var(--accent-gold); text-shadow: 0 0 10px var(--accent-gold);">' + targetWord.toUpperCase() + '</span>' + (parts[1] || '');
+            } else {
+                html = message;
+            }
+            
+            // Add buttons if provided
+            if (buttons && buttons.length > 0) {
+                html += '<div class="post-game-buttons">';
+                buttons.forEach(btn => {
+                    html += `<button class="post-game-btn ${btn.class}" onclick="${btn.action}">${btn.label}</button>`;
+                });
+                html += '</div>';
+            }
+            
+            notification.innerHTML = html;
+            notification.classList.add('show');
+            // Don't auto-hide if there are buttons - let user click
+            if (!buttons || buttons.length === 0) {
+                setTimeout(() => notification.classList.remove('show'), 5000);
+            }
+        }
+
+        function showNotification(message, targetWord = null) {
+            const notification = document.getElementById('notification');
+            if (targetWord) {
+                // Bold and enlarge the target word
+                const parts = message.split(targetWord);
+                notification.innerHTML = parts[0] + '<span style="font-size: 22px; font-weight: 900; color: var(--accent-gold); text-shadow: 0 0 10px var(--accent-gold);">' + targetWord.toUpperCase() + '</span>' + parts[1];
+            } else {
+                notification.textContent = message;
+            }
+            notification.classList.add('show');
+            setTimeout(() => notification.classList.remove('show'), 5000);
+        }
+
+        function init() {
+            const savedName = localStorage.getItem('wordQuestWizardName');
+            if (savedName) {
+                gameState.wizardName = savedName;
+                document.getElementById('wizardNameDisplay').textContent = `🧙 ${savedName}`;
+                document.getElementById('wizardModal').classList.add('hidden');
+                
+                const savedStats = localStorage.getItem(`wordQuest_${savedName}`);
+                gameState.playerStats = savedStats ? JSON.parse(savedStats) : { totalScore: 0, victories: { novice: 0, seeker: 0, master: 0 }, journeyDays: 0, totalWins: 0, gamesPlayed: 0, dailyHistory: {} };
+                updateLevelCards();
+            }
+            
+            document.getElementById('guessInput').addEventListener('keypress', e => {
+                if (e.key === 'Enter') makeGuess();
+            });
+            
+            document.getElementById('wizardNameInput').addEventListener('keypress', e => {
+                if (e.key === 'Enter') saveWizardName();
+            });
+            
+            const today = new Date();
+            document.getElementById('dailyDate').textContent = `Today's Quest: ${today.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`;
+        }
+
+        init();
+    </script>
+</body>
+</html>
